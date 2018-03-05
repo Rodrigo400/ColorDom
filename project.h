@@ -1,4 +1,11 @@
+#ifndef _GAME_H_
+#define _GAME_H_
+#include "ppm.h"
 // Header File
+
+#include <time.h>
+typedef double Flt;
+#define rnd() (((double)rand())/(double)RAND_MAX)
 
 // Constants
 const int MAX_PARTICLES = 10000;
@@ -62,3 +69,40 @@ class Game {
         }
 };
 
+extern class Global {
+    public:
+	int xres;
+	int yres;
+	int done;
+	int walk;
+	int result;
+	int mcharFrame;
+	int keys[65536];
+	double delay;
+
+	Ppmimage *mainchar1Image;
+
+	GLuint mchar1Texture;
+
+	Vec box[20];
+	Global() {
+	    xres = 1280;
+	    yres = 720;
+	    done = 0;
+	    result = 0;
+	    //
+	    mcharFrame = 0;
+	    //
+	    mainchar1Image = NULL;
+
+	    //
+	    delay = 0.1;
+	    /*for (int i = 0; i < 20; i++) {
+		box[i][0] = rnd() * xres;
+		box[i][1] = rnd() * (yres-220) + 220.0;
+		box[i][2] = 0.0;
+	    }*/
+	    memset(keys, 0, 65536);
+	}
+} gl;
+#endif

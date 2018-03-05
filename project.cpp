@@ -1,5 +1,4 @@
-//===============================================
-// Color Domination
+
 //===============================================
 // Created By:
 //      Rodrigo Garcia-Novoa
@@ -50,6 +49,7 @@ typedef Flt Matrix[4][4];
 (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
+const float gravity = -0.2f;
 //const int MAX_PARTICLES = 10000;
 #define ALPHA 1
 
@@ -58,6 +58,7 @@ const float timeslice = 1.0f;
 // Global Instance
 // ==============================================
 Timers timers;
+Global gl;
 //Game gl;
 //Sprite
 //
@@ -77,9 +78,8 @@ int main(void);
 void init_opengl(void);
 void cleanupXWindows(void);
 void check_mouse(XEvent *e, Game *game);
-int check_keys(XEvent *e, Game *game);
-void movement(Game *game);
-//void physics(void);
+void check_keys(XEvent *e);
+void physics(void);
 void render(Game *game);
 
 // ==============================================
@@ -101,7 +101,6 @@ void render(Game *game);
 
 int main(void)
 {
-	int done=0;
 	srand(time(NULL));
 	initXWindows();
 	init_opengl();
@@ -115,14 +114,14 @@ int main(void)
 	game.box.center.y = 500 - 5*60;
 
 	//start animation
-	while (!done) {
+	while (!gl.done) {
 		while (XPending(dpy)) {
 			XEvent e;
 			XNextEvent(dpy, &e);
 			check_mouse(&e, &game);
-			done = check_keys(&e, &game);
+			check_keys(&e);
 		}
-		movement(&game);
+		physics();
 		render(&game);
 		glXSwapBuffers(dpy, win);
 	}
@@ -173,6 +172,36 @@ void initXWindows(void)
 	glXMakeCurrent(dpy, win, glc);
 }
 
+unsigned char *buildAlphaData(Ppmimage *img)
+{
+    //add 4th component to RGB stream...
+    int i;
+    unsigned char *newdata, *ptr;
+    unsigned char *data = (unsigned char *)img->data;
+    newdata = (unsigned char *)malloc(img->width * img->height * 4);
+    ptr = newdata;
+    unsigned char a,b,c;
+    //use the first pixel in the image as the transparent color.
+    unsigned char t0 = *(data+0);
+    unsigned char t1 = *(data+1);
+    unsigned char t2 = *(data+2);
+    for (i=0; i<img->width * img->height * 3; i+=3) {
+	a = *(data+0);
+	b = *(data+1);
+	c = *(data+2);
+	*(ptr+0) = a;
+	*(ptr+1) = b;
+	*(ptr+2) = c;
+	*(ptr+3) = 1;
+	if (a==t0 && b==t1 && c==t2)
+	    *(ptr+3) = 0;
+	//-----------------------------------------------
+	ptr += 4;
+	data += 3;
+    }
+    return newdata;
+}
+
 void init_opengl(void)
 {
 	//OpenGL initialization
@@ -182,8 +211,53 @@ void init_opengl(void)
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 	//Set 2D mode (no perspective)
 	glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 1);
+
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_FOG);
+	glDisable(GL_CULL_FACE);	
+	
 	//Set the screen background color
 	glClearColor(0.1, 0.1, 0.1, 1.0);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//Do this to allow fonts
+	glEnable(GL_TEXTURE_2D);
+	initialize_fonts();
+	//
+	//==============================================
+	// Convertpng2ppm
+	//==============================================
+	system("convert ./images/mainChar1.png ./images/mainChar1.ppm");
+	//==============================================
+
+
+	//==============================================
+	// Get Images
+	//==============================================
+	gl.mainchar1Image = ppm6GetImage("./images/mainChar1.ppm");	
+	//==============================================
+	
+
+	//==============================================
+	// Generate Textures
+	//==============================================
+	glGenTextures(1, &gl.mchar1Texture);	
+	//==============================================
+	
+	
+	//==============================================
+	// Main Character 1
+	int w = gl.mainchar1Image->width;
+	int h = gl.mainchar1Image->height;
+	glBindTexture(GL_TEXTURE_2D, gl.mchar1Texture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *maincharacter1Data = buildAlphaData(gl.mainchar1Image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, maincharacter1Data);
+	free(maincharacter1Data);
+	unlink("./images/mainChar1.ppm"); 
+	//==============================================
 }
 
 void makeParticle(Game *game, int x, int y)
@@ -239,25 +313,53 @@ void check_mouse(XEvent *e, Game *game)
 	}
 }
 
-int check_keys(XEvent *e, Game *game)
+void check_keys(XEvent *e)
 {
-	//Was there input from the keyboard?
-	if (e->type == KeyPress) {
-		int key = XLookupKeysym(&e->xkey, 0);
-		if (key == XK_Escape) {
-			return 1;
-		}
-		//You may check other keys here.
+    //Was there input from the keyboard?
+    /*if (e->type == KeyPress) {
+      int key = XLookupKeysym(&e->xkey, 0);
+      if (key == XK_Escape) {
+      return 1;
+      }
+    //You may check other keys here.
+    */
+    int key = XLookupKeysym(&e->xkey, 0);
+    if (e->type == KeyRelease) {
+	gl.keys[key] = 0;
+	if (key == XK_Shift_L || key == XK_Shift_R)
+	    return;
+    }
+    if (e->type == KeyPress) {
+	gl.keys[key] = 1;
+	if (key == XK_Shift_L || key == XK_Shift_R)
+	    return;
+    } else { 
+	return;
+    }
 
-
-
-	}
-	return 0;
+    switch(key)
+    {
+	case XK_Escape:
+	    gl.done = 1;
+	    break;
+	case XK_w:
+		timers.recordTime(&timers.maincharacterTime);
+		gl.walk ^= 1;
+		break;
+	case XK_equal:
+		gl.delay -= 0.005;
+		if (gl.delay < 0.005)
+		    gl.delay = 0.005;
+		break;
+	case XK_minus:
+		gl.delay += 0.005;
+		break;
+    }		
 }
 
-void movement(Game *game)
+void physics(void)
 {
-	Particle *p;
+	/*Particle *p;
 
 	if (game->n <= 0)
 		return;
@@ -288,7 +390,34 @@ void movement(Game *game)
 			game->particle[i] = game->particle[game->n-1];
 			game->n--;
 		}
+	}*/
+    if (gl.walk || gl.keys[XK_Right]) {
+	//man is walking...
+	//when time is up, advance the frame.
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.maincharacterTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay) {
+	    //advance
+	    ++gl.mcharFrame;
+	    if (gl.mcharFrame >= 8)
+		gl.mcharFrame -= 8;
+	    timers.recordTime(&timers.maincharacterTime);
 	}
+    }
+
+    if (gl.walk || gl.keys[XK_Left]) {
+	//man is walking...
+	//when time is up, advance the frame.
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.maincharacterTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay) {
+	    //advance
+	    ++gl.mcharFrame;
+	    if (gl.mcharFrame >= 8)
+		gl.mcharFrame -= 8;
+	    timers.recordTime(&timers.maincharacterTime);
+	}
+    }
 }
 
 void render(Game *game)
@@ -329,6 +458,50 @@ void render(Game *game)
 		glEnd();
 		glPopMatrix();
 	}*/
+
+	// CHARACTERi
+	float cx = gl.xres/2.0;
+	float cy = gl.yres/2.0;
+	h = 200.0;
+	w = h * 0.5;
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gl.mchar1Texture);
+	//
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	int ix = gl.mcharFrame % 4;
+	int iy = 3;
+	if (gl.mcharFrame >= 4)
+	    iy = 0;
+	float tx = (float)ix / 4.0;
+	float ty = (float)iy / 3.0;
+
+	//int result;
+	glBegin(GL_QUADS);
+	if (gl.keys[XK_Right])
+	{
+	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(cx + w, cy - h);
+	    glTexCoord2f(tx,       ty + .333); glVertex2i(cx - w, cy - h);
+	    glTexCoord2f(tx,              ty); glVertex2i(cx - w, cy + h);
+	    glTexCoord2f(tx + .25, ty); glVertex2i(cx + w, cy + h);
+	    gl.result = 0;	
+	}
+
+	if (gl.keys[XK_Left])
+	{
+	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(cx - w, cy - h);
+	    glTexCoord2f(tx + .25,        ty); glVertex2i(cx - w, cy + h);
+	    glTexCoord2f(tx,              ty); glVertex2i(cx + w, cy + h);
+	    glTexCoord2f(tx, ty + .333); glVertex2i(cx + w, cy - h);
+	    gl.result = 1;
+	}
+
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_ALPHA_TEST); 	
 }
 
 
