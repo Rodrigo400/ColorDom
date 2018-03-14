@@ -59,7 +59,8 @@ const float gravity = -0.2f;
 // ==============================================
 Timers timers;
 Global gl;
-//Game gl;
+Character player1;
+Game game;
 //Sprite
 //
 //Particle
@@ -105,13 +106,15 @@ int main(void)
 	initXWindows();
 	init_opengl();
 	//declare game object
-	Game game;
+	//Game game;
 
 	//declare a box shape
-	game.box.width = 100;
-	game.box.height = 10;
-	game.box.center.x = 120 + 5*65;
-	game.box.center.y = 500 - 5*60;
+	game.box[0].width = 300;
+	game.box[0].height = 10;
+	//game.box.center.x = 250 + 5*65;
+	//game.box.center.y = 600 - 5*60;
+	game.box[0].center.x = gl.xres/2;
+	game.box[0].center.y = 150;
 
 	//start animation
 	while (!gl.done) {
@@ -391,6 +394,7 @@ void physics(void)
 			game->n--;
 		}
 	}*/
+    
     if (gl.walk || gl.keys[XK_Right]) {
 	//man is walking...
 	//when time is up, advance the frame.
@@ -429,7 +433,7 @@ void render(Game *game)
 	//draw box
 	Shape *s;
 	glColor3ub(10,0,250);
-	s = &game->box;
+	s = &game->box[0];
 	glPushMatrix();
 	glTranslatef(s->center.x, s->center.y, s->center.z);
 	w = s->width;

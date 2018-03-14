@@ -58,16 +58,20 @@ struct Particle {
     Vec velocity;
 };
 
-class Game {
+/*extern class Weapon {
     public:
-        Shape box;
-        Particle particle[MAX_PARTICLES];
-        int n;
-        Game()
-        {
-            n = 0;
-        }
-};
+	Shape s;
+	Vec vel;
+};*/
+
+extern class Character {
+    public:
+	Shape s;
+	//Weapon weapon[2];
+	Vec dir;
+	Vec pos;
+	Vec vel;
+} player1;
 
 extern class Global {
     public:
@@ -105,4 +109,17 @@ extern class Global {
 	    memset(keys, 0, 65536);
 	}
 } gl;
+
+extern class Game {
+    public:
+        Shape box[4];
+	Shape platforms[5];
+	Character player1;
+        Particle particle[MAX_PARTICLES];
+        int n;
+        Game()
+        {
+            n = 0;
+        }
+} game;
 #endif
