@@ -115,12 +115,14 @@ class Character {
 	Character () {
 	    cx = gl.xres/2;
 	    cy = gl.yres/2;
+	    height = 100.0;
+	    width = height *0.9;
 	}
 };
 
 class Game {
     public:
-        Shape box[4];
+        Shape box[100];
 	Shape platforms[5];
 	Character player[2];
         Particle particle[MAX_PARTICLES];

@@ -61,6 +61,7 @@ Timers timers;
 Global gl;
 Character *char1;
 Game game;
+Shape *s;
 //Sprite
 //
 //Particle
@@ -109,12 +110,12 @@ int main(void)
 	//Game game;
 
 	//declare a box shape
-	game.box[0].width = 300;
-	game.box[0].height = 10;
+	//game.box[0].width = 300;
+	//game.box[0].height = 10;
 	//game.box.center.x = 250 + 5*65;
 	//game.box.center.y = 600 - 5*60;
-	game.box[0].center.x = gl.xres/2;
-	game.box[0].center.y = 150;
+	//game.box[0].center.x = gl.xres/2;
+	//game.box[0].center.y = 150;
 
 	//start animation
 	while (!gl.done) {
@@ -362,23 +363,34 @@ void check_keys(XEvent *e)
 
 void physics(Game *game)
 {
-	/*Particle *p;
-
+	//Particle *p;
+/*
 	if (game->n <= 0)
 		return;
 
 	for (int i = 0; i < game->n; i++)
 	{
-		p = &game->particle[i];
-		p->velocity.y -= GRAVITY;
-		p->s.center.x += p->velocity.x;
-		p->s.center.y += p->velocity.y;
+    		char1 = &game->player[0];
+		//p = &game->particle[i];
+		char1->vel.y -= GRAVITY;
+		//p->s.center.x += p->velocity.x;
+		//p->s.center.y += p->velocity.y;
 	
 
 		//check for collision with shapes...
-		Shape *s = &game->box[0];
+		//Shape *s = &game->box[0];
 
-		if ( p->s.center.y < s->center.y + s->height && 
+		// Need shape
+		if ( char1->cx < s[i].center.y + 25 && 
+		     char1->cx > s[i].center.x - 25 &&
+		     char1->cx < s[i].center.x + 25)
+		{	
+	       	        char1->cy = s[i].center.y + 25;
+			//char1->velocity.y = -p->velocity.y;
+			//p->velocity.y *= 0.5;
+		}	
+		// Need shape
+		if ( char1->cx < s[i]->center.y + s[i]->height && 
 		     p->s.center.x > s->center.x - s->width &&
 		     p->s.center.x < s->center.x + s->width)
 		{	
@@ -393,8 +405,28 @@ void physics(Game *game)
 			game->particle[i] = game->particle[game->n-1];
 			game->n--;
 		}
-	}*/
+	}
+  */  
+
+    char1 = &game->player[0];
+    char1->cy -= 1;
     
+    //
+    //collision detect character and boxes
+    /*for (int i = 0; i < game->n; i++) {
+	if ( char1->cx < s[i].center.y + 25 && 
+		char1->cx > s[i].center.x - 25 &&
+		char1->cx < s[i].center.x + 25) {
+	    char1->cy = s[i].center.y + 25;
+	}
+    }*/
+
+    // Practice collision
+    if (char1->cy - char1->height < 85) 
+	char1->cy = char1->height + 60 + 25/2;
+
+    //for (int i = 0; i < game->n; i++) {
+//	if (char1->cy - char1->height < 60 + s[i].center.x
 
     if (gl.walk || gl.keys[XK_Right]) {
 	//man is walking...
@@ -423,16 +455,11 @@ void physics(Game *game)
 	    timers.recordTime(&timers.maincharacterTime);
 	}
     }
-    
-    //Character *char1;
-    char1 = &game->player[0];
-	//char1->cx = gl.xres/2;
-	//char1->cy = gl.yres/2;
 
     if (gl.keys[XK_Right]) 
-	char1->cx += 5;
+	char1->cx += 8;
     if (gl.keys[XK_Left]) 
-    	char1->cx += -5;
+    	char1->cx += -8;
 }
 
 void render(Game *game)
@@ -441,21 +468,93 @@ void render(Game *game)
 	glClear(GL_COLOR_BUFFER_BIT);
 	//Draw shapes...
 
-	//draw box
-	Shape *s;
-	glColor3ub(10,0,250);
-	s = &game->box[0];
-	glPushMatrix();
-	glTranslatef(s->center.x, s->center.y, s->center.z);
-	w = s->width;
-	h = s->height;
-	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+	//==============================================
+	// Draw Map
+	//
+	// BOTTOM SCREEN
+	for (int i = 1; i < 48; i++) {
+	    glColor3ub(10,0,250);
+	    if (i == 47)
+		glColor3ub(255, 0, 0);
+	    s = &game->box[i];
+	    glPushMatrix();
+	    glTranslatef((25*i)+40, 60, s->center.z);
+	    w = 25;
+	    h = 25;
+	    glBegin(GL_QUADS);
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i( w, h);
+	    glVertex2i( w, -h);
+	    glEnd();
+	    glPopMatrix();
+	}
+	int total = 1;
+	// TOP SCREEN
+	for (int i = 48; i < 95; i++) {
+	    glColor3ub(10,0,250);
+	    if (i == 94)
+		glColor3ub(255, 0, 0);
+	    s = &game->box[i];
+	    glPushMatrix();
+	    glTranslatef((25*total)+40, gl.yres-60, s->center.z);
+	    w = 25;
+	    h = 25;
+	    glBegin(GL_QUADS);
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i( w, h);
+	    glVertex2i( w, -h);
+	    glEnd();
+	    glPopMatrix();
+	    total++;
+	}
+	total = 1;
+	// LEFT SCREEN
+	for (int i = 95; i < 119; i++) {
+	    glColor3ub(10,0,250);
+	    if (i == 95)
+		glColor3ub(255, 0, 0);
+	    if (i == 118)
+		glColor3ub(255, 255, 0);
+	    s = &game->box[i];
+	    glPushMatrix();
+	    glTranslatef(65, (25*total)+60, s->center.z);
+	    w = 25;
+	    h = 25;
+	    glBegin(GL_QUADS);
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i( w, h);
+	    glVertex2i( w, -h);
+	    glEnd();
+	    glPopMatrix();
+	    total++;
+	}
+	total = 1;
+	// LEFT SCREEN
+	for (int i = 119; i < 143; i++) {
+	    glColor3ub(10,0,250);
+	    if (i == 119)
+		glColor3ub(255, 0, 155);
+	    if (i == 142)
+		glColor3ub(255, 55, 0);
+	    s = &game->box[i];
+	    glPushMatrix();
+	    glTranslatef(gl.xres-65, (25*total)+60, s->center.z);
+	    w = 25;
+	    h = 25;
+	    glBegin(GL_QUADS);
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i( w, h);
+	    glVertex2i( w, -h);
+	    glEnd();
+	    glPopMatrix();
+	    total++;
+	}
+	//==============================================
+
 
 	//draw all particles here
 	/*glPushMatrix();
@@ -478,8 +577,12 @@ void render(Game *game)
 	//Character *char1;
 	//float cx = gl.xres/2.0;
 	//float cy = gl.yres/2.0;
-	h = 200.0;
-	w = h * 0.5;
+	//h = 200.0;
+	//w = h * 0.5;
+	//
+	//char1->cx = gl.xres/2;
+	//char1->cy = gl.yres/2;
+	//
 	glPushMatrix();
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, gl.mchar1Texture);
@@ -498,19 +601,19 @@ void render(Game *game)
 	glBegin(GL_QUADS);
 	if (gl.keys[XK_Right])
 	{
-	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx + w, char1->cy - h);
-	    glTexCoord2f(tx,       ty + .333); glVertex2i(char1->cx - w, char1->cy - h);
-	    glTexCoord2f(tx,              ty); glVertex2i(char1->cx - w, char1->cy + h);
-	    glTexCoord2f(tx + .25, ty);        glVertex2i(char1->cx + w, char1->cy + h);
+	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+	    glTexCoord2f(tx,       ty + .333); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+	    glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+	    glTexCoord2f(tx + .25, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
 	    gl.result = 0;	
 	}
 
 	if (gl.keys[XK_Left])
 	{
-	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx - w, char1->cy - h);
-	    glTexCoord2f(tx + .25,        ty); glVertex2i(char1->cx - w, char1->cy + h);
-	    glTexCoord2f(tx,              ty); glVertex2i(char1->cx + w, char1->cy + h);
-	    glTexCoord2f(tx, ty + .333);       glVertex2i(char1->cx + w, char1->cy - h);
+	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+	    glTexCoord2f(tx + .25,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+	    glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+	    glTexCoord2f(tx, ty + .333);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
 	    gl.result = 1;
 	}
 
