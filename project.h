@@ -64,15 +64,6 @@ struct Particle {
 	Vec vel;
 };*/
 
-extern class Character {
-    public:
-	Shape s;
-	//Weapon weapon[2];
-	Vec dir;
-	Vec pos;
-	Vec vel;
-} player1;
-
 extern class Global {
     public:
 	int xres;
@@ -110,16 +101,33 @@ extern class Global {
 	}
 } gl;
 
-extern class Game {
+class Character {
+    public:
+	Shape s;
+	//Weapon weapon[2];
+	float cx;
+	float cy;
+	float height;
+	float width;
+	Vec dir;
+	Vec pos;
+	Vec vel;
+	Character () {
+	    cx = gl.xres/2;
+	    cy = gl.yres/2;
+	}
+};
+
+class Game {
     public:
         Shape box[4];
 	Shape platforms[5];
-	Character player1;
+	Character player[2];
         Particle particle[MAX_PARTICLES];
         int n;
         Game()
         {
             n = 0;
         }
-} game;
+};
 #endif

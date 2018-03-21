@@ -59,7 +59,7 @@ const float gravity = -0.2f;
 // ==============================================
 Timers timers;
 Global gl;
-Character player1;
+Character *char1;
 Game game;
 //Sprite
 //
@@ -80,7 +80,7 @@ void init_opengl(void);
 void cleanupXWindows(void);
 void check_mouse(XEvent *e, Game *game);
 void check_keys(XEvent *e);
-void physics(void);
+void physics(Game *game);
 void render(Game *game);
 
 // ==============================================
@@ -124,7 +124,7 @@ int main(void)
 			check_mouse(&e, &game);
 			check_keys(&e);
 		}
-		physics();
+		physics(&game);
 		render(&game);
 		glXSwapBuffers(dpy, win);
 	}
@@ -360,7 +360,7 @@ void check_keys(XEvent *e)
     }		
 }
 
-void physics(void)
+void physics(Game *game)
 {
 	/*Particle *p;
 
@@ -376,7 +376,7 @@ void physics(void)
 	
 
 		//check for collision with shapes...
-		Shape *s = &game->box;
+		Shape *s = &game->box[0];
 
 		if ( p->s.center.y < s->center.y + s->height && 
 		     p->s.center.x > s->center.x - s->width &&
@@ -395,6 +395,7 @@ void physics(void)
 		}
 	}*/
     
+
     if (gl.walk || gl.keys[XK_Right]) {
 	//man is walking...
 	//when time is up, advance the frame.
@@ -422,6 +423,16 @@ void physics(void)
 	    timers.recordTime(&timers.maincharacterTime);
 	}
     }
+    
+    //Character *char1;
+    char1 = &game->player[0];
+	//char1->cx = gl.xres/2;
+	//char1->cy = gl.yres/2;
+
+    if (gl.keys[XK_Right]) 
+	char1->cx += 5;
+    if (gl.keys[XK_Left]) 
+    	char1->cx += -5;
 }
 
 void render(Game *game)
@@ -464,8 +475,9 @@ void render(Game *game)
 	}*/
 
 	// CHARACTERi
-	float cx = gl.xres/2.0;
-	float cy = gl.yres/2.0;
+	//Character *char1;
+	//float cx = gl.xres/2.0;
+	//float cy = gl.yres/2.0;
 	h = 200.0;
 	w = h * 0.5;
 	glPushMatrix();
@@ -486,19 +498,19 @@ void render(Game *game)
 	glBegin(GL_QUADS);
 	if (gl.keys[XK_Right])
 	{
-	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(cx + w, cy - h);
-	    glTexCoord2f(tx,       ty + .333); glVertex2i(cx - w, cy - h);
-	    glTexCoord2f(tx,              ty); glVertex2i(cx - w, cy + h);
-	    glTexCoord2f(tx + .25, ty); glVertex2i(cx + w, cy + h);
+	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx + w, char1->cy - h);
+	    glTexCoord2f(tx,       ty + .333); glVertex2i(char1->cx - w, char1->cy - h);
+	    glTexCoord2f(tx,              ty); glVertex2i(char1->cx - w, char1->cy + h);
+	    glTexCoord2f(tx + .25, ty);        glVertex2i(char1->cx + w, char1->cy + h);
 	    gl.result = 0;	
 	}
 
 	if (gl.keys[XK_Left])
 	{
-	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(cx - w, cy - h);
-	    glTexCoord2f(tx + .25,        ty); glVertex2i(cx - w, cy + h);
-	    glTexCoord2f(tx,              ty); glVertex2i(cx + w, cy + h);
-	    glTexCoord2f(tx, ty + .333); glVertex2i(cx + w, cy - h);
+	    glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx - w, char1->cy - h);
+	    glTexCoord2f(tx + .25,        ty); glVertex2i(char1->cx - w, char1->cy + h);
+	    glTexCoord2f(tx,              ty); glVertex2i(char1->cx + w, char1->cy + h);
+	    glTexCoord2f(tx, ty + .333);       glVertex2i(char1->cx + w, char1->cy - h);
 	    gl.result = 1;
 	}
 
