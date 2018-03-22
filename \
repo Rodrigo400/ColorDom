@@ -471,11 +471,10 @@ void physics(Game *game)
     // Collision getting good
     for (int j = 1; j < 48; j++) {
 	s = &game->box[j];
-	printf("Value char1 cy: %f\n", char1->cy);
-	printf("Value index 15: center is %f\n", game->box[15].center.y);
-	printf("Value index 15: height is %f\n", game->box[15].height);
-	if (char1->cy < (char1->height-5) + s->center.y + s->height) {		// checks top
-	    char1->cy = char1->height-15 + s->center.y + s->height;
+	printf("Value index 15: center is\n", game->box[15].center.y);
+	printf("Value index 15: height is\n", game->box[15].height);
+	if (char1->cx < s->center.y + s->height) {		// checks top
+	    char1->cy = s->center.y + s->height;
 	}
     }
 /*
