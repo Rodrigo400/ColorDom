@@ -471,11 +471,29 @@ void physics(Game *game)
     // Collision getting good
     for (int j = 1; j < 48; j++) {
 	s = &game->box[j];
+	printf("Value char1 cx: %f\n", char1->cx);
 	printf("Value char1 cy: %f\n", char1->cy);
 	printf("Value index 15: center is %f\n", game->box[15].center.y);
 	printf("Value index 15: height is %f\n", game->box[15].height);
 	if (char1->cy < (char1->height-5) + s->center.y + s->height) {		// checks top
-	    char1->cy = char1->height-15 + s->center.y + s->height;
+	    char1->cy = char1->height-10 + s->center.y + s->height;
+		printf("COLLISION\n");
+	    
+	    glColor3ub(255,0,250);
+	    s = &game->box[15];
+	    glPushMatrix();
+	    s[15].center.x = 50*15 + 40;
+	    s[15].center.y = 60;
+	    glTranslatef(s[15].center.x, s[15].center.y, s[15].center.z);
+	    float w = s->width;
+	    float h = s->height;
+	    glBegin(GL_QUADS);
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i( w, h);
+	    glVertex2i( w, -h);
+	    glEnd();
+	    glPopMatrix();
 	}
     }
 /*
@@ -520,6 +538,8 @@ void physics(Game *game)
     	char1->cx += -8;
     if (gl.keys[XK_Up]) 
     	char1->cy += 8;
+    if (gl.keys[XK_Down]) 
+    	char1->cy += -8;
 }
 
 void render(Game *game)
@@ -533,13 +553,15 @@ void render(Game *game)
 	// Draw Map
 	//
 	// BOTTOM SCREEN
-	for (int i = 1; i < 48; i++) {
+	for (int i = 1; i < 24; i++) {
 	    glColor3ub(10,0,250);
 	    s = &game->box[i];
-	    if (i == 47)
+	    if (i == 7)
+		glColor3ub(0, 255, 0);
+	    if (i == 23)
 		glColor3ub(255, 0, 0);
 	    glPushMatrix();
-	    s[i].center.x = 25*i + 40;
+	    s[i].center.x = 50*i + 40;
 	    s[i].center.y = 60;
 	    glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
 	    w = s->width;
@@ -552,7 +574,7 @@ void render(Game *game)
 	    glEnd();
 	    glPopMatrix();
 	}
-	int total = 1;
+	/*int total = 1;
 	// TOP SCREEN
 	for (int i = 48; i < 95; i++) {
 	    glColor3ub(10,0,250);
@@ -626,7 +648,7 @@ void render(Game *game)
 	    total++;
 	}
 	//==============================================
-
+*/
 
 	// CHARACTER
 	//Character *char1;
