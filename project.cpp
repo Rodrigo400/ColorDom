@@ -62,7 +62,8 @@ Global gl;
 Character *char1;
 Game game;
 Shape *s;
-    bool leftFace = 0; 
+bool leftFace = 0; 
+bool colorChangeFlag = 0;
 //s = &game->box[i];
 //Sprite
 //
@@ -111,15 +112,17 @@ int main(void)
 	//declare game object
 	//Game game;
 
+	
+
 	//declare a box shape
-	//game.box[0].width = 300;
-	//game.box[0].height = 10;
+	game.box[0].width = 300;
+	game.box[0].height = 50;
 	//game.box.center.x = 250 + 5*65;
 	//game.box.center.y = 600 - 5*60;
-	//game.box[0].center.x = gl.xres/2;
-	//game.box[0].center.y = 150;
+	game.box[0].center.x = gl.xres/2;
+	game.box[0].center.y = 150;
 
-	for (int i = 1; i < 48; i++) {
+	/*for (int i = 1; i < 48; i++) {
 	    game.box[i].width = 25;
 	    game.box[i].height = 25;
 	    game.box[i].center.x = 25*i + 40;
@@ -145,7 +148,7 @@ int main(void)
 	    game.box[i].height = 25;
 	    game.box[i].center.x = gl.xres-65;
 	    game.box[i].center.y = 25*total+60;
-	}
+	}*/
 
 	//start animation
 	while (!gl.done) {
@@ -469,7 +472,7 @@ void physics(Game *game)
     }*/
 
     // Collision getting good
-    for (int j = 1; j < 48; j++) {
+    /*for (int j = 1; j < 48; j++) {
 	s = &game->box[j];
 	printf("Value char1 cx: %f\n", char1->cx);
 	printf("Value char1 cy: %f\n", char1->cy);
@@ -477,7 +480,7 @@ void physics(Game *game)
 	printf("Value index 15: height is %f\n", game->box[15].height);
 	if (char1->cy < (char1->height-5) + s->center.y + s->height) {		// checks top
 	    char1->cy = char1->height-10 + s->center.y + s->height;
-		printf("COLLISION\n");
+		//printf("COLLISION\n");
 	    
 	    glColor3ub(255,0,250);
 	    s = &game->box[15];
@@ -495,10 +498,26 @@ void physics(Game *game)
 	    glEnd();
 	    glPopMatrix();
 	}
-    }
-/*
+    }*/
+
+    if (char1->cy > 450)
+	colorChangeFlag = 1;
+    else
+	colorChangeFlag = 0;
+
+    s = &game->box[0];
+    if (char1->cy-(char1->height-5) < s->center.y + s->height &&	// top
+	    char1->cy+(char1->height-5) > s->center.y - s->height &&	// bot
+	    char1->cx+(char1->width) > s->center.x - s->width &&	// left
+	    char1->cx-(char1->width) < s->center.x + s->width)	// right
+	printf("COLLISION\n");
+
+
     printf("Value char1 cy: %f\n", char1->cy);
-    printf("Value char1 height: %f\n", char1->height);
+    printf("Value char1 cx: %f\n", char1->cx);
+    printf("Box center x: %f\n", s->center.x);
+    printf("Box center x minus: %f\n", (s->center.x - s->width));
+/*    printf("Value char1 height: %f\n", char1->height);
     printf("Value center box: %f\n", game->box[15].center.y);
     printf("Value box height: %f\n", game->box[15].height);
 */
@@ -549,11 +568,62 @@ void render(Game *game)
 	//Draw shapes...
 
 	Shape *s;
+	
+	if (colorChangeFlag) {
+	    s = &game->box[0];
+	    glPushMatrix();
+	    glTranslatef(s->center.x, s->center.y, s->center.z);
+	    w = s->width;
+	    h = s->height;
+	    glBegin(GL_QUADS);
+	    glColor3ub(30,144,255);
+	    glVertex2i(-w, -h);
+	    glColor3ub(30,144,255);
+	    glVertex2i(-w, h);
+	    glColor3ub(30,144,255);
+	    glVertex2i(w, h);
+	    glColor3ub(30,144,255);
+	    glVertex2i(w, -h);
+	    glEnd();
+	    glPopMatrix();
+	} else {
+	    s = &game->box[0];
+	    glPushMatrix();
+	    glTranslatef(s->center.x, s->center.y, s->center.z);
+	    w = s->width;
+	    h = s->height;
+	    glBegin(GL_QUADS);
+	    glColor3ub(255,14,25);
+	    glVertex2i(-w, -h);
+	    glColor3ub(255,1,5);
+	    glVertex2i(-w, h);
+	    glColor3ub(255,4,5);
+	    glVertex2i(w, h);
+	    glColor3ub(255,4,5);
+	    glVertex2i(w, -h);
+	    glEnd();
+	    glPopMatrix();
+	}
+
+
+	
+	
 	//==============================================
 	// Draw Map
 	//
 	// BOTTOM SCREEN
-	for (int i = 1; i < 24; i++) {
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*for (int i = 1; i < 24; i++) {
 	    glColor3ub(10,0,250);
 	    s = &game->box[i];
 	    if (i == 7)
@@ -574,7 +644,7 @@ void render(Game *game)
 	    glEnd();
 	    glPopMatrix();
 	}
-	/*int total = 1;
+	int total = 1;
 	// TOP SCREEN
 	for (int i = 48; i < 95; i++) {
 	    glColor3ub(10,0,250);
