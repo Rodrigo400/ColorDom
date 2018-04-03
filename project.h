@@ -128,6 +128,7 @@ class Game {
     public:
         Shape box[200];
 	Shape platforms[5];
+	Shape boxPerimeter[20];
 	Character player[2];
         Particle particle[MAX_PARTICLES];
         int n;
