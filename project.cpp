@@ -580,12 +580,24 @@ void physics(Game *game)
 
     if (gl.keys[XK_Right]) 
 	char1->cx += 8;
+    
     if (gl.keys[XK_Left]) 
     	char1->cx += -8;
+    
     if (gl.keys[XK_Up] && !inAirBool) {
-    	int jumpLimit = char1->cy + 100;
+	jump();
+
+
+	/*inAirBool = true;
+    	int jumpLimit = 100;
+	int i = 0;
     	printf("JUMP LIMIT: %d\n", jumpLimit);
-	if (char1->cy < jumpLimit) {
+
+
+	gravityOn = true;
+	*/
+	
+	/*if (char1->cy < jumpLimit) {
 	   gravityOn = false;
 	    char1->cy += 10;
 	} else {
@@ -594,10 +606,13 @@ void physics(Game *game)
 	    //char1->cy += 100;
 	    inAirBool = true;
 	    gravityOn = true;
-	}
+	}*/
     }
+    
     if (gl.keys[XK_Down]) 
     	char1->cy += -8;
+    
+    
     
     if (gl.walk || gl.keys[XK_Right]) {
 	leftFace = 0;
@@ -626,6 +641,36 @@ void physics(Game *game)
 	    if (gl.mcharFrame >= 8)
 		gl.mcharFrame -= 8;
 	    timers.recordTime(&timers.maincharacterTime);
+	}
+    }
+}
+
+int finalJumpCy;
+int jumpStartCy;
+
+void jump() 
+{
+	if (!inAirBool) {
+	    jumpStartCy = char1->cy;
+	    finalJumpCy = jumpStartCy + 100;
+	    inAirBool = true;
+	}
+}
+
+void checkJump() 
+{
+    if (inAirBool) {
+	if (char1->cy <= finalJumpCy) {
+	    char1->cy = 1 + char1->cy + ((finalJumpCy - char1->cy)*.06);
+	}
+    }
+    // reach max height
+    if (inAirBool) {
+	if (char1->cy > jumpStartCy) {
+	    char1->cy = char1->cy - ((finalJumpCy - char1->cy) * .06) - 1;
+	}
+	if (char1->cy <= jumpStartCy) {
+	    char1->cy = jumpStartCy;
 	}
     }
 }
