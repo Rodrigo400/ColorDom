@@ -49,7 +49,7 @@ typedef Flt Matrix[4][4];
 (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
-const float gravity = -0.2f;
+const float gravity = -9;
 //const int MAX_PARTICLES = 10000;
 #define ALPHA 1
 
@@ -61,9 +61,15 @@ Timers timers;
 Global gl;
 Character *char1;
 Game game;
-Shape *s;
+//Shape *s;
 bool leftFace = 0; 
 bool colorChangeFlag = 0;
+bool gravityOn = true;
+bool inAirBool = true;
+bool moveUpBool = true;
+bool moveDownBool = true;
+bool moveRightBool = true;
+bool moveLeftBool = true;
 //s = &game->box[i];
 //Sprite
 //
@@ -440,9 +446,6 @@ void physics(Game *game)
 		}
 	}
   */  
-
-    char1 = &game->player[0];
-    char1->cy -= 1;
     
     //
     //collision detect character and boxes
@@ -499,18 +502,70 @@ void physics(Game *game)
 	    glPopMatrix();
 	}
     }*/
+    
+    char1 = &game->player[0];
+    if (gravityOn)
+    	char1->cy += gravity;
 
     if (char1->cy > 450)
 	colorChangeFlag = 1;
     else
 	colorChangeFlag = 0;
 
-    s = &game->box[0];
-    if (char1->cy-(char1->height-5) < s->center.y + s->height &&	// top
+    Shape *s = &game->box[0];
+    int boxTop[7], boxBot[7], boxLeft[7], boxRight[7];
+    boxTop[0] = s->center.y + s->height + (char1->height-5);
+    boxBot[0] = s->center.y - s->height - (char1->height-5);
+    boxLeft[0] = s->center.x - s->width - (char1->width);
+    boxRight[0] = s->center.x + s->width + (char1->width);
+
+    if (char1->cy < boxTop[0] && char1->cy > boxBot[0]) {
+	if (char1->cx > boxLeft[0] && char1->cx < boxRight[0]) {
+	    // Top Collision
+	    if (char1->cy < boxTop[0] &&
+		    char1->cy > boxTop[0] - 10 &&
+		    char1->cx < boxRight[0] - 10 &&
+		    char1->cx > boxLeft[0] + 10) {
+		char1->cy = boxTop[0];
+		gravityOn = false;
+		inAirBool = false;
+	    }
+	    // Bot Collision
+	    if (char1->cy > boxBot[0] &&
+		    char1->cy < boxBot[0] + 10 &&
+		    char1->cx < boxRight[0] - 10 &&
+		    char1->cx > boxLeft[0] + 10) {
+		char1->cy = boxBot[0];
+	    }
+	    // Right Collision
+	    if (char1->cx < boxRight[0] && 
+		    char1->cx > s->center.x &&
+		    char1->cy < boxTop[0] - 10 &&
+		    char1->cy > boxBot[0] + 10) {
+		char1->cx = boxRight[0];
+	    }
+	    // Left Collision
+	    if (char1->cx > boxLeft[0] &&
+		    char1->cx < s->center.x &&
+		    char1->cy < boxTop[0] - 10 &&
+		    char1->cy > boxBot[0] + 10) {
+		char1->cx = boxLeft[0];
+	    }
+	}
+    }
+    
+    
+    /*if (char1->cy-(char1->height-5) < s->center.y + s->height &&	// top
 	    char1->cy+(char1->height-5) > s->center.y - s->height &&	// bot
 	    char1->cx+(char1->width) > s->center.x - s->width &&	// left
-	    char1->cx-(char1->width) < s->center.x + s->width)	// right
+	    char1->cx-(char1->width) < s->center.x + s->width) {	// right
 	printf("COLLISION\n");
+	char1->cy = s->center.y + s->height + char1->height;
+	gravityOn = false;
+	inAirBool = false;
+	//char1->cy = char1->cy;
+	//char1->cx = char1->cx;
+    }*/
 
 
     printf("Value char1 cy: %f\n", char1->cy);
@@ -521,6 +576,22 @@ void physics(Game *game)
     printf("Value center box: %f\n", game->box[15].center.y);
     printf("Value box height: %f\n", game->box[15].height);
 */
+    
+    int jumpLimit = char1->cy + 100;
+
+    if (gl.keys[XK_Right]) 
+	char1->cx += 8;
+    if (gl.keys[XK_Left]) 
+    	char1->cx += -8;
+    if (gl.keys[XK_Up] && !inAirBool) {
+	char1->cy += 150;
+	//char1->cy += 100;
+	inAirBool = true;
+	gravityOn = true;
+    }
+    if (gl.keys[XK_Down]) 
+    	char1->cy += -8;
+    
     if (gl.walk || gl.keys[XK_Right]) {
 	leftFace = 0;
 	//man is walking...
@@ -550,15 +621,6 @@ void physics(Game *game)
 	    timers.recordTime(&timers.maincharacterTime);
 	}
     }
-    
-    if (gl.keys[XK_Right]) 
-	char1->cx += 8;
-    if (gl.keys[XK_Left]) 
-    	char1->cx += -8;
-    if (gl.keys[XK_Up]) 
-    	char1->cy += 8;
-    if (gl.keys[XK_Down]) 
-    	char1->cy += -8;
 }
 
 void render(Game *game)
