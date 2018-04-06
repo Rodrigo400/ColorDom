@@ -568,26 +568,33 @@ void physics(Game *game)
     }*/
 
 
-    printf("Value char1 cy: %f\n", char1->cy);
-    printf("Value char1 cx: %f\n", char1->cx);
-    printf("Box center x: %f\n", s->center.x);
-    printf("Box center x minus: %f\n", (s->center.x - s->width));
+    //printf("Value char1 cy: %f\n", char1->cy);
+    //printf("Value char1 cx: %f\n", char1->cx);
+    //printf("Box center x: %f\n", s->center.x);
+    //printf("Box center x minus: %f\n", (s->center.x - s->width));
 /*    printf("Value char1 height: %f\n", char1->height);
     printf("Value center box: %f\n", game->box[15].center.y);
     printf("Value box height: %f\n", game->box[15].height);
 */
     
-    int jumpLimit = char1->cy + 100;
 
     if (gl.keys[XK_Right]) 
 	char1->cx += 8;
     if (gl.keys[XK_Left]) 
     	char1->cx += -8;
     if (gl.keys[XK_Up] && !inAirBool) {
-	char1->cy += 150;
-	//char1->cy += 100;
-	inAirBool = true;
-	gravityOn = true;
+    	int jumpLimit = char1->cy + 100;
+    	printf("JUMP LIMIT: %d\n", jumpLimit);
+	if (char1->cy < jumpLimit) {
+	   gravityOn = false;
+	    char1->cy += 10;
+	} else {
+
+	    //char1->cy += 150;
+	    //char1->cy += 100;
+	    inAirBool = true;
+	    gravityOn = true;
+	}
     }
     if (gl.keys[XK_Down]) 
     	char1->cy += -8;
