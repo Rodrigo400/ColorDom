@@ -17,7 +17,7 @@ extern class Timers
         double physicsRate;
         double oobillion;
         struct timespec timeStart, timeEnd, timeCurrent;
-        struct timespec maincharacterTime;
+        struct timespec yellowcharTime;
         struct timespec turt1Time, turt2Time;
         struct timespec gameTime;
         struct timespec timeOut;
@@ -52,8 +52,8 @@ struct Shape {
     float radius;
     Vec center;
     Shape () {
-	width = 25;
-	height = 25;
+        width = 25;
+        height = 25;
     }
 };
 
@@ -63,73 +63,93 @@ struct Particle {
 };
 
 /*extern class Weapon {
-    public:
-	Shape s;
-	Vec vel;
-};*/
+  public:
+  Shape s;
+  Vec vel;
+  };*/
 
 extern class Global {
     public:
-	int xres;
-	int yres;
-	int done;
-	int walk;
-	int result;
-	int mcharFrame;
-	int keys[65536];
-	double delay;
+        int xres;
+        int yres;
+        int done;
+        int walk;
+        int result;
+        int mainchar1Frame;
+        int yellowcharFrame;
+        int bluecharFrame;
+        int greencharFrame;
+        int purplecharFrame;
+        int keys[65536];
+        double delay;
 
-	Ppmimage *mainchar1Image;
+        Ppmimage *mainchar1Image;
+        Ppmimage *yellowcharImage;
+        Ppmimage *bluecharImage;
+        Ppmimage *greencharImage;
+        Ppmimage *purplecharImage;
 
-	GLuint mchar1Texture;
+        GLuint mchar1Texture;
+        GLuint yellowcharTexture;
+        GLuint bluecharTexture;
+        GLuint greencharTexture;
+        GLuint purplecharTexture;
 
-	Vec box[20];
-	Global() {
-	    xres = 1280;
-	    yres = 720;
-	    done = 0;
-	    result = 0;
-	    //
-	    mcharFrame = 0;
-	    //
-	    mainchar1Image = NULL;
+        Vec box[20];
+        Global() {
+            xres = 1280;
+            yres = 720;
+            done = 0;
+            result = 0;
+            //
+            mainchar1Frame = 0;
+            yellowcharFrame = 0;
+            bluecharFrame = 0;
+            greencharFrame = 0;
+            purplecharFrame = 0;
+            //
+            mainchar1Image = NULL;
+            yellowcharImage = NULL;
+            bluecharImage = NULL;
+            greencharImage = NULL;
+            purplecharImage = NULL;
 
-	    //
-	    delay = 0.1;
-	    /*for (int i = 0; i < 20; i++) {
-		box[i][0] = rnd() * xres;
-		box[i][1] = rnd() * (yres-220) + 220.0;
-		box[i][2] = 0.0;
-	    }*/
-	    memset(keys, 0, 65536);
-	}
+            //
+            delay = 0.06;
+            /*for (int i = 0; i < 20; i++) {
+              box[i][0] = rnd() * xres;
+              box[i][1] = rnd() * (yres-220) + 220.0;
+              box[i][2] = 0.0;
+              }*/
+            memset(keys, 0, 65536);
+        }
 } gl;
 
 class Character {
     public:
-	Shape s;
-	//Weapon weapon[2];
-	float cx;
-	float cy;
-	float height;
-	float width;
-	Vec dir;
-	Vec pos;
-	Vec vel;
-	Character () {
-	    cx = gl.xres/2;
-	    cy = gl.yres/2;
-	    height = 100.0;
-	    width = height * 0.9;
-	}
+        Shape s;
+        //Weapon weapon[2];
+        float cx;
+        float cy;
+        float height;
+        float width;
+        Vec dir;
+        Vec pos;
+        Vec vel;
+        Character () {
+            cx = gl.xres/2;
+            cy = gl.yres/2;
+            height = 100.0;
+            width = height * 0.9;
+        }
 };
 
 class Game {
     public:
         Shape box[200];
-	Shape platforms[5];
-	Shape boxPerimeter[20];
-	Character player[2];
+        Shape platforms[5];
+        Shape boxPerimeter[20];
+        Character player[2];
         Particle particle[MAX_PARTICLES];
         int n;
         Game()

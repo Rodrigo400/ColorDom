@@ -273,6 +273,10 @@ void init_opengl(void)
     // Convertpng2ppm
     //==============================================
     system("convert ./images/mainChar1.png ./images/mainChar1.ppm");
+    system("convert ./images/YellowChar.png ./images/yellowchar.ppm");
+    system("convert ./images/BlueChar.png ./images/bluechar.ppm");
+    system("convert ./images/GreenChar.png ./images/greenchar.ppm");
+    system("convert ./images/PurpleChar.png ./images/purplechar.ppm");
     //==============================================
 
 
@@ -280,6 +284,10 @@ void init_opengl(void)
     // Get Images
     //==============================================
     gl.mainchar1Image = ppm6GetImage("./images/mainChar1.ppm");	
+    gl.yellowcharImage = ppm6GetImage("./images/yellowchar.ppm");	
+    gl.bluecharImage = ppm6GetImage("./images/bluechar.ppm");	
+    gl.greencharImage = ppm6GetImage("./images/greenchar.ppm");	
+    gl.purplecharImage = ppm6GetImage("./images/purplechar.ppm");	
     //==============================================
 
 
@@ -287,6 +295,10 @@ void init_opengl(void)
     // Generate Textures
     //==============================================
     glGenTextures(1, &gl.mchar1Texture);	
+    glGenTextures(1, &gl.yellowcharTexture);	
+    glGenTextures(1, &gl.bluecharTexture);	
+    glGenTextures(1, &gl.greencharTexture);	
+    glGenTextures(1, &gl.purplecharTexture);	
     //==============================================
 
 
@@ -302,6 +314,62 @@ void init_opengl(void)
             GL_RGBA, GL_UNSIGNED_BYTE, maincharacter1Data);
     free(maincharacter1Data);
     unlink("./images/mainChar1.ppm"); 
+    //==============================================
+
+    //==============================================
+    // Yellow Char
+    w = gl.yellowcharImage->width;
+    h = gl.yellowcharImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.yellowcharTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *yellowcharData = buildAlphaData(gl.yellowcharImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, yellowcharData);
+    free(yellowcharData);
+    unlink("./images/yellowchar.ppm"); 
+    //==============================================
+
+    //==============================================
+    // Blue Char
+    w = gl.bluecharImage->width;
+    h = gl.bluecharImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.bluecharTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *bluecharData = buildAlphaData(gl.bluecharImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, bluecharData);
+    free(bluecharData);
+    unlink("./images/bluechar.ppm"); 
+    //==============================================
+
+    //==============================================
+    // Green Char
+    w = gl.greencharImage->width;
+    h = gl.greencharImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.greencharTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *greencharData = buildAlphaData(gl.greencharImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, greencharData);
+    free(greencharData);
+    unlink("./images/greenchar.ppm"); 
+    //==============================================
+
+    //==============================================
+    // Purple Char
+    w = gl.purplecharImage->width;
+    h = gl.purplecharImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.purplecharTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *purplecharData = buildAlphaData(gl.purplecharImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, purplecharData);
+    free(purplecharData);
+    unlink("./images/purplechar.ppm"); 
     //==============================================
 }
 
@@ -516,18 +584,18 @@ void physics(Game *game)
     }
 
     /*if (char1->cy > 450) {
-        colorChangeFlag = 1;
-    } else {
-        colorChangeFlag = 0;
-    }*/
+      colorChangeFlag = 1;
+      } else {
+      colorChangeFlag = 0;
+      }*/
 
 
     Shape *s = &game->box[0];
     int boxTop[7], boxBot[7], boxLeft[7], boxRight[7];
     boxTop[0] = s->center.y + s->height + (char1->height-5);
     boxBot[0] = s->center.y - s->height - (char1->height-5);
-    boxLeft[0] = s->center.x - s->width - (char1->width);
-    boxRight[0] = s->center.x + s->width + (char1->width);
+    boxLeft[0] = s->center.x - s->width - (char1->width-10);
+    boxRight[0] = s->center.x + s->width + (char1->width-10);
 
     if (char1->cy < boxTop[0] && char1->cy > boxBot[0]) {
         if (char1->cx > boxLeft[0] && char1->cx < boxRight[0]) {
@@ -592,18 +660,20 @@ void physics(Game *game)
           */
 
 
-    if (gl.keys[XK_Right]) 
+    if (gl.keys[XK_Right]) {
         char1->cx += 8;
+    }
 
-    if (gl.keys[XK_Left]) 
+    if (gl.keys[XK_Left]) {
         char1->cx += -8;
+    }
 
     //printf("AirBool: %d\n", inAirBool);
 
     if (gl.keys[XK_Up] && !inAirBool) {
         //jump();
         //checkJump();
-        
+
         //inAirBool = true;
         char1->cy += 8;
         //gravityOn = true;
@@ -619,13 +689,13 @@ void physics(Game *game)
         //man is walking...
         //when time is up, advance the frame.
         timers.recordTime(&timers.timeCurrent);
-        double timeSpan = timers.timeDiff(&timers.maincharacterTime, &timers.timeCurrent);
+        double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
         if (timeSpan > gl.delay) {
             //advance
-            ++gl.mcharFrame;
-            if (gl.mcharFrame >= 8)
-                gl.mcharFrame -= 8;
-            timers.recordTime(&timers.maincharacterTime);
+            ++gl.yellowcharFrame;
+            if (gl.yellowcharFrame >= 2)
+                gl.yellowcharFrame -= 2;
+            timers.recordTime(&timers.yellowcharTime);
         }
     }
 
@@ -634,55 +704,55 @@ void physics(Game *game)
         //man is walking...
         //when time is up, advance the frame.
         timers.recordTime(&timers.timeCurrent);
-        double timeSpan = timers.timeDiff(&timers.maincharacterTime, &timers.timeCurrent);
+        double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
         if (timeSpan > gl.delay) {
             //advance
-            ++gl.mcharFrame;
-            if (gl.mcharFrame >= 8)
-                gl.mcharFrame -= 8;
-            timers.recordTime(&timers.maincharacterTime);
+            ++gl.yellowcharFrame;
+            if (gl.yellowcharFrame >= 2)
+                gl.yellowcharFrame -= 2;
+            timers.recordTime(&timers.yellowcharTime);
         }
     }
 }
 
 
 /*void jump() 
-{
-    if (!inAirBool) {
-        jumpStartCy = char1->cy;
-        finalJumpCy = jumpStartCy + 100;
-        inAirBool = true;
-    }
+  {
+  if (!inAirBool) {
+  jumpStartCy = char1->cy;
+  finalJumpCy = jumpStartCy + 100;
+  inAirBool = true;
+  }
+  }
+
+  float rate = .0006;
+
+  void checkJump() 
+  {
+//printf("Char cy: %f\n", char1->cy);
+//printf("Final cy: %f\n", finalJumpCy);
+
+//if (inAirBool) {
+// jumping up
+if (jumpStartCy <= finalJumpCy) {
+char1->vel.y = 3.0;
+//char1->vel.y += 1;
+//gravityOn = false;
+//char1->vel.y = 6;
+printf("Char cy: %f\n", char1->cy);
+printf("Final cy: %f\n", finalJumpCy);
+printf("JumpStart cy: %f\n", jumpStartCy);
+printf("FinalJump cy: %f\n", finalJumpCy);
+jumpStartCy = finalJumpCy;
+printf("jumping up\n");
 }
-
-float rate = .0006;
-
-void checkJump() 
-{
-    //printf("Char cy: %f\n", char1->cy);
-    //printf("Final cy: %f\n", finalJumpCy);
-
-    //if (inAirBool) {
-        // jumping up
-        if (jumpStartCy <= finalJumpCy) {
-            char1->vel.y = 3.0;
-            //char1->vel.y += 1;
-            //gravityOn = false;
-            //char1->vel.y = 6;
-            printf("Char cy: %f\n", char1->cy);
-            printf("Final cy: %f\n", finalJumpCy);
-            printf("JumpStart cy: %f\n", jumpStartCy);
-            printf("FinalJump cy: %f\n", finalJumpCy);
-            jumpStartCy = finalJumpCy;
-            printf("jumping up\n");
-        }
-        // jumping down
-        if (char1->cy >= finalJumpCy) {
-            printf("jumping down\n");
-            char1->vel.y = 0;
-            char1->cy += GRAVITY;
-        }
-    //}
+// jumping down
+if (char1->cy >= finalJumpCy) {
+printf("jumping down\n");
+char1->vel.y = 0;
+char1->cy += GRAVITY;
+}
+//}
 }*/
 
 void render(Game *game)
@@ -856,35 +926,47 @@ void render(Game *game)
         //
         glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
-    glBindTexture(GL_TEXTURE_2D, gl.mchar1Texture);
+    glBindTexture(GL_TEXTURE_2D, gl.yellowcharTexture);
     //
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
     glColor4ub(255,255,255,255);
-    int ix = gl.mcharFrame % 4;
-    int iy = 3;
-    if (gl.mcharFrame >= 4)
+    int ix = gl.yellowcharFrame % 2;
+    int iy = 1;
+    if (gl.yellowcharFrame >= 2)
         iy = 0;
-    float tx = (float)ix / 4.0;
-    float ty = (float)iy / 3.0;
+    float tx = (float)ix / 2.0;
+    float ty = (float)iy / 1.0;
+
+    /*if (gl.keys[XK_Right] || !leftFace) {
+        glTranslatef(0.5, 0.5, 0);
+        glRotatef(0.1,0,0,1);
+        glTranslatef(-0.5, -0.5, 0);
+    }
+    if (gl.keys[XK_Left] || leftFace) {
+        glTranslatef(char1->width, char1->height, 0);
+        glRotatef(-0.1,0,0,1);
+        glTranslatef(char1->width, char1->height, 0);
+    }*/
+
 
     //int result;
     glBegin(GL_QUADS);
     if (gl.keys[XK_Right] || !leftFace)
     {
-        glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-        glTexCoord2f(tx,       ty + .333); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+        glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+        glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
         glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-        glTexCoord2f(tx + .25, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+        glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
         gl.result = 0;	
     }
 
     if (gl.keys[XK_Left] || leftFace)
     {
-        glTexCoord2f(tx + .25, ty + .333); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-        glTexCoord2f(tx + .25,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+        glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+        glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
         glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-        glTexCoord2f(tx, ty + .333);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+        glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
         gl.result = 1;
     }
 
