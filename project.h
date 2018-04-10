@@ -95,7 +95,7 @@ extern class Global {
         GLuint greencharTexture;
         GLuint purplecharTexture;
 
-        Vec box[20];
+        Vec box[50];
         Global() {
             xres = 1280;
             yres = 720;
@@ -139,16 +139,17 @@ class Character {
         Character () {
             cx = gl.xres/2;
             cy = gl.yres/2;
-            height = 100.0;
+            height = 50.0;
             width = height * 0.9;
         }
 };
 
 class Game {
     public:
-        Shape box[200];
+        Shape box[50];
         Shape platforms[5];
         Shape boxPerimeter[20];
+	Shape backgroundBlock[10];
         Character player[2];
         Particle particle[MAX_PARTICLES];
         int n;

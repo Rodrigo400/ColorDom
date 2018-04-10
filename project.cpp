@@ -45,7 +45,7 @@ typedef Flt Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b) ((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-                             (c)[1]=(a)[1]-(b)[1]; \
+			     (c)[1]=(a)[1]-(b)[1]; \
 (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
@@ -128,7 +128,18 @@ int main(void)
     //game.box.center.x = 250 + 5*65;
     //game.box.center.y = 600 - 5*60;
     game.box[0].center.x = gl.xres/2;
-    game.box[0].center.y = 150;
+    game.box[0].center.y = 450;
+
+    // bottom boxes row
+    for (int i = 1; i < 20; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	game.box[i].center.x = 60*i + 40;
+	game.box[i].center.y = 200;
+	printf("Box %d center y: %f\n", i, game.box[i].center.y); 
+	printf("Box %d center x: %f\n", i, game.box[i].center.x); 
+    }
+
 
     /*for (int i = 1; i < 48; i++) {
       game.box[i].width = 25;
@@ -160,15 +171,15 @@ int main(void)
 
     //start animation
     while (!gl.done) {
-        while (XPending(dpy)) {
-            XEvent e;
-            XNextEvent(dpy, &e);
-            check_mouse(&e, &game);
-            check_keys(&e);
-        }
-        physics(&game);
-        render(&game);
-        glXSwapBuffers(dpy, win);
+	while (XPending(dpy)) {
+	    XEvent e;
+	    XNextEvent(dpy, &e);
+	    check_mouse(&e, &game);
+	    check_keys(&e);
+	}
+	physics(&game);
+	render(&game);
+	glXSwapBuffers(dpy, win);
     }
     cleanupXWindows();
     return 0;
@@ -195,23 +206,23 @@ void initXWindows(void)
     int w=WINDOW_WIDTH, h=WINDOW_HEIGHT;
     dpy = XOpenDisplay(NULL);
     if (dpy == NULL) {
-        std::cout << "\n\tcannot connect to X server\n" << std::endl;
-        exit(EXIT_FAILURE);
+	std::cout << "\n\tcannot connect to X server\n" << std::endl;
+	exit(EXIT_FAILURE);
     }
     Window root = DefaultRootWindow(dpy);
     XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
     if (vi == NULL) {
-        std::cout << "\n\tno appropriate visual found\n" << std::endl;
-        exit(EXIT_FAILURE);
+	std::cout << "\n\tno appropriate visual found\n" << std::endl;
+	exit(EXIT_FAILURE);
     } 
     Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
     XSetWindowAttributes swa;
     swa.colormap = cmap;
     swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
-        ButtonPress | ButtonReleaseMask | PointerMotionMask |
-        StructureNotifyMask | SubstructureNotifyMask;
+	ButtonPress | ButtonReleaseMask | PointerMotionMask |
+	StructureNotifyMask | SubstructureNotifyMask;
     win = XCreateWindow(dpy, root, 0, 0, w, h, 0, vi->depth,
-            InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
+	    InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
     set_title();
     glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
     glXMakeCurrent(dpy, win, glc);
@@ -231,18 +242,18 @@ unsigned char *buildAlphaData(Ppmimage *img)
     unsigned char t1 = *(data+1);
     unsigned char t2 = *(data+2);
     for (i=0; i<img->width * img->height * 3; i+=3) {
-        a = *(data+0);
-        b = *(data+1);
-        c = *(data+2);
-        *(ptr+0) = a;
-        *(ptr+1) = b;
-        *(ptr+2) = c;
-        *(ptr+3) = 1;
-        if (a==t0 && b==t1 && c==t2)
-            *(ptr+3) = 0;
-        //-----------------------------------------------
-        ptr += 4;
-        data += 3;
+	a = *(data+0);
+	b = *(data+1);
+	c = *(data+2);
+	*(ptr+0) = a;
+	*(ptr+1) = b;
+	*(ptr+2) = c;
+	*(ptr+3) = 1;
+	if (a==t0 && b==t1 && c==t2)
+	    *(ptr+3) = 0;
+	//-----------------------------------------------
+	ptr += 4;
+	data += 3;
     }
     return newdata;
 }
@@ -311,7 +322,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *maincharacter1Data = buildAlphaData(gl.mainchar1Image);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, maincharacter1Data);
+	    GL_RGBA, GL_UNSIGNED_BYTE, maincharacter1Data);
     free(maincharacter1Data);
     unlink("./images/mainChar1.ppm"); 
     //==============================================
@@ -325,7 +336,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *yellowcharData = buildAlphaData(gl.yellowcharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, yellowcharData);
+	    GL_RGBA, GL_UNSIGNED_BYTE, yellowcharData);
     free(yellowcharData);
     unlink("./images/yellowchar.ppm"); 
     //==============================================
@@ -339,7 +350,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *bluecharData = buildAlphaData(gl.bluecharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, bluecharData);
+	    GL_RGBA, GL_UNSIGNED_BYTE, bluecharData);
     free(bluecharData);
     unlink("./images/bluechar.ppm"); 
     //==============================================
@@ -353,7 +364,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *greencharData = buildAlphaData(gl.greencharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, greencharData);
+	    GL_RGBA, GL_UNSIGNED_BYTE, greencharData);
     free(greencharData);
     unlink("./images/greenchar.ppm"); 
     //==============================================
@@ -367,7 +378,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *purplecharData = buildAlphaData(gl.purplecharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, purplecharData);
+	    GL_RGBA, GL_UNSIGNED_BYTE, purplecharData);
     free(purplecharData);
     unlink("./images/purplechar.ppm"); 
     //==============================================
@@ -376,7 +387,7 @@ void init_opengl(void)
 void makeParticle(Game *game, int x, int y)
 {
     if (game->n >= MAX_PARTICLES)
-        return;
+	return;
     //std::cout << "makeParticle() " << x << " " << y << std::endl;
     //position of particle
     Particle *p = &game->particle[game->n];
@@ -394,35 +405,35 @@ void check_mouse(XEvent *e, Game *game)
     static int n = 0;
 
     if (e->type == ButtonRelease) {
-        return;
+	return;
     }
     if (e->type == ButtonPress) {
-        if (e->xbutton.button==1) {
-            //Left button was pressed
-            int y = WINDOW_HEIGHT - e->xbutton.y;	
-            makeParticle(game, e->xbutton.x, y);
-            makeParticle(game, e->xbutton.x, y);
-            makeParticle(game, e->xbutton.x, y);
-            makeParticle(game, e->xbutton.x, y);
-            makeParticle(game, e->xbutton.x, y);
-            return;
-        }
-        if (e->xbutton.button==3) {
-            //Right button was pressed
-            return;
-        }
+	if (e->xbutton.button==1) {
+	    //Left button was pressed
+	    int y = WINDOW_HEIGHT - e->xbutton.y;	
+	    makeParticle(game, e->xbutton.x, y);
+	    makeParticle(game, e->xbutton.x, y);
+	    makeParticle(game, e->xbutton.x, y);
+	    makeParticle(game, e->xbutton.x, y);
+	    makeParticle(game, e->xbutton.x, y);
+	    return;
+	}
+	if (e->xbutton.button==3) {
+	    //Right button was pressed
+	    return;
+	}
     }
     //Did the mouse move?
     if (savex != e->xbutton.x || savey != e->xbutton.y) {
-        savex = e->xbutton.x;
-        savey = e->xbutton.y;
-        if (++n < 10)
-            return;
-        int y = WINDOW_HEIGHT - e->xbutton.y;
-        for (int i = 0; i < 10; i++)
-        {
-            makeParticle(game, e->xbutton.x, y);
-        }
+	savex = e->xbutton.x;
+	savey = e->xbutton.y;
+	if (++n < 10)
+	    return;
+	int y = WINDOW_HEIGHT - e->xbutton.y;
+	for (int i = 0; i < 10; i++)
+	{
+	    makeParticle(game, e->xbutton.x, y);
+	}
     }
 }
 
@@ -438,34 +449,34 @@ void check_keys(XEvent *e)
     */
     int key = XLookupKeysym(&e->xkey, 0);
     if (e->type == KeyRelease) {
-        gl.keys[key] = 0;
-        if (key == XK_Shift_L || key == XK_Shift_R)
-            return;
+	gl.keys[key] = 0;
+	if (key == XK_Shift_L || key == XK_Shift_R)
+	    return;
     }
     if (e->type == KeyPress) {
-        gl.keys[key] = 1;
-        if (key == XK_Shift_L || key == XK_Shift_R)
-            return;
+	gl.keys[key] = 1;
+	if (key == XK_Shift_L || key == XK_Shift_R)
+	    return;
     } else { 
-        return;
+	return;
     }
 
     switch(key)
     {
-        case XK_Escape:
-            gl.done = 1;
-            break;
-        case XK_w:
-            colorChangeFlag = 0;
-            break;
-        case XK_equal:
-            gl.delay -= 0.005;
-            if (gl.delay < 0.005)
-                gl.delay = 0.005;
-            break;
-        case XK_minus:
-            gl.delay += 0.005;
-            break;
+	case XK_Escape:
+	    gl.done = 1;
+	    break;
+	case XK_w:
+	    colorChangeFlag = 0;
+	    break;
+	case XK_equal:
+	    gl.delay -= 0.005;
+	    if (gl.delay < 0.005)
+		gl.delay = 0.005;
+	    break;
+	case XK_minus:
+	    gl.delay += 0.005;
+	    break;
     }		
 }
 
@@ -571,16 +582,17 @@ glEnd();
 glPopMatrix();
 }
 }*/
+
 void physics(Game *game)
 {
 
     char1 = &game->player[0];
 
     if (inAirBool)
-        char1->cy += char1->vel.y; 
+	char1->cy += char1->vel.y; 
 
     if (gravityOn) {
-        char1->cy += 0.2*gravity;
+	char1->cy += 0.2*gravity;
     }
 
     /*if (char1->cy > 450) {
@@ -589,51 +601,58 @@ void physics(Game *game)
       colorChangeFlag = 0;
       }*/
 
+    int boxTop[25], boxBot[25], boxLeft[25], boxRight[25];
 
-    Shape *s = &game->box[0];
-    int boxTop[7], boxBot[7], boxLeft[7], boxRight[7];
-    boxTop[0] = s->center.y + s->height + (char1->height-5);
-    boxBot[0] = s->center.y - s->height - (char1->height-5);
-    boxLeft[0] = s->center.x - s->width - (char1->width-10);
-    boxRight[0] = s->center.x + s->width + (char1->width-10);
+    for (int i = 0; i < 20; i++) {
+	Shape *s = &game->box[i];
+	boxTop[i] = s->center.y + s->height + (char1->height-5);
+	boxBot[i] = s->center.y - s->height - (char1->height-10);
+	boxLeft[i] = s->center.x - s->width - (char1->width-10);
+	boxRight[i] = s->center.x + s->width + (char1->width-10);
+    }
 
-    if (char1->cy < boxTop[0] && char1->cy > boxBot[0]) {
-        if (char1->cx > boxLeft[0] && char1->cx < boxRight[0]) {
-            // Top Collision
-            if (char1->cy < boxTop[0] &&
-                    char1->cy > boxTop[0] - 10 &&
-                    char1->cx < boxRight[0] - 10 &&
-                    char1->cx > boxLeft[0] + 10) {
-                char1->cy = boxTop[0];
-                gravityOn = false;
-                inAirBool = false;
-                colorChangeFlag = 1;
-            }
-            // Bot Collision
-            if (char1->cy > boxBot[0] &&
-                    char1->cy < boxBot[0] + 10 &&
-                    char1->cx < boxRight[0] - 10 &&
-                    char1->cx > boxLeft[0] + 10) {
-                char1->cy = boxBot[0];
-                colorChangeFlag = 1;
-            }
-            // Right Collision
-            if (char1->cx < boxRight[0] && 
-                    char1->cx > s->center.x &&
-                    char1->cy < boxTop[0] - 10 &&
-                    char1->cy > boxBot[0] + 10) {
-                char1->cx = boxRight[0];
-                colorChangeFlag = 1;
-            }
-            // Left Collision
-            if (char1->cx > boxLeft[0] &&
-                    char1->cx < s->center.x &&
-                    char1->cy < boxTop[0] - 10 &&
-                    char1->cy > boxBot[0] + 10) {
-                char1->cx = boxLeft[0];
-                colorChangeFlag = 1;
-            }
-        }
+    for (int i = 0; i < 20; i++) {
+	Shape *s = &game->box[i];
+	if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
+	    if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
+		// Top Collision
+		if (char1->cy < boxTop[i] &&
+			char1->cy > boxTop[i] - 10 &&
+			char1->cx < boxRight[i] - 10 &&
+			char1->cx > boxLeft[i] + 10) {
+		    char1->cy = boxTop[i];
+		    gravityOn = false;
+		    inAirBool = false;
+		    colorChangeFlag = 1;
+		    //printf("Top box y center: %f\n", s->center.y);
+		    //printf("Top box x center: %f\n", s->center.x);
+		}
+		// Bot Collision
+		if (char1->cy > boxBot[i] &&
+			char1->cy < boxBot[i] + 10 &&
+			char1->cx < boxRight[i] - 10 &&
+			char1->cx > boxLeft[i] + 10) {
+		    char1->cy = boxBot[i];
+		    colorChangeFlag = 1;
+		}
+		// Right Collision
+		if (char1->cx < boxRight[i] && 
+			char1->cx > s->center.x &&
+			char1->cy < boxTop[i] - 10 &&
+			char1->cy > boxBot[i] + 10) {
+		    char1->cx = boxRight[i];
+		    colorChangeFlag = 1;
+		}
+		// Left Collision
+		if (char1->cx > boxLeft[i] &&
+			char1->cx < s->center.x &&
+			char1->cy < boxTop[i] - 10 &&
+			char1->cy > boxBot[i] + 10) {
+		    char1->cx = boxLeft[i];
+		    colorChangeFlag = 1;
+		}
+	    }
+	}
     }
 
 
@@ -655,64 +674,66 @@ void physics(Game *game)
     //printf("Box center x: %f\n", s->center.x);
     //printf("Box center x minus: %f\n", (s->center.x - s->width));
     /*    printf("Value char1 height: %f\n", char1->height);
-          printf("Value center box: %f\n", game->box[15].center.y);
-          printf("Value box height: %f\n", game->box[15].height);
-          */
+	  printf("Value center box: %f\n", game->box[15].center.y);
+	  printf("Value box height: %f\n", game->box[15].height);
+	  */
 
 
     if (gl.keys[XK_Right]) {
-        char1->cx += 8;
+	char1->cx += 8;
     }
 
     if (gl.keys[XK_Left]) {
-        char1->cx += -8;
+	char1->cx += -8;
     }
 
     //printf("AirBool: %d\n", inAirBool);
 
-    if (gl.keys[XK_Up] && !inAirBool) {
-        //jump();
-        //checkJump();
+    //if (gl.keys[XK_Up] && !inAirBool) {
+    if (gl.keys[XK_Up]) {
+	//jump();
+	//checkJump();
 
-        //inAirBool = true;
-        char1->cy += 8;
-        //gravityOn = true;
+	//inAirBool = true;
+	char1->cy += 8;
+	//gravityOn = true;
     }
 
     if (gl.keys[XK_Down]) 
-        char1->cy += -8;
+	char1->cy += -8;
 
 
 
     if (gl.walk || gl.keys[XK_Right]) {
-        leftFace = 0;
-        //man is walking...
-        //when time is up, advance the frame.
-        timers.recordTime(&timers.timeCurrent);
-        double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
-        if (timeSpan > gl.delay) {
-            //advance
-            ++gl.yellowcharFrame;
-            if (gl.yellowcharFrame >= 2)
-                gl.yellowcharFrame -= 2;
-            timers.recordTime(&timers.yellowcharTime);
-        }
+	leftFace = 0;
+	//man is walking...
+	//when time is up, advance the frame.
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay) {
+	    //advance
+	    ++gl.yellowcharFrame;
+	    if (gl.yellowcharFrame >= 2)
+		gl.yellowcharFrame -= 2;
+	    timers.recordTime(&timers.yellowcharTime);
+	}
     }
 
     if (gl.walk || gl.keys[XK_Left]) {
-        leftFace = 1;
-        //man is walking...
-        //when time is up, advance the frame.
-        timers.recordTime(&timers.timeCurrent);
-        double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
-        if (timeSpan > gl.delay) {
-            //advance
-            ++gl.yellowcharFrame;
-            if (gl.yellowcharFrame >= 2)
-                gl.yellowcharFrame -= 2;
-            timers.recordTime(&timers.yellowcharTime);
-        }
+	leftFace = 1;
+	//man is walking...
+	//when time is up, advance the frame.
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay) {
+	    //advance
+	    ++gl.yellowcharFrame;
+	    if (gl.yellowcharFrame >= 2)
+		gl.yellowcharFrame -= 2;
+	    timers.recordTime(&timers.yellowcharTime);
+	}
     }
+
 }
 
 
@@ -762,44 +783,75 @@ void render(Game *game)
     //Draw shapes...
 
     Shape *s;
+    s = &game->box[10];
+    printf("Box 10 Center y before: %f\n", s[10].center.y);
+    printf("Box 10 Center x before: %f\n", s[10].center.x);
+    
+    s = &game->box[0];
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+    glBegin(GL_QUADS);
+    glColor3ub(30,144,255);
+    glVertex2i(-w, -h);
+    glColor3ub(30,144,255);
+    glVertex2i(-w, h);
+    glColor3ub(30,144,255);
+    glVertex2i(w, h);
+    glColor3ub(30,144,255);
+    glVertex2i(w, -h);
+    glEnd();
+    glPopMatrix();
 
-    if (colorChangeFlag) {
-        s = &game->box[0];
-        glPushMatrix();
-        glTranslatef(s->center.x, s->center.y, s->center.z);
-        w = s->width;
-        h = s->height;
-        glBegin(GL_QUADS);
-        glColor3ub(30,144,255);
-        glVertex2i(-w, -h);
-        glColor3ub(30,144,255);
-        glVertex2i(-w, h);
-        glColor3ub(30,144,255);
-        glVertex2i(w, h);
-        glColor3ub(30,144,255);
-        glVertex2i(w, -h);
-        glEnd();
-        glPopMatrix();
-    } else {
-        s = &game->box[0];
-        glPushMatrix();
-        glTranslatef(s->center.x, s->center.y, s->center.z);
-        w = s->width;
-        h = s->height;
-        glBegin(GL_QUADS);
-        glColor3ub(255,14,25);
-        glVertex2i(-w, -h);
-        glColor3ub(255,1,5);
-        glVertex2i(-w, h);
-        glColor3ub(255,4,5);
-        glVertex2i(w, h);
-        glColor3ub(255,4,5);
-        glVertex2i(w, -h);
-        glEnd();
-        glPopMatrix();
-    }
+    /*for (int i = 0; i < 20; i++) {
+	//if (colorChangeFlag) {
+	    s = &game->box[i];
+	    glPushMatrix();
+	    glTranslatef(s->center.x, s->center.y, s->center.z);
+	    w = s->width;
+	    h = s->height;
+	    glBegin(GL_QUADS);
+	    glColor3ub(30,144,255);
+	    glVertex2i(-w, -h);
+	    glColor3ub(30,144,255);
+	    glVertex2i(-w, h);
+	    glColor3ub(30,144,255);
+	    glVertex2i(w, h);
+	    glColor3ub(30,144,255);
+	    glVertex2i(w, -h);
+	    glEnd();
+	    glPopMatrix();
+	    //printf("hereBox 10 Center y: %f\n", s[10].center.y);
+	    //printf("hereBox 10 Center x: %f\n\n", s[10].center.x);
+	    //printf("Box %d center y: %f\n", i, game->box[i].center.y); 
+	    //printf("Box %d center x: %f\n", i, game->box[i].center.x);
+	   //colorChangeFlag = 0; 
+	} else {
+	    s = &game->box[i];
+	    glPushMatrix();
+	    glTranslatef(s->center.x, s->center.y, s->center.z);
+	    w = s->width;
+	    h = s->height;
+	    glColor3ub(255,14,25);
+	    glBegin(GL_QUADS);
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i(w, h);
+	    glVertex2i(w, -h);
+	    glEnd();
+	    glPopMatrix();
+	    printf("Box %d center y: %f\n", i, game->box[i].center.y); 
+	    printf("Box %d center x: %f\n", i, game->box[i].center.x);
+	}
+    }*/
 
+    //printf("Box 10 center y: %f\n", game->box[10].center.y); 
+    //printf("Box 10 center x: %f\n", game->box[10].center.x);
 
+    s = &game->box[10];
+    printf("Box 10 Center y after: %f\n", s[10].center.y);
+    printf("Box 10 Center x after: %f\n\n", s[10].center.x);
 
 
     //==============================================
@@ -807,124 +859,43 @@ void render(Game *game)
     //
     // BOTTOM SCREEN
 
-
-
-
-
-
-
-
-
-
-
-    /*for (int i = 1; i < 24; i++) {
-      glColor3ub(10,0,250);
-      s = &game->box[i];
-      if (i == 7)
-      glColor3ub(0, 255, 0);
-      if (i == 23)
-      glColor3ub(255, 0, 0);
-      glPushMatrix();
-      s[i].center.x = 50*i + 40;
-      s[i].center.y = 60;
-      glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
-      w = s->width;
-      h = s->height;
-      glBegin(GL_QUADS);
-      glVertex2i(-w, -h);
-      glVertex2i(-w, h);
-      glVertex2i( w, h);
-      glVertex2i( w, -h);
-      glEnd();
-      glPopMatrix();
-      }
-      int total = 1;
-    // TOP SCREEN
-    for (int i = 48; i < 95; i++) {
-    glColor3ub(10,0,250);
-    if (i == 94)
-    glColor3ub(255, 0, 0);
-    //s = &game->box[i];
-    glPushMatrix();
-    s = &game->box[i];
-    s[i].center.x = 25*total + 40;
-    s[i].center.y = gl.yres-60;
-    glTranslatef((25*total)+40, gl.yres-60, s->center.z);
-    w = 25;
-    h = 25;
-    glBegin(GL_QUADS);
-    glVertex2i(-w, -h);
-    glVertex2i(-w, h);
-    glVertex2i( w, h);
-    glVertex2i( w, -h);
-    glEnd();
-    glPopMatrix();
-    total++;
+    for (int i = 1; i < 20; i++) {
+	if (i == 10)
+	    glColor3ub(255,0,0);
+	else
+	    glColor3ub(10,255,0);
+	s = &game->box[i];
+	glPushMatrix();
+	//s.center.x = 60*i + 40;
+	//s.center.y = 60;
+	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
+	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+	w = s->width;
+	h = s->height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i( w, h);
+	glVertex2i( w, -h);
+	glEnd();
+	glPopMatrix();
     }
-    total = 1;
-    // LEFT SCREEN
-    for (int i = 95; i < 119; i++) {
-    glColor3ub(10,0,250);
-    if (i == 95)
-    glColor3ub(255, 0, 0);
-    if (i == 118)
-    glColor3ub(255, 255, 0);
-    //s = &game->box[i];
-    glPushMatrix();
-    s = &game->box[i];
-    s[i].center.x = 65;
-    s[i].center.y = 25*total+60;
-    glTranslatef(65, (25*total)+60, s->center.z);
-    w = 25;
-    h = 25;
-    glBegin(GL_QUADS);
-    glVertex2i(-w, -h);
-    glVertex2i(-w, h);
-    glVertex2i( w, h);
-    glVertex2i( w, -h);
-    glEnd();
-    glPopMatrix();
-    total++;
-    }
-    total = 1;
-    // RIGHT SCREEN
-    for (int i = 119; i < 143; i++) {
-        glColor3ub(10,0,250);
-        if (i == 119)
-            glColor3ub(255, 0, 155);
-        if (i == 142)
-            glColor3ub(255, 55, 0);
-        //s = &game->box[i];
-        glPushMatrix();
-        s = &game->box[i];
-        s[i].center.x = gl.xres-65;
-        s[i].center.y = 25*total+60;
-        glTranslatef(gl.xres-65, (25*total)+60, s->center.z);
-        w = 25;
-        h = 25;
-        glBegin(GL_QUADS);
-        glVertex2i(-w, -h);
-        glVertex2i(-w, h);
-        glVertex2i( w, h);
-        glVertex2i( w, -h);
-        glEnd();
-        glPopMatrix();
-        total++;
-    }
-    //==============================================
-    */
 
-        // CHARACTER
-        //Character *char1;
-        //float cx = gl.xres/2.0;
-        //float cy = gl.yres/2.0;
-        //h = 200.0;
-        //w = h * 0.5;
-        //
-        //char1->cx = gl.xres/2;
-        //char1->cy = gl.yres/2;
-        //
-        glPushMatrix();
+    //printf("Box 10 Center y after after: %f\n", s[10].center.y);
+    //printf("Box 10 Center x after after: %f\n", s[10].center.x);
+
+
+	// CHARACTER
+	//Character *char1;
+	//float cx = gl.xres/2.0;
+	//float cy = gl.yres/2.0;
+	//h = 200.0;
+	//w = h * 0.5;
+	//
+	//char1->cx = gl.xres/2;
+	//char1->cy = gl.yres/2;
+	//
+	glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
     glBindTexture(GL_TEXTURE_2D, gl.yellowcharTexture);
     //
@@ -934,40 +905,40 @@ void render(Game *game)
     int ix = gl.yellowcharFrame % 2;
     int iy = 1;
     if (gl.yellowcharFrame >= 2)
-        iy = 0;
+	iy = 0;
     float tx = (float)ix / 2.0;
     float ty = (float)iy / 1.0;
 
     /*if (gl.keys[XK_Right] || !leftFace) {
-        glTranslatef(0.5, 0.5, 0);
-        glRotatef(0.1,0,0,1);
-        glTranslatef(-0.5, -0.5, 0);
-    }
-    if (gl.keys[XK_Left] || leftFace) {
-        glTranslatef(char1->width, char1->height, 0);
-        glRotatef(-0.1,0,0,1);
-        glTranslatef(char1->width, char1->height, 0);
-    }*/
+      glTranslatef(0.5, 0.5, 0);
+      glRotatef(0.1,0,0,1);
+      glTranslatef(-0.5, -0.5, 0);
+      }
+      if (gl.keys[XK_Left] || leftFace) {
+      glTranslatef(char1->width, char1->height, 0);
+      glRotatef(-0.1,0,0,1);
+      glTranslatef(char1->width, char1->height, 0);
+      }*/
 
 
     //int result;
     glBegin(GL_QUADS);
     if (gl.keys[XK_Right] || !leftFace)
     {
-        glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-        glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-        glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-        glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-        gl.result = 0;	
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+	glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+	glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+	glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+	gl.result = 0;	
     }
 
     if (gl.keys[XK_Left] || leftFace)
     {
-        glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-        glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-        glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-        glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-        gl.result = 1;
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+	glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+	glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+	glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+	gl.result = 1;
     }
 
     glEnd();
