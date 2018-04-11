@@ -131,14 +131,42 @@ int main(void)
     game.box[0].center.y = 450;
 
     // bottom boxes row
-    for (int i = 1; i < 20; i++) {
+    for (int i = 1; i < 22; i++) {
 	game.box[i].width = 25;
 	game.box[i].height = 25;
-	game.box[i].center.x = 60*i + 40;
-	game.box[i].center.y = 200;
+	game.box[i].center.x = 55*i + 35;
+	game.box[i].center.y = 100;
 	printf("Box %d center y: %f\n", i, game.box[i].center.y); 
 	printf("Box %d center x: %f\n", i, game.box[i].center.x); 
     }
+    int total = 1;
+    // top row
+    for (int i = 22; i < 43; i++) {
+      game.box[i].width = 25;
+      game.box[i].height = 25;
+      game.box[i].center.x = 55*total + 35;
+      game.box[i].center.y = gl.yres-60;
+      total++;
+    }
+    total = 1;
+    // left side
+    for (int i = 43; i < 52; i++) {
+      game.box[i].width = 25;
+      game.box[i].height = 25;
+      game.box[i].center.x = 37;
+      game.box[i].center.y = 55*total+105;
+      total++;
+    }
+    total = 1;
+    // right side
+    for (int i = 52; i < 61; i++) {
+      game.box[i].width = 25;
+      game.box[i].height = 25;
+      game.box[i].center.x = gl.xres-37;
+      game.box[i].center.y = 55*total+105;
+      total++;
+    }
+
 
 
     /*for (int i = 1; i < 48; i++) {
@@ -601,9 +629,9 @@ void physics(Game *game)
       colorChangeFlag = 0;
       }*/
 
-    int boxTop[25], boxBot[25], boxLeft[25], boxRight[25];
+    int boxTop[75], boxBot[75], boxLeft[75], boxRight[75];
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 75; i++) {
 	Shape *s = &game->box[i];
 	boxTop[i] = s->center.y + s->height + (char1->height-5);
 	boxBot[i] = s->center.y - s->height - (char1->height-10);
@@ -611,7 +639,7 @@ void physics(Game *game)
 	boxRight[i] = s->center.x + s->width + (char1->width-10);
     }
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 75; i++) {
 	Shape *s = &game->box[i];
 	if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
 	    if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
@@ -859,7 +887,7 @@ void render(Game *game)
     //
     // BOTTOM SCREEN
 
-    for (int i = 1; i < 20; i++) {
+    for (int i = 1; i < 22; i++) {
 	if (i == 10)
 	    glColor3ub(255,0,0);
 	else
@@ -880,6 +908,61 @@ void render(Game *game)
 	glEnd();
 	glPopMatrix();
     }
+    for (int i = 22; i < 43; i++) {
+	glColor3ub(10,255,0);
+	s = &game->box[i];
+	glPushMatrix();
+	//s.center.x = 60*i + 40;
+	//s.center.y = 60;
+	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
+	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+	w = s->width;
+	h = s->height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i( w, h);
+	glVertex2i( w, -h);
+	glEnd();
+	glPopMatrix();
+    }
+    for (int i = 43; i < 52; i++) {
+	glColor3ub(10,255,0);
+	s = &game->box[i];
+	glPushMatrix();
+	//s.center.x = 60*i + 40;
+	//s.center.y = 60;
+	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
+	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+	w = s->width;
+	h = s->height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i( w, h);
+	glVertex2i( w, -h);
+	glEnd();
+	glPopMatrix();
+    }
+    for (int i = 52; i < 61; i++) {
+	glColor3ub(10,255,0);
+	s = &game->box[i];
+	glPushMatrix();
+	//s.center.x = 60*i + 40;
+	//s.center.y = 60;
+	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
+	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+	w = s->width;
+	h = s->height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i( w, h);
+	glVertex2i( w, -h);
+	glEnd();
+	glPopMatrix();
+    }
+
 
     //printf("Box 10 Center y after after: %f\n", s[10].center.y);
     //printf("Box 10 Center x after after: %f\n", s[10].center.x);
