@@ -133,6 +133,7 @@ class Character {
         float cy;
         float height;
         float width;
+	int colorID;
         Vec dir;
         Vec pos;
         Vec vel;

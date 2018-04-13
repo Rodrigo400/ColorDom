@@ -60,6 +60,7 @@ const float gravity = -9;
 Timers timers;
 Global gl;
 Character *char1;
+Shape *globalSaveBox;
 Game game;
 //Shape *s;
 bool leftFace = 0; 
@@ -72,6 +73,7 @@ bool moveRightBool = true;
 bool moveLeftBool = true;
 float finalJumpCy;
 float jumpStartCy;
+int boxIndex;
 //s = &game->box[i];
 //Sprite
 //
@@ -100,7 +102,7 @@ void render(Game *game);
 // ==============================================
 void jump();
 void checkJump();
-
+void changeColor(Character*, Shape*);
 // ==============================================
 
 // ==============================================
@@ -615,6 +617,7 @@ void physics(Game *game)
 {
 
     char1 = &game->player[0];
+    char1->colorID = 1;		// YELLOW
 
     if (inAirBool)
 	char1->cy += char1->vel.y; 
@@ -651,7 +654,14 @@ void physics(Game *game)
 		    char1->cy = boxTop[i];
 		    gravityOn = false;
 		    inAirBool = false;
+		    //if (char1->colorID == 1)
 		    colorChangeFlag = 1;
+		    
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+
+		    //changeColor(char1, s);
 		    //printf("Top box y center: %f\n", s->center.y);
 		    //printf("Top box x center: %f\n", s->center.x);
 		}
@@ -661,7 +671,7 @@ void physics(Game *game)
 			char1->cx < boxRight[i] - 10 &&
 			char1->cx > boxLeft[i] + 10) {
 		    char1->cy = boxBot[i];
-		    colorChangeFlag = 1;
+		    //colorChangeFlag = 1;
 		}
 		// Right Collision
 		if (char1->cx < boxRight[i] && 
@@ -669,7 +679,7 @@ void physics(Game *game)
 			char1->cy < boxTop[i] - 10 &&
 			char1->cy > boxBot[i] + 10) {
 		    char1->cx = boxRight[i];
-		    colorChangeFlag = 1;
+		    //colorChangeFlag = 1;
 		}
 		// Left Collision
 		if (char1->cx > boxLeft[i] &&
@@ -677,7 +687,7 @@ void physics(Game *game)
 			char1->cy < boxTop[i] - 10 &&
 			char1->cy > boxBot[i] + 10) {
 		    char1->cx = boxLeft[i];
-		    colorChangeFlag = 1;
+		    //colorChangeFlag = 1;
 		}
 	    }
 	}
@@ -804,6 +814,36 @@ char1->cy += GRAVITY;
 //}
 }*/
 
+void changeColor(Character *player, Shape *box)
+{
+    if (player->colorID == 1)			// YELLOW
+    	glColor3ub(255,255,0);
+    /*if (player->colorID == 1)			// YELLOW
+    	glColor3ub(255,255,0);
+    if (player->colorID == 1)			// YELLOW
+    	glColor3ub(255,255,0);
+*/	
+    Shape *s;
+    s = box;
+    glPushMatrix();
+    //s.center.x = 60*i + 40;
+    //s.center.y = 60;
+    //glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
+    cout << box->center.x << endl;
+    glTranslatef(box->center.x, box->center.y, box->center.z);
+    int w = s->width;
+    int h = s->height;
+    glBegin(GL_QUADS);
+    glVertex2i(-w, -h);
+    glVertex2i(-w, h);
+    glVertex2i( w, h);
+    glVertex2i( w, -h);
+    glEnd();
+    glPopMatrix();
+	
+}
+
+
 void render(Game *game)
 {
     float w, h;
@@ -812,8 +852,8 @@ void render(Game *game)
 
     Shape *s;
     s = &game->box[10];
-    printf("Box 10 Center y before: %f\n", s[10].center.y);
-    printf("Box 10 Center x before: %f\n", s[10].center.x);
+    //printf("Box 10 Center y before: %f\n", s[10].center.y);
+    //printf("Box 10 Center x before: %f\n", s[10].center.x);
     
     s = &game->box[0];
     glPushMatrix();
@@ -878,8 +918,8 @@ void render(Game *game)
     //printf("Box 10 center x: %f\n", game->box[10].center.x);
 
     s = &game->box[10];
-    printf("Box 10 Center y after: %f\n", s[10].center.y);
-    printf("Box 10 Center x after: %f\n\n", s[10].center.x);
+    //printf("Box 10 Center y after: %f\n", s[10].center.y);
+    //printf("Box 10 Center x after: %f\n\n", s[10].center.x);
 
 
     //==============================================
@@ -888,10 +928,13 @@ void render(Game *game)
     // BOTTOM SCREEN
 
     for (int i = 1; i < 22; i++) {
-	if (i == 10)
-	    glColor3ub(255,0,0);
+	if (colorChangeFlag == 1 && boxIndex == i) {
+	    changeColor(char1, globalSaveBox);
+	    //goto here;
+	}
 	else
 	    glColor3ub(10,255,0);
+	
 	s = &game->box[i];
 	glPushMatrix();
 	//s.center.x = 60*i + 40;
@@ -907,6 +950,9 @@ void render(Game *game)
 	glVertex2i( w, -h);
 	glEnd();
 	glPopMatrix();
+//here:
+	//int z = 0;
+	// bnothing
     }
     for (int i = 22; i < 43; i++) {
 	glColor3ub(10,255,0);
