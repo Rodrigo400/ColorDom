@@ -141,8 +141,8 @@ class Character {
         Character () {
             cx = gl.xres/2;
             cy = gl.yres/2;
-            height = 50.0;
-            width = height * 0.9;
+            height = 45.0;
+            width = 45;
         }
 };
 

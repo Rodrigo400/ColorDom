@@ -106,6 +106,7 @@ void render(Game *game);
 void jump();
 void checkJump();
 void changeColor(Character*, Shape*);
+void awardPoint(Shape*);
 // ==============================================
 
 // ==============================================
@@ -140,36 +141,36 @@ int main(void)
 	game.box[i].width = 25;
 	game.box[i].height = 25;
 	game.box[i].center.x = 55*i + 35;
-	game.box[i].center.y = 100;
+	game.box[i].center.y = 150;
 	//printf("Box %d center y: %f\n", i, game.box[i].center.y); 
 	//printf("Box %d center x: %f\n", i, game.box[i].center.x); 
     }
     int total = 1;
     // top row
     for (int i = 22; i < 43; i++) {
-      game.box[i].width = 25;
-      game.box[i].height = 25;
-      game.box[i].center.x = 55*total + 35;
-      game.box[i].center.y = gl.yres-60;
-      total++;
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	game.box[i].center.x = 55*total + 35;
+	game.box[i].center.y = gl.yres-65;
+	total++;
     }
     total = 1;
     // left side
-    for (int i = 43; i < 52; i++) {
-      game.box[i].width = 25;
-      game.box[i].height = 25;
-      game.box[i].center.x = 37;
-      game.box[i].center.y = 55*total+105;
-      total++;
+    for (int i = 43; i < 51; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	game.box[i].center.x = 37;
+	game.box[i].center.y = 55*total+155;
+	total++;
     }
     total = 1;
     // right side
-    for (int i = 52; i < 61; i++) {
-      game.box[i].width = 25;
-      game.box[i].height = 25;
-      game.box[i].center.x = gl.xres-37;
-      game.box[i].center.y = 55*total+105;
-      total++;
+    for (int i = 51; i < 59; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	game.box[i].center.x = gl.xres-37;
+	game.box[i].center.y = 55*total+155;
+	total++;
     }
 
 
@@ -626,7 +627,7 @@ void physics(Game *game)
 	char1->cy += char1->vel.y; 
 
     //if (gravityOn) {
-	char1->cy += 0.2*gravity;
+    char1->cy += 0.2*gravity;
     //}
 
     /*if (char1->cy > 450) {
@@ -657,24 +658,15 @@ void physics(Game *game)
 		    char1->cy = boxTop[i];
 		    gravityOn = false;
 		    inAirBool = false;
-		    //if (char1->colorID == 1)
 		    colorChangeFlag = 1;
-		    
-		    //cout << "Char1 colorID " << char1->colorID << endl;
-		    //cout << "Box colorID " << s->boxColorID << endl;
-		    
-		    if (char1->colorID != s->boxColorID) {
-			points++;
-			cout << "Points: " << points << endl;
-		    }
-		    
+
+		    // Point System 
+		    awardPoint(s);    
+
 		    // Save box index # and location
 		    boxIndex = i;
 		    globalSaveBox = s;
 		    s->boxColorID = char1->colorID;
-		    //changeColor(char1, s);
-		    //printf("Top box y center: %f\n", s->center.y);
-		    //printf("Top box x center: %f\n", s->center.x);
 		}
 		// Bot Collision
 		if (char1->cy > boxBot[i] &&
@@ -683,6 +675,17 @@ void physics(Game *game)
 			char1->cx > boxLeft[i] + 10) {
 		    char1->cy = boxBot[i];
 		    //colorChangeFlag = 1;
+		    
+		    
+		    colorChangeFlag = 1;
+
+		    // Point System 
+		    awardPoint(s);    
+
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+		    s->boxColorID = char1->colorID;
 		}
 		// Right Collision
 		if (char1->cx < boxRight[i] && 
@@ -691,6 +694,17 @@ void physics(Game *game)
 			char1->cy > boxBot[i] + 10) {
 		    char1->cx = boxRight[i];
 		    //colorChangeFlag = 1;
+		    
+		    
+		    colorChangeFlag = 1;
+
+		    // Point System 
+		    awardPoint(s);    
+
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+		    s->boxColorID = char1->colorID;
 		}
 		// Left Collision
 		if (char1->cx > boxLeft[i] &&
@@ -699,6 +713,17 @@ void physics(Game *game)
 			char1->cy > boxBot[i] + 10) {
 		    char1->cx = boxLeft[i];
 		    //colorChangeFlag = 1;
+		    
+		    
+		    colorChangeFlag = 1;
+
+		    // Point System 
+		    awardPoint(s);    
+
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+		    s->boxColorID = char1->colorID;
 		}
 	    }
 	}
@@ -828,12 +853,12 @@ char1->cy += GRAVITY;
 void changeColor(Character *player, Shape *box)
 {
     if (player->colorID == 1)			// YELLOW
-    	glColor3ub(255,255,0);
+	glColor3ub(255,255,0);
     /*if (player->colorID == 1)			// YELLOW
-    	glColor3ub(255,255,0);
-    if (player->colorID == 1)			// YELLOW
-    	glColor3ub(255,255,0);
-*/	
+      glColor3ub(255,255,0);
+      if (player->colorID == 1)			// YELLOW
+      glColor3ub(255,255,0);
+      */	
     Shape *s;
     s = box;
     glPushMatrix();
@@ -851,24 +876,21 @@ void changeColor(Character *player, Shape *box)
     glVertex2i( w, -h);
     glEnd();
     glPopMatrix();
-	    
+
     /*if (pointFlag) {
-	points++;
-	cout << "Points " << points << endl;
-	pointFlag = false;
-    }*/	
+      points++;
+      cout << "Points " << points << endl;
+      pointFlag = false;
+      }*/	
 }
 
-/*void awardPoint(bool pointFlag) {
-	pointFlag = false;
-	//if (pointFlag) {
-	    points++;
-	    cout << "Points " << points << endl;
-	    cout << pointFlag << endl;
-	    pointFlag = false;
-	//}
-	//pointFlag = false;
-}*/
+void awardPoint(Shape *s) 
+{
+    if (char1->colorID != s->boxColorID) {
+	points++;
+	cout << "Points: " << points << endl;
+    }
+}
 
 
 void render(Game *game)
@@ -881,7 +903,7 @@ void render(Game *game)
     s = &game->box[10];
     //printf("Box 10 Center y before: %f\n", s[10].center.y);
     //printf("Box 10 Center x before: %f\n", s[10].center.x);
-    
+
     s = &game->box[0];
     glPushMatrix();
     glTranslatef(s->center.x, s->center.y, s->center.z);
@@ -900,45 +922,45 @@ void render(Game *game)
     glPopMatrix();
 
     /*for (int i = 0; i < 20; i++) {
-	//if (colorChangeFlag) {
-	    s = &game->box[i];
-	    glPushMatrix();
-	    glTranslatef(s->center.x, s->center.y, s->center.z);
-	    w = s->width;
-	    h = s->height;
-	    glBegin(GL_QUADS);
-	    glColor3ub(30,144,255);
-	    glVertex2i(-w, -h);
-	    glColor3ub(30,144,255);
-	    glVertex2i(-w, h);
-	    glColor3ub(30,144,255);
-	    glVertex2i(w, h);
-	    glColor3ub(30,144,255);
-	    glVertex2i(w, -h);
-	    glEnd();
-	    glPopMatrix();
-	    //printf("hereBox 10 Center y: %f\n", s[10].center.y);
-	    //printf("hereBox 10 Center x: %f\n\n", s[10].center.x);
-	    //printf("Box %d center y: %f\n", i, game->box[i].center.y); 
-	    //printf("Box %d center x: %f\n", i, game->box[i].center.x);
-	   //colorChangeFlag = 0; 
-	} else {
-	    s = &game->box[i];
-	    glPushMatrix();
-	    glTranslatef(s->center.x, s->center.y, s->center.z);
-	    w = s->width;
-	    h = s->height;
-	    glColor3ub(255,14,25);
-	    glBegin(GL_QUADS);
-	    glVertex2i(-w, -h);
-	    glVertex2i(-w, h);
-	    glVertex2i(w, h);
-	    glVertex2i(w, -h);
-	    glEnd();
-	    glPopMatrix();
-	    printf("Box %d center y: %f\n", i, game->box[i].center.y); 
-	    printf("Box %d center x: %f\n", i, game->box[i].center.x);
-	}
+    //if (colorChangeFlag) {
+    s = &game->box[i];
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+    glBegin(GL_QUADS);
+    glColor3ub(30,144,255);
+    glVertex2i(-w, -h);
+    glColor3ub(30,144,255);
+    glVertex2i(-w, h);
+    glColor3ub(30,144,255);
+    glVertex2i(w, h);
+    glColor3ub(30,144,255);
+    glVertex2i(w, -h);
+    glEnd();
+    glPopMatrix();
+    //printf("hereBox 10 Center y: %f\n", s[10].center.y);
+    //printf("hereBox 10 Center x: %f\n\n", s[10].center.x);
+    //printf("Box %d center y: %f\n", i, game->box[i].center.y); 
+    //printf("Box %d center x: %f\n", i, game->box[i].center.x);
+    //colorChangeFlag = 0; 
+    } else {
+    s = &game->box[i];
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+    glColor3ub(255,14,25);
+    glBegin(GL_QUADS);
+    glVertex2i(-w, -h);
+    glVertex2i(-w, h);
+    glVertex2i(w, h);
+    glVertex2i(w, -h);
+    glEnd();
+    glPopMatrix();
+    printf("Box %d center y: %f\n", i, game->box[i].center.y); 
+    printf("Box %d center x: %f\n", i, game->box[i].center.x);
+    }
     }*/
 
     //printf("Box 10 center y: %f\n", game->box[10].center.y); 
@@ -953,11 +975,11 @@ void render(Game *game)
     // Draw Map
     //
     // BOTTOM SCREEN
-   
+
 
     // Init map first
     if (initializeFlag) { 
-	for (int i = 1; i < 22; i++) {
+	for (int i = 1; i < 60; i++) {
 	    glColor3ub(10,255,0);
 
 	    s = &game->box[i];
@@ -979,35 +1001,20 @@ void render(Game *game)
 
     initializeFlag = 0;
 
-    //cout << "here " << s->boxColorID << endl;
-    //cout << "here " << char1->colorID << endl;
-    
-    for (int i = 1; i < 22; i++) {
+
+    for (int i = 1; i < 59; i++) {
 	s = &game->box[i];
-	//cout << "Char1 colorID " << char1->colorID << endl;
-	//cout << "Box colorID " << s->boxColorID << endl;
 
 	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
-	    /*if (char1->colorID != s->boxColorID) {
-		s->boxColorID = char1->colorID;
-		points++;
-		cout << "Points " << points << endl;
-
-	    }*/
-	    //pointFlag = true;
-	    //s->boxColorID = char1->colorID;
-	    //points++;
-	    //cout << "Points " << points << endl;
 	    changeColor(char1, globalSaveBox);
 	    //awardPoint(pointFlag);
 	    //pointFlag = false;
-	    //goto here;
 	} else if (s->boxColorID == 1 /*&& char1->colorID != s->boxColorID*/) {
 	    glColor3ub(255,255,0);
 	} else {
 	    glColor3ub(10,255,0);
 	}
-	
+
 	glPushMatrix();
 	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
 	w = s->width;
@@ -1020,8 +1027,8 @@ void render(Game *game)
 	glEnd();
 	glPopMatrix();
     }
-    
-    for (int i = 22; i < 43; i++) {
+
+    /*for (int i = 22; i < 43; i++) {
 	glColor3ub(10,255,0);
 	s = &game->box[i];
 	glPushMatrix();
@@ -1074,24 +1081,24 @@ void render(Game *game)
 	glVertex2i( w, -h);
 	glEnd();
 	glPopMatrix();
-    }
+    }*/
 
 
     //printf("Box 10 Center y after after: %f\n", s[10].center.y);
     //printf("Box 10 Center x after after: %f\n", s[10].center.x);
 
 
-	// CHARACTER
-	//Character *char1;
-	//float cx = gl.xres/2.0;
-	//float cy = gl.yres/2.0;
-	//h = 200.0;
-	//w = h * 0.5;
-	//
-	//char1->cx = gl.xres/2;
-	//char1->cy = gl.yres/2;
-	//
-	glPushMatrix();
+    // CHARACTER
+    //Character *char1;
+    //float cx = gl.xres/2.0;
+    //float cy = gl.yres/2.0;
+    //h = 200.0;
+    //w = h * 0.5;
+    //
+    //char1->cx = gl.xres/2;
+    //char1->cy = gl.yres/2;
+    //
+    glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
     glBindTexture(GL_TEXTURE_2D, gl.yellowcharTexture);
     //
