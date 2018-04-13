@@ -75,6 +75,7 @@ bool initializeFlag = 1;
 float finalJumpCy;
 float jumpStartCy;
 int boxIndex;
+int points = 0;
 //s = &game->box[i];
 //Sprite
 //
@@ -139,8 +140,8 @@ int main(void)
 	game.box[i].height = 25;
 	game.box[i].center.x = 55*i + 35;
 	game.box[i].center.y = 100;
-	printf("Box %d center y: %f\n", i, game.box[i].center.y); 
-	printf("Box %d center x: %f\n", i, game.box[i].center.x); 
+	//printf("Box %d center y: %f\n", i, game.box[i].center.y); 
+	//printf("Box %d center x: %f\n", i, game.box[i].center.x); 
     }
     int total = 1;
     // top row
@@ -830,7 +831,7 @@ void changeColor(Character *player, Shape *box)
     //s.center.x = 60*i + 40;
     //s.center.y = 60;
     //glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
-    cout << box->center.x << endl;
+    //cout << box->center.x << endl;
     glTranslatef(box->center.x, box->center.y, box->center.z);
     int w = s->width;
     int h = s->height;
@@ -841,6 +842,10 @@ void changeColor(Character *player, Shape *box)
     glVertex2i( w, -h);
     glEnd();
     glPopMatrix();
+	    
+    
+    points++;
+	    cout << "Points " << points << endl;
 	
 }
 
@@ -928,11 +933,14 @@ void render(Game *game)
     //
     // BOTTOM SCREEN
    
+
     if (initializeFlag) { 
 	for (int i = 1; i < 22; i++) {
 	    glColor3ub(10,255,0);
 
 	    s = &game->box[i];
+	    s->boxColorID = 0;
+	    cout << s->boxColorID << endl;
 	    glPushMatrix();
 	    glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
 	    w = s->width;
@@ -949,16 +957,18 @@ void render(Game *game)
 
     initializeFlag = 0;
 
+    //cout << s->boxColorID << endl;
+    
     for (int i = 1; i < 22; i++) {
 	s = &game->box[i];
-	if (colorChangeFlag == 1 && boxIndex == i) {
+	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
 	    changeColor(char1, globalSaveBox);
 	    //goto here;
-	}
-	else if (s->boxColorID == 1)
+	} else if (s->boxColorID == 1 /*&& char1->colorID != s->boxColorID*/) {
 	    glColor3ub(255,255,0);
-	else
+	} else {
 	    glColor3ub(10,255,0);
+	}
 	
 	glPushMatrix();
 	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
