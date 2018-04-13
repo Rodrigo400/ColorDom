@@ -72,6 +72,7 @@ bool moveDownBool = true;
 bool moveRightBool = true;
 bool moveLeftBool = true;
 bool initializeFlag = 1;
+bool pointFlag = 0;
 float finalJumpCy;
 float jumpStartCy;
 int boxIndex;
@@ -624,9 +625,9 @@ void physics(Game *game)
     if (inAirBool)
 	char1->cy += char1->vel.y; 
 
-    if (gravityOn) {
+    //if (gravityOn) {
 	char1->cy += 0.2*gravity;
-    }
+    //}
 
     /*if (char1->cy > 450) {
       colorChangeFlag = 1;
@@ -658,6 +659,14 @@ void physics(Game *game)
 		    inAirBool = false;
 		    //if (char1->colorID == 1)
 		    colorChangeFlag = 1;
+		    
+		    //cout << "Char1 colorID " << char1->colorID << endl;
+		    //cout << "Box colorID " << s->boxColorID << endl;
+		    
+		    if (char1->colorID != s->boxColorID) {
+			points++;
+			cout << "Points: " << points << endl;
+		    }
 		    
 		    // Save box index # and location
 		    boxIndex = i;
@@ -843,11 +852,23 @@ void changeColor(Character *player, Shape *box)
     glEnd();
     glPopMatrix();
 	    
-    
-    points++;
-	    cout << "Points " << points << endl;
-	
+    /*if (pointFlag) {
+	points++;
+	cout << "Points " << points << endl;
+	pointFlag = false;
+    }*/	
 }
+
+/*void awardPoint(bool pointFlag) {
+	pointFlag = false;
+	//if (pointFlag) {
+	    points++;
+	    cout << "Points " << points << endl;
+	    cout << pointFlag << endl;
+	    pointFlag = false;
+	//}
+	//pointFlag = false;
+}*/
 
 
 void render(Game *game)
@@ -934,13 +955,14 @@ void render(Game *game)
     // BOTTOM SCREEN
    
 
+    // Init map first
     if (initializeFlag) { 
 	for (int i = 1; i < 22; i++) {
 	    glColor3ub(10,255,0);
 
 	    s = &game->box[i];
 	    s->boxColorID = 0;
-	    cout << s->boxColorID << endl;
+	    //cout << s->boxColorID << endl;
 	    glPushMatrix();
 	    glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
 	    w = s->width;
@@ -957,12 +979,28 @@ void render(Game *game)
 
     initializeFlag = 0;
 
-    //cout << s->boxColorID << endl;
+    //cout << "here " << s->boxColorID << endl;
+    //cout << "here " << char1->colorID << endl;
     
     for (int i = 1; i < 22; i++) {
 	s = &game->box[i];
+	//cout << "Char1 colorID " << char1->colorID << endl;
+	//cout << "Box colorID " << s->boxColorID << endl;
+
 	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
+	    /*if (char1->colorID != s->boxColorID) {
+		s->boxColorID = char1->colorID;
+		points++;
+		cout << "Points " << points << endl;
+
+	    }*/
+	    //pointFlag = true;
+	    //s->boxColorID = char1->colorID;
+	    //points++;
+	    //cout << "Points " << points << endl;
 	    changeColor(char1, globalSaveBox);
+	    //awardPoint(pointFlag);
+	    //pointFlag = false;
 	    //goto here;
 	} else if (s->boxColorID == 1 /*&& char1->colorID != s->boxColorID*/) {
 	    glColor3ub(255,255,0);
