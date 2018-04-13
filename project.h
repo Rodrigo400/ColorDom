@@ -51,6 +51,7 @@ struct Shape {
     float width, height;
     float radius;
     Vec center;
+    int boxColorID;
     Shape () {
         width = 25;
         height = 25;

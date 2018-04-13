@@ -71,6 +71,7 @@ bool moveUpBool = true;
 bool moveDownBool = true;
 bool moveRightBool = true;
 bool moveLeftBool = true;
+bool initializeFlag = 1;
 float finalJumpCy;
 float jumpStartCy;
 int boxIndex;
@@ -660,7 +661,7 @@ void physics(Game *game)
 		    // Save box index # and location
 		    boxIndex = i;
 		    globalSaveBox = s;
-
+		    s->boxColorID = char1->colorID;
 		    //changeColor(char1, s);
 		    //printf("Top box y center: %f\n", s->center.y);
 		    //printf("Top box x center: %f\n", s->center.x);
@@ -926,20 +927,40 @@ void render(Game *game)
     // Draw Map
     //
     // BOTTOM SCREEN
+   
+    if (initializeFlag) { 
+	for (int i = 1; i < 22; i++) {
+	    glColor3ub(10,255,0);
+
+	    s = &game->box[i];
+	    glPushMatrix();
+	    glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+	    w = s->width;
+	    h = s->height;
+	    glBegin(GL_QUADS);
+	    glVertex2i(-w, -h);
+	    glVertex2i(-w, h);
+	    glVertex2i( w, h);
+	    glVertex2i( w, -h);
+	    glEnd();
+	    glPopMatrix();
+	}
+    }
+
+    initializeFlag = 0;
 
     for (int i = 1; i < 22; i++) {
+	s = &game->box[i];
 	if (colorChangeFlag == 1 && boxIndex == i) {
 	    changeColor(char1, globalSaveBox);
 	    //goto here;
 	}
+	else if (s->boxColorID == 1)
+	    glColor3ub(255,255,0);
 	else
 	    glColor3ub(10,255,0);
 	
-	s = &game->box[i];
 	glPushMatrix();
-	//s.center.x = 60*i + 40;
-	//s.center.y = 60;
-	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
 	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
 	w = s->width;
 	h = s->height;
@@ -950,10 +971,8 @@ void render(Game *game)
 	glVertex2i( w, -h);
 	glEnd();
 	glPopMatrix();
-//here:
-	//int z = 0;
-	// bnothing
     }
+    
     for (int i = 22; i < 43; i++) {
 	glColor3ub(10,255,0);
 	s = &game->box[i];
