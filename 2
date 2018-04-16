@@ -852,44 +852,29 @@ char1->cy += GRAVITY;
 //}
 }*/
 
-const float DEG2RAD = 3.14159/180;
-
-void drawCircle(float radius)
-{
-	glBegin(GL_TRIANGLE_FAN);
-
-	for (int i = 0; i < 360; i++) {
-	    float degInRad = i*DEG2RAD;
-	    //float degInRad = DEG2RAD*gameFrame;
-	    glColor3ub(255,0,0);
-	    glVertex2f(cos(degInRad)*radius + gl.xres/2, sin(degInRad)*radius + gl.yres-50);
-	}
-
-	glEnd();
-}
-
 void countdown() 
 {
     Rect r;
     unsigned int c = 0x002d88d8;
-    r.bot = gl.yres - 60;
-    r.left = (gl.xres/2-10);
+    r.bot = gl.yres - 30;
+    r.left = (gl.xres/2);
     r.center = 0;
     //if (gl.state == STATE_GAMEPLAY) {
 	timers.recordTime(&timers.timeCurrent);
 	double timeSpan = timers.timeDiff(&timers.gameTime, &timers.timeCurrent);
-	if (timeSpan > gameDelay && gameFrame > 0) {
+	if (timeSpan > gameDelay) {
 	    //advance
 	    --gameFrame;
 	    timers.recordTime(&timers.gameTime);
 	}
-	if (gameFrame == 0)
+	if (gl.gameFrame == 0)
 	{
 	    //++gl.minutes;
-	    gameFrame = 0;
+	    //gl.gameFrame = 0;
 	    printf("GAME OVER\n");
 	}
     //}
+    ggprint16(&r, 20, c, "TIME");
     ggprint16(&r, 32, c, "%02i", gameFrame);
 }	
 
@@ -1200,7 +1185,6 @@ void render(Game *game)
     glDisable(GL_ALPHA_TEST); 	
    
 
-    drawCircle(30);
     
     // countdown timer
 	countdown();
