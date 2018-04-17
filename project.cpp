@@ -8,6 +8,9 @@
 //===============================================
 
 
+//#include "context_gl_x11.h"
+#include <GL/glx.h>
+#include <GL/glxext.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,6 +82,9 @@ int boxIndex;
 int points = 0;
 int gameFrame = 30;
 int gameDelay = 1;
+
+int xres3, xres4;
+unsigned char *screendata = NULL;
 //s = &game->box[i];
 //Sprite
 //
@@ -93,10 +99,14 @@ GLXContext glc;
 // ==============================================
 
 //Function prototypes
-void initXWindows(void);
-int main(void);
+void showFrameRate();
+void setup_screen_res(const int w, const int h);
+void initXWindows(int w, int h);
+//int main(void);
 void init_opengl(void);
 void cleanupXWindows(void);
+void check_resize(XEvent *e);
+void showFrameRate();
 void check_mouse(XEvent *e, Game *game);
 void check_keys(XEvent *e);
 void physics(Game *game);
@@ -118,14 +128,29 @@ void awardPoint(Shape*);
 
 
 // ==============================================
+const double oothousand = 1.0 / 1000.0;
+struct timeval gamestarttv;
+int xxGetTicks() {
+        struct timeval end;
+        //gettimeofday(&end, NULL);
+        //long seconds  = end.tv_sec  - gamestarttv.tv_sec;
+        //long useconds = end.tv_usec - gamestarttv.tv_usec;
+        //long mtime = (seconds*1000 + useconds*oothousand) + 0.5;
+        //return (int)mtime;
+        //code above compressed...
+        return (int)((end.tv_sec - gamestarttv.tv_sec) * 1000 +
+                (end.tv_usec - gamestarttv.tv_usec) * oothousand) + 0.5;
+}
 
 
-int main(void)
+
+int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    initXWindows();
-    init_opengl();
-    //declare game object
+    //initXWindows();
+    //init_opengl();
+    
+	//declare game object
     //Game game;
 
 
@@ -175,47 +200,33 @@ int main(void)
 	total++;
     }
 
-
-
-    /*for (int i = 1; i < 48; i++) {
-      game.box[i].width = 25;
-      game.box[i].height = 25;
-      game.box[i].center.x = 25*i + 40;
-      game.box[i].center.y = 60;
-      }
-      int total = 1;
-      for (int i = 48; i < 95; i++) {
-      game.box[i].width = 25;
-      game.box[i].height = 25;
-      game.box[i].center.x = 25*total + 40;
-      game.box[i].center.y = gl.yres-60;
-      }
-      total = 1;
-      for (int i = 95; i < 119; i++) {
-      game.box[i].width = 25;
-      game.box[i].height = 25;
-      game.box[i].center.x = 65;
-      game.box[i].center.y = 25*total+60;
-      }
-      total = 1;
-      for (int i = 119; i < 143; i++) {
-      game.box[i].width = 25;
-      game.box[i].height = 25;
-      game.box[i].center.x = gl.xres-65;
-      game.box[i].center.y = 25*total+60;
-      }*/
-
     //start animation
+    int x=0, y=0; 
+    if (argc > 2) {
+	x = atoi(argv[1]);
+	y = atoi(argv[2]);
+    }
+    //if (argc > 3)
+	//showOpengl = 1;
+    
+    initXWindows(x, y);
+    setup_screen_res(gl.xres, gl.yres);
+    init_opengl();
+    //int done = 0;
+    //gettimeofday(&gamestarttv, NULL);
+
     while (!gl.done) {
 	while (XPending(dpy)) {
 	    XEvent e;
 	    XNextEvent(dpy, &e);
+	    check_resize(&e);
 	    check_mouse(&e, &game);
 	    check_keys(&e);
 	}
 	physics(&game);
 	render(&game);
 	glXSwapBuffers(dpy, win);
+	showFrameRate();
     }
     cleanupXWindows();
     return 0;
@@ -235,17 +246,64 @@ void cleanupXWindows(void)
     XCloseDisplay(dpy);
 }
 
-void initXWindows(void)
+void showFrameRate()
+{
+    static int count=0;
+    static int lastt = xxGetTicks();
+    if (++count >= 32) {
+	int diff = xxGetTicks() - lastt;
+	//32 frames took diff 1/1000 seconds.
+	//how much did 1 frame take?
+	float secs = (float)diff / 1000.0;
+	//frames per second...
+	float fps = (float)count / secs;
+	printf("frame rate: %f\n", fps);
+	count = 0;
+	lastt = xxGetTicks();
+    }
+}
+
+void setup_screen_res(const int w, const int h)
+{
+        gl.xres = w;
+        gl.yres = h;
+        xres3 = gl.xres * 3;
+        xres4 = gl.xres * 4;
+        if (screendata)
+                delete [] screendata;
+        screendata = new unsigned char[gl.yres * xres4];
+}
+
+
+void initXWindows(int w, int h)
 {
     //do not change
     GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-    int w=WINDOW_WIDTH, h=WINDOW_HEIGHT;
+    //int w=WINDOW_WIDTH, h=WINDOW_HEIGHT;
     dpy = XOpenDisplay(NULL);
     if (dpy == NULL) {
 	std::cout << "\n\tcannot connect to X server\n" << std::endl;
 	exit(EXIT_FAILURE);
     }
     Window root = DefaultRootWindow(dpy);
+    // for fullscreen
+    XWindowAttributes getWinAttr;
+    XGetWindowAttributes(dpy, root, &getWinAttr);
+    int fullscreen = 0;
+    gl.xres = w;
+    gl.yres = h;
+    if (!w && !h) {
+	//Go to fullscreen.
+	gl.xres = getWinAttr.width;
+	gl.yres = getWinAttr.height;
+	printf("getWinAttr: %i %i\n", w, h); fflush(stdout);
+	//When window is fullscreen, there is no client window
+	//so keystrokes are linked to the root window.
+	XGrabKeyboard(dpy, root, False,
+		GrabModeAsync, GrabModeAsync, CurrentTime);
+	fullscreen = 1;
+    }
+
     XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
     if (vi == NULL) {
 	std::cout << "\n\tno appropriate visual found\n" << std::endl;
@@ -257,12 +315,49 @@ void initXWindows(void)
     swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
 	ButtonPress | ButtonReleaseMask | PointerMotionMask |
 	StructureNotifyMask | SubstructureNotifyMask;
-    win = XCreateWindow(dpy, root, 0, 0, w, h, 0, vi->depth,
-	    InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
-    set_title();
+    
+    unsigned int winops = CWBorderPixel|CWColormap|CWEventMask;
+    if (fullscreen) {
+	winops |= CWOverrideRedirect;
+	swa.override_redirect = True;
+    }
+    printf("2 getWinAttr: %i %i\n", w, h); fflush(stdout);
+    
+    //win = XCreateWindow(dpy, root, 0, 0, gl.xres, gl.yres, 0, vi->depth,
+	//    InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
+    win = XCreateWindow(dpy, root, 0, 0, gl.xres, gl.yres, 0,
+                vi->depth, InputOutput, vi->visual, winops, &swa);
+ 
+
     glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
     glXMakeCurrent(dpy, win, glc);
+    set_title();
 }
+
+void renderViewport(const int y, const int w, const int h)
+{
+        //x: column, is always 0
+        //y: row
+        //w: width of area to be drawn
+        //h: height of area to be drawn
+        unsigned char *p = screendata + (y * xres4);
+        //Log("render_viewport(%i %i %i %i)\n", 0, y, w, h);
+        glRasterPos2i(0, y);
+        glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *)p);
+}
+
+void reshape_window(int width, int height)
+{
+        //window has been resized.
+        setup_screen_res(width, height);
+        //
+        glViewport(0, 0, (GLint)width, (GLint)height);
+        glMatrixMode(GL_PROJECTION); glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
+        set_title();
+}
+
 
 unsigned char *buildAlphaData(Ppmimage *img)
 {
@@ -292,6 +387,19 @@ unsigned char *buildAlphaData(Ppmimage *img)
 	data += 3;
     }
     return newdata;
+}
+
+void check_resize(XEvent *e)
+{
+        //The ConfigureNotify is sent by the
+        //server if the window is resized.
+        if (e->type != ConfigureNotify)
+                return;
+        XConfigureEvent xce = e->xconfigure;
+        if (xce.width != gl.xres || xce.height != gl.yres) {
+                //Window size did change.
+                reshape_window(xce.width, xce.height);
+        }
 }
 
 void init_opengl(void)
@@ -505,6 +613,21 @@ void check_keys(XEvent *e)
 	case XK_w:
 	    colorChangeFlag = 0;
 	    break;
+	case XK_v: { 
+	    gl.vsync ^= 1;
+	    //https://github.com/godotengine/godot/blob/master/platform/x11/context_gl_x11.cpp
+	    static PFNGLXSWAPINTERVALXTPROC glxSwapIntervalEXT = NULL;
+	    glXSwapIntervalEXT =
+		(PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB(
+			(const GLubyte *)"glXSwapIntervalEXT");
+	    GLXDrawable drawable = glXGetCurrentDrawable();
+	    if (gl.vsync) {
+		glXSwapIntervalEXT(dpy, drawable, 1);
+	    } else {
+		glXSwapIntervalEXT(dpy, drawable, 0);
+	    }
+	    break;
+		   }
 	case XK_equal:
 	    gl.delay -= 0.005;
 	    if (gl.delay < 0.005)
@@ -941,6 +1064,7 @@ void render(Game *game)
     float w, h;
     glClear(GL_COLOR_BUFFER_BIT);
 
+	//renderViewport(0, gl.xres, gl.yres);
 
 	// countdown timer
 //	countdown();
