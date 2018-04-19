@@ -80,7 +80,6 @@ bool pointFlag = 0;
 float finalJumpCy;
 float jumpStartCy;
 int boxIndex;
-int points = 0;
 int gameFrame = 30;
 int gameDelay = 1;
 
@@ -119,7 +118,8 @@ void render(Game *game);
 void jump();
 void checkJump();
 void changeColor(Character*, Shape*);
-void awardPoint(Shape*);
+void awardPoint(Character*, Shape*);
+void removePoint(Character*, Shape*);
 void playerCollision(Character*);
 // ==============================================
 
@@ -259,7 +259,7 @@ void showFrameRate()
 	float secs = (float)diff / 1000.0;
 	//frames per second...
 	float fps = (float)count / secs;
-	printf("frame rate: %f\n", fps);
+	//printf("frame rate: %f\n", fps);
 	count = 0;
 	lastt = xxGetTicks();
     }
@@ -752,12 +752,14 @@ void physics(Game *game)
     char1->colorID = 1;		// YELLOW
     char2->colorID = 2;         // BLUE
 
-    if (inAirBool)
+    if (inAirBool) {
 	char1->cy += char1->vel.y; 
+	char2->cy += char2->vel.y; 
+    }
 
     //if (gravityOn) {
-    char1->cy += 0.3*gravity;
-    char2->cy += 0.3*gravity;
+    char1->cy += 0.2*gravity;
+    char2->cy += 0.2*gravity;
     //}
 
     /*if (char1->cy > 450) {
@@ -793,7 +795,8 @@ void physics(Game *game)
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(char1, s);    
+		    removePoint(char2, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
@@ -812,7 +815,8 @@ void physics(Game *game)
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(char1, s);    
+		    removePoint(char2, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
@@ -831,7 +835,7 @@ void physics(Game *game)
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(char1, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
@@ -850,7 +854,8 @@ void physics(Game *game)
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(char1, s);    
+		    removePoint(char2, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
@@ -861,7 +866,7 @@ void physics(Game *game)
 	}
     }
 
-    //playerCollision(char2);
+    playerCollision(char2);
 
     /*if (char1->cy-(char1->height-5) < s->center.y + s->height &&	// top
       char1->cy+(char1->height-5) > s->center.y - s->height &&	// bot
@@ -931,7 +936,6 @@ void physics(Game *game)
 	char2->cy += -8;
 
 
-
     // Player 1 Animation
     if (gl.keys[XK_Right]) {
 	leftFaceChar1 = 0;
@@ -996,101 +1000,107 @@ void physics(Game *game)
 
 }
 
-/*void playerCollision(Character *char1)
+void playerCollision(Character *player)
 {
     int boxTop[75], boxBot[75], boxLeft[75], boxRight[75];
 
     for (int i = 0; i < 75; i++) {
-	Shape *s = &game->box[i];
-	boxTop[i] = s->center.y + s->height + (char1->height-5);
-	boxBot[i] = s->center.y - s->height - (char1->height-10);
-	boxLeft[i] = s->center.x - s->width - (char1->width-10);
-	boxRight[i] = s->center.x + s->width + (char1->width-10);
+	//Shape *s = &game->box[i];
+	Shape *s = &game.box[i];
+	boxTop[i] = s->center.y + s->height + (player->height-5);
+	boxBot[i] = s->center.y - s->height - (player->height-10);
+	boxLeft[i] = s->center.x - s->width - (player->width-10);
+	boxRight[i] = s->center.x + s->width + (player->width-10);
     }
 
     for (int i = 0; i < 75; i++) {
-	Shape *s = &game->box[i];
-	if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
-	    if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
+	//Shape *s = &game->box[i];
+	Shape *s = &game.box[i];
+	if (player->cy < boxTop[i] && player->cy > boxBot[i]) {
+	    if (player->cx > boxLeft[i] && player->cx < boxRight[i]) {
 		// Top Collision
-		if (char1->cy < boxTop[i] &&
-			char1->cy > boxTop[i] - 10 &&
-			char1->cx < boxRight[i] - 10 &&
-			char1->cx > boxLeft[i] + 10) {
-		    char1->cy = boxTop[i];
+		if (player->cy < boxTop[i] &&
+			player->cy > boxTop[i] - 10 &&
+			player->cx < boxRight[i] - 10 &&
+			player->cx > boxLeft[i] + 10) {
+		    player->cy = boxTop[i];
 		    gravityOn = false;
 		    inAirBool = false;
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(player, s);    
+		    removePoint(char1, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
 		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
+		    s->boxColorID = player->colorID;
 		}
 		// Bot Collision
-		if (char1->cy > boxBot[i] &&
-			char1->cy < boxBot[i] + 10 &&
-			char1->cx < boxRight[i] - 10 &&
-			char1->cx > boxLeft[i] + 10) {
-		    char1->cy = boxBot[i];
+		if (player->cy > boxBot[i] &&
+			player->cy < boxBot[i] + 10 &&
+			player->cx < boxRight[i] - 10 &&
+			player->cx > boxLeft[i] + 10) {
+		    player->cy = boxBot[i];
 		    //colorChangeFlag = 1;
 		    
 		    
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(player, s);    
+		    removePoint(char1, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
 		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
+		    s->boxColorID = player->colorID;
 		}
 		// Right Collision
-		if (char1->cx < boxRight[i] && 
-			char1->cx > s->center.x &&
-			char1->cy < boxTop[i] - 10 &&
-			char1->cy > boxBot[i] + 10) {
-		    char1->cx = boxRight[i];
+		if (player->cx < boxRight[i] && 
+			player->cx > s->center.x &&
+			player->cy < boxTop[i] - 10 &&
+			player->cy > boxBot[i] + 10) {
+		    player->cx = boxRight[i];
 		    //colorChangeFlag = 1;
 		    
 		    
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(player, s);    
+		    removePoint(char1, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
 		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
+		    s->boxColorID = player->colorID;
 		}
 		// Left Collision
-		if (char1->cx > boxLeft[i] &&
-			char1->cx < s->center.x &&
-			char1->cy < boxTop[i] - 10 &&
-			char1->cy > boxBot[i] + 10) {
-		    char1->cx = boxLeft[i];
+		if (player->cx > boxLeft[i] &&
+			player->cx < s->center.x &&
+			player->cy < boxTop[i] - 10 &&
+			player->cy > boxBot[i] + 10) {
+		    player->cx = boxLeft[i];
 		    //colorChangeFlag = 1;
 		    
 		    
 		    colorChangeFlag = 1;
 
 		    // Point System 
-		    awardPoint(s);    
+		    awardPoint(player, s);    
+		    removePoint(char1, s);    
 
 		    // Save box index # and location
 		    boxIndex = i;
 		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
+		    s->boxColorID = player->colorID;
 		}
 	    }
 	}
     }
-}*/
+}
 
 /*void jump() 
   {
@@ -1174,13 +1184,14 @@ void countdown()
 
 void changeColor(Character *player, Shape *box)
 {
-    if (player->colorID == 1)			// YELLOW
+    if (player->colorID == 1) {			// YELLOW
 	glColor3ub(255,255,0);
-    /*if (player->colorID == 1)			// YELLOW
-      glColor3ub(255,255,0);
-      if (player->colorID == 1)			// YELLOW
-      glColor3ub(255,255,0);
-      */	
+    } else if (player->colorID == 2) {			// Blue
+	glColor3ub(0,0,200);
+	/*if (player->colorID == 1)			// YELLOW
+	  glColor3ub(255,255,0);
+	  */	
+    }
     Shape *s;
     s = box;
     glPushMatrix();
@@ -1198,22 +1209,23 @@ void changeColor(Character *player, Shape *box)
     glVertex2i( w, -h);
     glEnd();
     glPopMatrix();
-
-    /*if (pointFlag) {
-      points++;
-      cout << "Points " << points << endl;
-      pointFlag = false;
-      }*/	
 }
 
-void awardPoint(Shape *s) 
+void awardPoint(Character *player, Shape *s) 
 {
-    if (char1->colorID != s->boxColorID) {
-	points++;
-	cout << "Points: " << points << endl;
+    if (player->colorID != s->boxColorID) {
+	player->points++;
+	cout << "Player " << player->colorID << " Points: " << player->points << endl;
     }
 }
 
+void removePoint(Character *player, Shape *s) 
+{
+    if (player->colorID == s->boxColorID && s->boxColorID != 0) {
+	player->points--;	
+	cout << "Player " << player->colorID << " Points: " << player->points << endl;
+    }
+}
 
 void render(Game *game)
 {
@@ -1331,15 +1343,19 @@ void render(Game *game)
     initializeFlag = 0;
 
 
+    // Changing Color
     for (int i = 1; i < 59; i++) {
 	s = &game->box[i];
 
 	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
 	    changeColor(char1, globalSaveBox);
+	    changeColor(char2, globalSaveBox);
 	    //awardPoint(pointFlag);
 	    //pointFlag = false;
 	} else if (s->boxColorID == 1 /*&& char1->colorID != s->boxColorID*/) {
 	    glColor3ub(255,255,0);
+	} else if (s->boxColorID == 2 /*&& char1->colorID != s->boxColorID*/) {
+	    glColor3ub(0,0,200);
 	} else {
 	    glColor3ub(10,255,0);
 	}
@@ -1356,7 +1372,7 @@ void render(Game *game)
 	glEnd();
 	glPopMatrix();
     }
-
+    
     /*for (int i = 22; i < 43; i++) {
 	glColor3ub(10,255,0);
 	s = &game->box[i];
@@ -1493,7 +1509,7 @@ void render(Game *game)
 	iy = 0;
     tx = (float)ix / 2.0;
     ty = (float)iy / 1.0;
-    // Player 2 Draw
+    
     glBegin(GL_QUADS);
     if (gl.keys[XK_d] || !leftFaceChar2)
     {

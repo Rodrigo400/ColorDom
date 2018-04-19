@@ -139,6 +139,7 @@ class Character {
         float height;
         float width;
 	int colorID;
+	int points;
         Vec dir;
         Vec pos;
         Vec vel;
@@ -147,6 +148,7 @@ class Character {
             cy = gl.yres/2;
             height = 45.0;
             width = 45;
+	    points = 0;
         }
 };
 
