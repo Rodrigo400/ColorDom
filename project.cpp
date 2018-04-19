@@ -68,9 +68,10 @@ Game game;
 //Shape *s;
 bool leftFaceChar1 = 0; 
 bool leftFaceChar2 = 0; 
-bool colorChangeFlag = 0;
+int colorChangeFlag = 0;
 bool gravityOn = true;
-bool inAirBool = true;
+bool char1inAirBool = true;
+bool char2inAirBool = true;
 bool moveUpBool = true;
 bool moveDownBool = true;
 bool moveRightBool = true;
@@ -752,8 +753,11 @@ void physics(Game *game)
     char1->colorID = 1;		// YELLOW
     char2->colorID = 2;         // BLUE
 
-    if (inAirBool) {
+    if (char1inAirBool) {
 	char1->cy += char1->vel.y; 
+    }
+    
+    if (char2inAirBool) {
 	char2->cy += char2->vel.y; 
     }
 
@@ -761,12 +765,6 @@ void physics(Game *game)
     char1->cy += 0.2*gravity;
     char2->cy += 0.2*gravity;
     //}
-
-    /*if (char1->cy > 450) {
-      colorChangeFlag = 1;
-      } else {
-      colorChangeFlag = 0;
-      }*/
 
 
     // COLLISION
@@ -791,7 +789,7 @@ void physics(Game *game)
 			char1->cx > boxLeft[i] + 10) {
 		    char1->cy = boxTop[i];
 		    gravityOn = false;
-		    inAirBool = false;
+		    char1inAirBool = false;
 		    colorChangeFlag = 1;
 
 		    // Point System 
@@ -865,31 +863,8 @@ void physics(Game *game)
 	    }
 	}
     }
-
+    
     playerCollision(char2);
-
-    /*if (char1->cy-(char1->height-5) < s->center.y + s->height &&	// top
-      char1->cy+(char1->height-5) > s->center.y - s->height &&	// bot
-      char1->cx+(char1->width) > s->center.x - s->width &&	// left
-      char1->cx-(char1->width) < s->center.x + s->width) {	// right
-      printf("COLLISION\n");
-      char1->cy = s->center.y + s->height + char1->height;
-      gravityOn = false;
-      inAirBool = false;
-    //char1->cy = char1->cy;
-    //char1->cx = char1->cx;
-    }*/
-
-
-    //printf("Value char1 cy: %f\n", char1->cy);
-    //printf("Value char1 cx: %f\n", char1->cx);
-    //printf("Box center x: %f\n", s->center.x);
-    //printf("Box center x minus: %f\n", (s->center.x - s->width));
-    /*    printf("Value char1 height: %f\n", char1->height);
-	  printf("Value center box: %f\n", game->box[15].center.y);
-	  printf("Value box height: %f\n", game->box[15].height);
-	  */
-
 
     // Player 1 Movement Keys
     if (gl.keys[XK_Right]) {
@@ -1025,8 +1000,8 @@ void playerCollision(Character *player)
 			player->cx > boxLeft[i] + 10) {
 		    player->cy = boxTop[i];
 		    gravityOn = false;
-		    inAirBool = false;
-		    colorChangeFlag = 1;
+		    char2inAirBool = false;
+		    colorChangeFlag = 2;
 
 		    // Point System 
 		    awardPoint(player, s);    
@@ -1043,10 +1018,8 @@ void playerCollision(Character *player)
 			player->cx < boxRight[i] - 10 &&
 			player->cx > boxLeft[i] + 10) {
 		    player->cy = boxBot[i];
-		    //colorChangeFlag = 1;
 		    
-		    
-		    colorChangeFlag = 1;
+		    colorChangeFlag = 2;
 
 		    // Point System 
 		    awardPoint(player, s);    
@@ -1063,10 +1036,8 @@ void playerCollision(Character *player)
 			player->cy < boxTop[i] - 10 &&
 			player->cy > boxBot[i] + 10) {
 		    player->cx = boxRight[i];
-		    //colorChangeFlag = 1;
 		    
-		    
-		    colorChangeFlag = 1;
+		    colorChangeFlag = 2;
 
 		    // Point System 
 		    awardPoint(player, s);    
@@ -1083,10 +1054,8 @@ void playerCollision(Character *player)
 			player->cy < boxTop[i] - 10 &&
 			player->cy > boxBot[i] + 10) {
 		    player->cx = boxLeft[i];
-		    //colorChangeFlag = 1;
 		    
-		    
-		    colorChangeFlag = 1;
+		    colorChangeFlag = 2;
 
 		    // Point System 
 		    awardPoint(player, s);    
@@ -1177,6 +1146,12 @@ void countdown()
 	    //++gl.minutes;
 	    gameFrame = 0;
 	    printf("GAME OVER\n");
+	    if (char1->points > char2->points)
+	    	printf("Player 1 WINS\n");
+	    else if (char2->points > char1->points)
+	    	printf("Player 2 WINS\n");
+	    else 
+	    	printf("TIE\n");
 	}
     //}
     ggprint16(&r, 32, c, "%02i", gameFrame);
@@ -1186,12 +1161,11 @@ void changeColor(Character *player, Shape *box)
 {
     if (player->colorID == 1) {			// YELLOW
 	glColor3ub(255,255,0);
-    } else if (player->colorID == 2) {			// Blue
-	glColor3ub(0,0,200);
-	/*if (player->colorID == 1)			// YELLOW
-	  glColor3ub(255,255,0);
-	  */	
+    } 
+    if (player->colorID == 2) {			// BLUE
+    	glColor3ub(30,144,255);
     }
+
     Shape *s;
     s = box;
     glPushMatrix();
@@ -1349,13 +1323,14 @@ void render(Game *game)
 
 	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
 	    changeColor(char1, globalSaveBox);
-	    changeColor(char2, globalSaveBox);
 	    //awardPoint(pointFlag);
 	    //pointFlag = false;
-	} else if (s->boxColorID == 1 /*&& char1->colorID != s->boxColorID*/) {
+	} else if (colorChangeFlag == 2 && boxIndex == i) {
+	    changeColor(char2, globalSaveBox);
+	} else if (s->boxColorID == 1) {
 	    glColor3ub(255,255,0);
-	} else if (s->boxColorID == 2 /*&& char1->colorID != s->boxColorID*/) {
-	    glColor3ub(0,0,200);
+	} else if (s->boxColorID == 2) {
+	    glColor3ub(30,144,255);
 	} else {
 	    glColor3ub(10,255,0);
 	}
