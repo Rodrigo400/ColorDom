@@ -62,11 +62,12 @@ const float gravity = -9;
 // ==============================================
 Timers timers;
 Global gl;
-Character *char1;
+Character *char1, *char2;
 Shape *globalSaveBox;
 Game game;
 //Shape *s;
-bool leftFace = 0; 
+bool leftFaceChar1 = 0; 
+bool leftFaceChar2 = 0; 
 bool colorChangeFlag = 0;
 bool gravityOn = true;
 bool inAirBool = true;
@@ -119,6 +120,7 @@ void jump();
 void checkJump();
 void changeColor(Character*, Shape*);
 void awardPoint(Shape*);
+void playerCollision(Character*);
 // ==============================================
 
 // ==============================================
@@ -613,7 +615,7 @@ void check_keys(XEvent *e)
 	case XK_w:
 	    colorChangeFlag = 0;
 	    break;
-	case XK_v: { 
+	/*case XK_v: { 
 	    gl.vsync ^= 1;
 	    //https://github.com/godotengine/godot/blob/master/platform/x11/context_gl_x11.cpp
 	    static PFNGLXSWAPINTERVALXTPROC glxSwapIntervalEXT = NULL;
@@ -627,7 +629,7 @@ void check_keys(XEvent *e)
 		glXSwapIntervalEXT(dpy, drawable, 0);
 	    }
 	    break;
-		   }
+		   }*/
 	case XK_equal:
 	    gl.delay -= 0.005;
 	    if (gl.delay < 0.005)
@@ -746,13 +748,16 @@ void physics(Game *game)
 {
 
     char1 = &game->player[0];
+    char2 = &game->player[1];
     char1->colorID = 1;		// YELLOW
+    char2->colorID = 2;         // BLUE
 
     if (inAirBool)
 	char1->cy += char1->vel.y; 
 
     //if (gravityOn) {
-    char1->cy += 0.2*gravity;
+    char1->cy += 0.3*gravity;
+    char2->cy += 0.3*gravity;
     //}
 
     /*if (char1->cy > 450) {
@@ -761,6 +766,8 @@ void physics(Game *game)
       colorChangeFlag = 0;
       }*/
 
+
+    // COLLISION
     int boxTop[75], boxBot[75], boxLeft[75], boxRight[75];
 
     for (int i = 0; i < 75; i++) {
@@ -854,6 +861,7 @@ void physics(Game *game)
 	}
     }
 
+    //playerCollision(char2);
 
     /*if (char1->cy-(char1->height-5) < s->center.y + s->height &&	// top
       char1->cy+(char1->height-5) > s->center.y - s->height &&	// bot
@@ -878,6 +886,7 @@ void physics(Game *game)
 	  */
 
 
+    // Player 1 Movement Keys
     if (gl.keys[XK_Right]) {
 	char1->cx += 8;
     }
@@ -885,8 +894,6 @@ void physics(Game *game)
     if (gl.keys[XK_Left]) {
 	char1->cx += -8;
     }
-
-    //printf("AirBool: %d\n", inAirBool);
 
     //if (gl.keys[XK_Up] && !inAirBool) {
     if (gl.keys[XK_Up]) {
@@ -900,11 +907,34 @@ void physics(Game *game)
 
     if (gl.keys[XK_Down]) 
 	char1->cy += -8;
+    
+    // Player 2 Movement Keys
+    if (gl.keys[XK_d]) {
+	char2->cx += 8;
+    }
+
+    if (gl.keys[XK_a]) {
+	char2->cx += -8;
+    }
+
+    //if (gl.keys[XK_Up] && !inAirBool) {
+    if (gl.keys[XK_w]) {
+	//jump();
+	//checkJump();
+
+	//inAirBool = true;
+	char2->cy += 8;
+	//gravityOn = true;
+    }
+
+    if (gl.keys[XK_s]) 
+	char2->cy += -8;
 
 
 
-    if (gl.walk || gl.keys[XK_Right]) {
-	leftFace = 0;
+    // Player 1 Animation
+    if (gl.keys[XK_Right]) {
+	leftFaceChar1 = 0;
 	//man is walking...
 	//when time is up, advance the frame.
 	timers.recordTime(&timers.timeCurrent);
@@ -918,8 +948,8 @@ void physics(Game *game)
 	}
     }
 
-    if (gl.walk || gl.keys[XK_Left]) {
-	leftFace = 1;
+    if (gl.keys[XK_Left]) {
+	leftFaceChar1 = 1;
 	//man is walking...
 	//when time is up, advance the frame.
 	timers.recordTime(&timers.timeCurrent);
@@ -930,11 +960,137 @@ void physics(Game *game)
 	    if (gl.yellowcharFrame >= 2)
 		gl.yellowcharFrame -= 2;
 	    timers.recordTime(&timers.yellowcharTime);
+	}
+    }
+
+    // Player 2 Animation 
+    if (gl.keys[XK_d]) {
+	leftFaceChar2 = 0;
+	//man is walking...
+	//when time is up, advance the frame.
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay) {
+	    //advance
+	    ++gl.bluecharFrame;
+	    if (gl.bluecharFrame >= 2)
+		gl.bluecharFrame -= 2;
+	    timers.recordTime(&timers.bluecharTime);
+	}
+    }
+
+    if (gl.keys[XK_a]) {
+	leftFaceChar2 = 1;
+	//man is walking...
+	//when time is up, advance the frame.
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay) {
+	    //advance
+	    ++gl.bluecharFrame;
+	    if (gl.bluecharFrame >= 2)
+		gl.bluecharFrame -= 2;
+	    timers.recordTime(&timers.bluecharTime);
 	}
     }
 
 }
 
+/*void playerCollision(Character *char1)
+{
+    int boxTop[75], boxBot[75], boxLeft[75], boxRight[75];
+
+    for (int i = 0; i < 75; i++) {
+	Shape *s = &game->box[i];
+	boxTop[i] = s->center.y + s->height + (char1->height-5);
+	boxBot[i] = s->center.y - s->height - (char1->height-10);
+	boxLeft[i] = s->center.x - s->width - (char1->width-10);
+	boxRight[i] = s->center.x + s->width + (char1->width-10);
+    }
+
+    for (int i = 0; i < 75; i++) {
+	Shape *s = &game->box[i];
+	if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
+	    if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
+		// Top Collision
+		if (char1->cy < boxTop[i] &&
+			char1->cy > boxTop[i] - 10 &&
+			char1->cx < boxRight[i] - 10 &&
+			char1->cx > boxLeft[i] + 10) {
+		    char1->cy = boxTop[i];
+		    gravityOn = false;
+		    inAirBool = false;
+		    colorChangeFlag = 1;
+
+		    // Point System 
+		    awardPoint(s);    
+
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+		    s->boxColorID = char1->colorID;
+		}
+		// Bot Collision
+		if (char1->cy > boxBot[i] &&
+			char1->cy < boxBot[i] + 10 &&
+			char1->cx < boxRight[i] - 10 &&
+			char1->cx > boxLeft[i] + 10) {
+		    char1->cy = boxBot[i];
+		    //colorChangeFlag = 1;
+		    
+		    
+		    colorChangeFlag = 1;
+
+		    // Point System 
+		    awardPoint(s);    
+
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+		    s->boxColorID = char1->colorID;
+		}
+		// Right Collision
+		if (char1->cx < boxRight[i] && 
+			char1->cx > s->center.x &&
+			char1->cy < boxTop[i] - 10 &&
+			char1->cy > boxBot[i] + 10) {
+		    char1->cx = boxRight[i];
+		    //colorChangeFlag = 1;
+		    
+		    
+		    colorChangeFlag = 1;
+
+		    // Point System 
+		    awardPoint(s);    
+
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+		    s->boxColorID = char1->colorID;
+		}
+		// Left Collision
+		if (char1->cx > boxLeft[i] &&
+			char1->cx < s->center.x &&
+			char1->cy < boxTop[i] - 10 &&
+			char1->cy > boxBot[i] + 10) {
+		    char1->cx = boxLeft[i];
+		    //colorChangeFlag = 1;
+		    
+		    
+		    colorChangeFlag = 1;
+
+		    // Point System 
+		    awardPoint(s);    
+
+		    // Save box index # and location
+		    boxIndex = i;
+		    globalSaveBox = s;
+		    s->boxColorID = char1->colorID;
+		}
+	    }
+	}
+    }
+}*/
 
 /*void jump() 
   {
@@ -1298,23 +1454,63 @@ void render(Game *game)
 
 
     //int result;
+    // Player 1 Draw
     glBegin(GL_QUADS);
-    if (gl.keys[XK_Right] || !leftFace)
+    if (gl.keys[XK_Right] || !leftFaceChar1)
     {
 	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
 	glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
 	glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
 	glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-	gl.result = 0;	
+	gl.resultChar1 = 0;	
     }
 
-    if (gl.keys[XK_Left] || leftFace)
+    if (gl.keys[XK_Left] || leftFaceChar1)
     {
 	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
 	glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
 	glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
 	glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-	gl.result = 1;
+	gl.resultChar1 = 1;
+    }
+    glEnd();
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_ALPHA_TEST); 	
+   
+
+    // Player 2    
+    glPushMatrix();
+    glColor3f(1.0, 1.0, 1.0);
+    glBindTexture(GL_TEXTURE_2D, gl.bluecharTexture);
+    //
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    ix = gl.bluecharFrame % 2;
+    iy = 1;
+    if (gl.bluecharFrame >= 2)
+	iy = 0;
+    tx = (float)ix / 2.0;
+    ty = (float)iy / 1.0;
+    // Player 2 Draw
+    glBegin(GL_QUADS);
+    if (gl.keys[XK_d] || !leftFaceChar2)
+    {
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char2->cx + char2->width, char2->cy - char2->height);
+	glTexCoord2f(tx,       ty + 1); glVertex2i(char2->cx - char2->width, char2->cy - char2->height);
+	glTexCoord2f(tx,              ty); glVertex2i(char2->cx - char2->width, char2->cy + char2->height);
+	glTexCoord2f(tx + .5, ty);        glVertex2i(char2->cx + char2->width, char2->cy + char2->height);
+	gl.resultChar2 = 0;	
+    }
+
+    if (gl.keys[XK_a] || leftFaceChar2)
+    {
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char2->cx - char2->width, char2->cy - char2->height);
+	glTexCoord2f(tx + .5,        ty); glVertex2i(char2->cx - char2->width, char2->cy + char2->height);
+	glTexCoord2f(tx,              ty); glVertex2i(char2->cx + char2->width, char2->cy + char2->height);
+	glTexCoord2f(tx, ty + 1);       glVertex2i(char2->cx + char2->width, char2->cy - char2->height);
+	gl.resultChar2 = 1;
     }
 	
 

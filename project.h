@@ -17,7 +17,7 @@ extern class Timers
         double physicsRate;
         double oobillion;
         struct timespec timeStart, timeEnd, timeCurrent;
-        struct timespec yellowcharTime;
+        struct timespec yellowcharTime, bluecharTime, greencharTime, purplecharTime;
         struct timespec turt1Time, turt2Time;
         struct timespec gameTime;
         struct timespec timeOut;
@@ -76,7 +76,8 @@ extern class Global {
         int yres;
         int done;
         int walk;
-        int result;
+        int resultChar1;
+        int resultChar2;
         int mainchar1Frame;
         int yellowcharFrame;
         int bluecharFrame;
@@ -103,7 +104,8 @@ extern class Global {
             xres = 1280;
             yres = 720;
             done = 0;
-            result = 0;
+            resultChar1 = 0;
+            resultChar2 = 0;
             //
             mainchar1Frame = 0;
             yellowcharFrame = 0;
