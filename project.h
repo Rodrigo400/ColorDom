@@ -154,7 +154,7 @@ class Character {
 
 class Game {
     public:
-        Shape box[150];
+        Shape box[125];
         Shape platforms[5];
         Shape boxPerimeter[20];
 	Shape backgroundBlock[10];

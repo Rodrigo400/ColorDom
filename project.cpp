@@ -155,16 +155,18 @@ int main(int argc, char *argv[])
     
 	//declare game object
     //Game game;
-
-
+    char1 = &game.player[0];
+    char2 = &game.player[1];
+    char1->cx = 210;
+    char2->cx = 920;
+    char1->cy = gl.yres/2 + 15;
+    char2->cy = gl.yres/2 + 15;
 
     //declare a box shape
-    game.box[0].width = 300;
-    game.box[0].height = 50;
-    //game.box.center.x = 250 + 5*65;
-    //game.box.center.y = 600 - 5*60;
-    game.box[0].center.x = gl.xres/2;
-    game.box[0].center.y = 450;
+    //game.box[0].width = 300;
+    //game.box[0].height = 50;
+    //game.box[0].center.x = gl.xres/2;
+    //game.box[0].center.y = 450;
 
     // bottom boxes row
     for (int i = 1; i < 22; i++) {
@@ -202,6 +204,62 @@ int main(int argc, char *argv[])
 	game.box[i].center.y = 55*total+155;
 	total++;
     }
+    //
+    // Bottom half
+    //
+    // left platform
+    total = 1;
+    for (int i = 59; i < 63; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	game.box[i].center.x = 55*total + 150;
+	game.box[i].center.y = 300;
+	total++;
+    }
+    // right platform
+    total = 1;
+    for (int i = 63; i < 67; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	game.box[i].center.x = 55*total + 860;
+	game.box[i].center.y = 300;
+	total++;
+    }
+    // middle pyramid
+    total = 1;
+    for (int i = 67; i < 70; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	if (i == 68) {
+	    game.box[i].center.x = 55*total + 530;
+	    game.box[i].center.y = 355;
+	} else {
+	    game.box[i].center.x = 55*total + 530;
+	    game.box[i].center.y = 300;
+	}
+	total++;
+    }
+    //
+    // Top Half
+    // 55 wide height
+    // left side
+    total = 1;
+    for (int i = 70; i < 75; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	if (i == 74) {
+	    game.box[i].center.x = 55*total + 205;
+	    game.box[i].center.y = 435;
+	} else if (i == 70) {
+	    game.box[i].center.x = 55*total + 205;
+	    game.box[i].center.y = 435;
+	} else {
+	    game.box[i].center.x = 55*total + 205;
+	    game.box[i].center.y = 490;
+	}
+	total++;
+    }
+
 
     //start animation
     int x=0, y=0; 
@@ -747,9 +805,6 @@ glPopMatrix();
 
 void physics(Game *game)
 {
-
-    char1 = &game->player[0];
-    char2 = &game->player[1];
     char1->colorID = 1;		// YELLOW
     char2->colorID = 2;         // BLUE
 
@@ -768,7 +823,7 @@ void physics(Game *game)
 
 
     // COLLISION
-    int boxTop[75], boxBot[75], boxLeft[75], boxRight[75];
+    int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
 
     for (int i = 0; i < 75; i++) {
 	Shape *s = &game->box[i];
@@ -977,7 +1032,7 @@ void physics(Game *game)
 
 void playerCollision(Character *player)
 {
-    int boxTop[75], boxBot[75], boxLeft[75], boxRight[75];
+    int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
 
     for (int i = 0; i < 75; i++) {
 	//Shape *s = &game->box[i];
@@ -1206,85 +1261,10 @@ void render(Game *game)
     float w, h;
     glClear(GL_COLOR_BUFFER_BIT);
 
-	//renderViewport(0, gl.xres, gl.yres);
-
-	// countdown timer
-//	countdown();
-
+    //renderViewport(0, gl.xres, gl.yres);
 
     //Draw shapes...
-
     Shape *s;
-    s = &game->box[10];
-    //printf("Box 10 Center y before: %f\n", s[10].center.y);
-    //printf("Box 10 Center x before: %f\n", s[10].center.x);
-
-    s = &game->box[0];
-    glPushMatrix();
-    glTranslatef(s->center.x, s->center.y, s->center.z);
-    w = s->width;
-    h = s->height;
-    glBegin(GL_QUADS);
-    glColor3ub(30,144,255);
-    glVertex2i(-w, -h);
-    glColor3ub(30,144,255);
-    glVertex2i(-w, h);
-    glColor3ub(30,144,255);
-    glVertex2i(w, h);
-    glColor3ub(30,144,255);
-    glVertex2i(w, -h);
-    glEnd();
-    glPopMatrix();
-
-    /*for (int i = 0; i < 20; i++) {
-    //if (colorChangeFlag) {
-    s = &game->box[i];
-    glPushMatrix();
-    glTranslatef(s->center.x, s->center.y, s->center.z);
-    w = s->width;
-    h = s->height;
-    glBegin(GL_QUADS);
-    glColor3ub(30,144,255);
-    glVertex2i(-w, -h);
-    glColor3ub(30,144,255);
-    glVertex2i(-w, h);
-    glColor3ub(30,144,255);
-    glVertex2i(w, h);
-    glColor3ub(30,144,255);
-    glVertex2i(w, -h);
-    glEnd();
-    glPopMatrix();
-    //printf("hereBox 10 Center y: %f\n", s[10].center.y);
-    //printf("hereBox 10 Center x: %f\n\n", s[10].center.x);
-    //printf("Box %d center y: %f\n", i, game->box[i].center.y); 
-    //printf("Box %d center x: %f\n", i, game->box[i].center.x);
-    //colorChangeFlag = 0; 
-    } else {
-    s = &game->box[i];
-    glPushMatrix();
-    glTranslatef(s->center.x, s->center.y, s->center.z);
-    w = s->width;
-    h = s->height;
-    glColor3ub(255,14,25);
-    glBegin(GL_QUADS);
-    glVertex2i(-w, -h);
-    glVertex2i(-w, h);
-    glVertex2i(w, h);
-    glVertex2i(w, -h);
-    glEnd();
-    glPopMatrix();
-    printf("Box %d center y: %f\n", i, game->box[i].center.y); 
-    printf("Box %d center x: %f\n", i, game->box[i].center.x);
-    }
-    }*/
-
-    //printf("Box 10 center y: %f\n", game->box[10].center.y); 
-    //printf("Box 10 center x: %f\n", game->box[10].center.x);
-
-    s = &game->box[10];
-    //printf("Box 10 Center y after: %f\n", s[10].center.y);
-    //printf("Box 10 Center x after: %f\n\n", s[10].center.x);
-
 
     //==============================================
     // Draw Map
@@ -1294,7 +1274,7 @@ void render(Game *game)
 
     // Init map first
     if (initializeFlag) { 
-	for (int i = 1; i < 60; i++) {
+	for (int i = 1; i < 75; i++) {
 	    glColor3ub(10,255,0);
 
 	    s = &game->box[i];
@@ -1313,14 +1293,12 @@ void render(Game *game)
 	    glPopMatrix();
 	}
     }
-
     initializeFlag = 0;
 
 
     // Changing Color
-    for (int i = 1; i < 59; i++) {
+    for (int i = 1; i < 75; i++) {
 	s = &game->box[i];
-
 	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
 	    changeColor(char1, globalSaveBox);
 	    //awardPoint(pointFlag);
@@ -1348,66 +1326,6 @@ void render(Game *game)
 	glPopMatrix();
     }
     
-    /*for (int i = 22; i < 43; i++) {
-	glColor3ub(10,255,0);
-	s = &game->box[i];
-	glPushMatrix();
-	//s.center.x = 60*i + 40;
-	//s.center.y = 60;
-	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
-	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
-	w = s->width;
-	h = s->height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i( w, h);
-	glVertex2i( w, -h);
-	glEnd();
-	glPopMatrix();
-    }
-    for (int i = 43; i < 52; i++) {
-	glColor3ub(10,255,0);
-	s = &game->box[i];
-	glPushMatrix();
-	//s.center.x = 60*i + 40;
-	//s.center.y = 60;
-	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
-	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
-	w = s->width;
-	h = s->height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i( w, h);
-	glVertex2i( w, -h);
-	glEnd();
-	glPopMatrix();
-    }
-    for (int i = 52; i < 61; i++) {
-	glColor3ub(10,255,0);
-	s = &game->box[i];
-	glPushMatrix();
-	//s.center.x = 60*i + 40;
-	//s.center.y = 60;
-	//glTranslatef(s[i].center.x, s[i].center.y, s[i].center.z);
-	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
-	w = s->width;
-	h = s->height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i( w, h);
-	glVertex2i( w, -h);
-	glEnd();
-	glPopMatrix();
-    }*/
-
-
-    //printf("Box 10 Center y after after: %f\n", s[10].center.y);
-    //printf("Box 10 Center x after after: %f\n", s[10].center.x);
-
-
     // CHARACTER
     //Character *char1;
     //float cx = gl.xres/2.0;
@@ -1431,18 +1349,6 @@ void render(Game *game)
 	iy = 0;
     float tx = (float)ix / 2.0;
     float ty = (float)iy / 1.0;
-
-    /*if (gl.keys[XK_Right] || !leftFace) {
-      glTranslatef(0.5, 0.5, 0);
-      glRotatef(0.1,0,0,1);
-      glTranslatef(-0.5, -0.5, 0);
-      }
-      if (gl.keys[XK_Left] || leftFace) {
-      glTranslatef(char1->width, char1->height, 0);
-      glRotatef(-0.1,0,0,1);
-      glTranslatef(char1->width, char1->height, 0);
-      }*/
-
 
     //int result;
     // Player 1 Draw
