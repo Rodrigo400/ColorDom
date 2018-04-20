@@ -693,10 +693,10 @@ void check_keys(XEvent *e)
 	case XK_w:
 	    colorChangeFlag = 0;
 	    break;
-	/*case XK_v: { 
+	case XK_v: { 
 	    gl.vsync ^= 1;
 	    //https://github.com/godotengine/godot/blob/master/platform/x11/context_gl_x11.cpp
-	    static PFNGLXSWAPINTERVALXTPROC glxSwapIntervalEXT = NULL;
+	    static PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT = NULL; 
 	    glXSwapIntervalEXT =
 		(PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB(
 			(const GLubyte *)"glXSwapIntervalEXT");
@@ -707,7 +707,7 @@ void check_keys(XEvent *e)
 		glXSwapIntervalEXT(dpy, drawable, 0);
 	    }
 	    break;
-		   }*/
+		   }
 	case XK_equal:
 	    gl.delay -= 0.005;
 	    if (gl.delay < 0.005)
@@ -1439,7 +1439,8 @@ void render(Game *game)
     
     // countdown timer
 	countdown();
-    
+   
+       // Frame Rate	
 	Rect r;
 	unsigned int c = 0x002d88d8;
 	r.bot = gl.yres - 40;
