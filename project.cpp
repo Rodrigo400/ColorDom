@@ -16,9 +16,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
+#include <sys/time.h>
 #include <cstring>
-#include <math.h>
+#include <cmath>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
@@ -108,7 +109,6 @@ void initXWindows(int w, int h);
 void init_opengl(void);
 void cleanupXWindows(void);
 void check_resize(XEvent *e);
-void showFrameRate();
 void check_mouse(XEvent *e, Game *game);
 void check_keys(XEvent *e);
 void physics(Game *game);
@@ -136,7 +136,7 @@ const double oothousand = 1.0 / 1000.0;
 struct timeval gamestarttv;
 int xxGetTicks() {
         struct timeval end;
-        //gettimeofday(&end, NULL);
+        gettimeofday(&end, NULL);
         //long seconds  = end.tv_sec  - gamestarttv.tv_sec;
         //long useconds = end.tv_usec - gamestarttv.tv_usec;
         //long mtime = (seconds*1000 + useconds*oothousand) + 0.5;
@@ -146,15 +146,13 @@ int xxGetTicks() {
                 (end.tv_usec - gamestarttv.tv_usec) * oothousand) + 0.5;
 }
 
-
-
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
     //initXWindows();
     //init_opengl();
     
-	//declare game object
+    //declare game object
     //Game game;
     char1 = &game.player[0];
     char2 = &game.player[1];
@@ -280,7 +278,6 @@ int main(int argc, char *argv[])
     totalCubes = 80;
 
 
-    //start animation
     int x=0, y=0; 
     if (argc > 2) {
 	x = atoi(argv[1]);
@@ -293,7 +290,8 @@ int main(int argc, char *argv[])
     setup_screen_res(gl.xres, gl.yres);
     init_opengl();
     //int done = 0;
-    //gettimeofday(&gamestarttv, NULL);
+    gettimeofday(&gamestarttv, NULL);
+
 
     while (!gl.done) {
 	while (XPending(dpy)) {
@@ -326,6 +324,8 @@ void cleanupXWindows(void)
     XCloseDisplay(dpy);
 }
 
+float fps;
+
 void showFrameRate()
 {
     static int count=0;
@@ -336,8 +336,8 @@ void showFrameRate()
 	//how much did 1 frame take?
 	float secs = (float)diff / 1000.0;
 	//frames per second...
-	float fps = (float)count / secs;
-	//printf("frame rate: %f\n", fps);
+	fps = (float)count / secs;
+	printf("frame rate: %f\n", fps);
 	count = 0;
 	lastt = xxGetTicks();
     }
@@ -1290,7 +1290,6 @@ void render(Game *game)
     //
     // BOTTOM SCREEN
 
-
     // Init map first
     if (initializeFlag) { 
 	for (int i = 1; i < totalCubes; i++) {
@@ -1440,6 +1439,14 @@ void render(Game *game)
     
     // countdown timer
 	countdown();
+    
+	Rect r;
+	unsigned int c = 0x002d88d8;
+	r.bot = gl.yres - 40;
+	r.left = (50);
+	r.center = 0;
+	ggprint16(&r, 32, c, "Frame Rate : %f", fps);
+	//printf("frame rate: %f\n", fps);
 }
 
 
