@@ -83,6 +83,7 @@ float jumpStartCy;
 int boxIndex;
 int gameFrame = 30;
 int gameDelay = 1;
+int totalCubes;
 
 int xres3, xres4;
 unsigned char *screendata = NULL;
@@ -259,6 +260,24 @@ int main(int argc, char *argv[])
 	}
 	total++;
     }
+    // right side
+    total = 1;
+    for (int i = 75; i < 80; i++) {
+	game.box[i].width = 25;
+	game.box[i].height = 25;
+	if (i == 75) {
+	    game.box[i].center.x = 55*total + 750;
+	    game.box[i].center.y = 435;
+	} else if (i == 79) {
+	    game.box[i].center.x = 55*total + 750;
+	    game.box[i].center.y = 435;
+	} else {
+	    game.box[i].center.x = 55*total + 750;
+	    game.box[i].center.y = 490;
+	}
+	total++;
+    }
+    totalCubes = 80;
 
 
     //start animation
@@ -825,7 +844,7 @@ void physics(Game *game)
     // COLLISION
     int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
 
-    for (int i = 0; i < 75; i++) {
+    for (int i = 0; i < totalCubes; i++) {
 	Shape *s = &game->box[i];
 	boxTop[i] = s->center.y + s->height + (char1->height-5);
 	boxBot[i] = s->center.y - s->height - (char1->height-10);
@@ -833,7 +852,7 @@ void physics(Game *game)
 	boxRight[i] = s->center.x + s->width + (char1->width-10);
     }
 
-    for (int i = 0; i < 75; i++) {
+    for (int i = 0; i < totalCubes; i++) {
 	Shape *s = &game->box[i];
 	if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
 	    if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
@@ -1034,7 +1053,7 @@ void playerCollision(Character *player)
 {
     int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
 
-    for (int i = 0; i < 75; i++) {
+    for (int i = 0; i < totalCubes; i++) {
 	//Shape *s = &game->box[i];
 	Shape *s = &game.box[i];
 	boxTop[i] = s->center.y + s->height + (player->height-5);
@@ -1043,7 +1062,7 @@ void playerCollision(Character *player)
 	boxRight[i] = s->center.x + s->width + (player->width-10);
     }
 
-    for (int i = 0; i < 75; i++) {
+    for (int i = 0; i < totalCubes; i++) {
 	//Shape *s = &game->box[i];
 	Shape *s = &game.box[i];
 	if (player->cy < boxTop[i] && player->cy > boxBot[i]) {
@@ -1274,7 +1293,7 @@ void render(Game *game)
 
     // Init map first
     if (initializeFlag) { 
-	for (int i = 1; i < 75; i++) {
+	for (int i = 1; i < totalCubes; i++) {
 	    glColor3ub(10,255,0);
 
 	    s = &game->box[i];
@@ -1297,7 +1316,7 @@ void render(Game *game)
 
 
     // Changing Color
-    for (int i = 1; i < 75; i++) {
+    for (int i = 1; i < totalCubes; i++) {
 	s = &game->box[i];
 	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
 	    changeColor(char1, globalSaveBox);
