@@ -117,7 +117,7 @@ void render(Game *game);
 // ==============================================
 // Functions
 // ==============================================
-void jump();
+void jump(Character *);
 void checkJump();
 void changeColor(Character*, Shape*);
 void awardPoint(Character*, Shape*);
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
 		game.box[i].width = 25;
 		game.box[i].height = 25;
 		game.box[i].center.x = 55*i + 35;
-		game.box[i].center.y = 150;
+		game.box[i].center.y = 155;
 	}
 	int total = 1;
 	// top row
@@ -350,6 +350,7 @@ void showFrameRate()
 	}
 }
 
+#ifdef UNIT_TEST
 void setup_screen_res(const int w, const int h)
 {
 	gl.xres = w;
@@ -359,8 +360,14 @@ void setup_screen_res(const int w, const int h)
 	if (screendata)
 		delete [] screendata;
 	screendata = new unsigned char[gl.yres * xres4];
-}
+	
 
+	if (gl.xres != 1280 || gl.yres != 720) 
+	    printf("Unit test failed. Not 1280x720\n");
+	else 
+	    printf("Unit test passed.\n");
+}
+#endif //UNIT_TEST
 
 void initXWindows(int w, int h)
 {
@@ -732,6 +739,11 @@ void check_keys(XEvent *e)
 		case XK_Escape:
 			gl.done = 1;
 			break;
+#ifdef UNIT_TEST
+		case XK_b:
+			setup_screen_res(gl.xres, gl.yres);
+			break;
+#endif
 		case XK_w:
 			colorChangeFlag = 0;
 			break;
@@ -872,18 +884,25 @@ void physics(Game *game)
 	char1->colorID = 1;		// YELLOW
 	char2->colorID = 2;         // BLUE
 
-	if (char1inAirBool) {
+	/*if (char1inAirBool) {
 		char1->cy += char1->vel.y; 
 	}
 
 	if (char2inAirBool) {
 		char2->cy += char2->vel.y; 
-	}
+	}*/
 
-	//if (gravityOn) {
-	char1->cy += 0.2*gravity;
-	char2->cy += 0.2*gravity;
-	//}
+	// this is good
+	//char1->cy += 0.2*gravity;
+	//char2->cy += 0.2*gravity;
+
+
+	if (char1inAirBool) {
+	    //char1->vel.y = 0.2*gravity;
+	    if (char1->vel.y > -10)
+	    	char1->vel.y += gravity/8;
+	}
+	char2->vel.y += 0.2*gravity;
 
 
 	// COLLISION
@@ -909,6 +928,7 @@ void physics(Game *game)
 					char1->cy = boxTop[i];
 					gravityOn = false;
 					char1inAirBool = false;
+					char1->vel.y = -1;	
 					colorChangeFlag = 1;
 
 					// Point System 
@@ -927,6 +947,7 @@ void physics(Game *game)
 						char1->cx > boxLeft[i] + 10) {
 					char1->cy = boxBot[i];
 					//colorChangeFlag = 1;
+					//char1->vel.y = -0.1;	
 
 
 					colorChangeFlag = 1;
@@ -947,6 +968,7 @@ void physics(Game *game)
 						char1->cy > boxBot[i] + 10) {
 					char1->cx = boxRight[i];
 					//colorChangeFlag = 1;
+					//char1->vel.y = -0.1;	
 
 
 					colorChangeFlag = 1;
@@ -966,6 +988,7 @@ void physics(Game *game)
 						char1->cy > boxBot[i] + 10) {
 					char1->cx = boxLeft[i];
 					//colorChangeFlag = 1;
+					//char1->vel.y = -0.1;	
 
 
 					colorChangeFlag = 1;
@@ -995,10 +1018,10 @@ void physics(Game *game)
 	}
 
 	//if (gl.keys[XK_Up] && !inAirBool) {
-	if (gl.keys[XK_Up]) {
-		//jump();
+	if (gl.keys[XK_Up] && !char1inAirBool) {
+		jump(char1);
 		//checkJump();
-
+		//char1->vel.y = 5;
 		//inAirBool = true;
 		char1->cy += 8;
 		//gravityOn = true;
@@ -1104,6 +1127,11 @@ void physics(Game *game)
 		}
 
     }
+
+    // Jump Updatei
+    //printf("Char 1 vel y: %f\n", char1->vel.y);
+    char1->cy += char1->vel.y;
+
 }
 
 void playerCollision(Character *player)
@@ -1202,43 +1230,42 @@ void playerCollision(Character *player)
 	}
 }
 
-/*void jump() 
-  {
-  if (!inAirBool) {
-  jumpStartCy = char1->cy;
-  finalJumpCy = jumpStartCy + 100;
-  inAirBool = true;
-  }
-  }
-
-  float rate = .0006;
-
-  void checkJump() 
-  {
-//printf("Char cy: %f\n", char1->cy);
-//printf("Final cy: %f\n", finalJumpCy);
-
-//if (inAirBool) {
-// jumping up
-if (jumpStartCy <= finalJumpCy) {
-char1->vel.y = 3.0;
-//char1->vel.y += 1;
-//gravityOn = false;
-//char1->vel.y = 6;
-printf("Char cy: %f\n", char1->cy);
-printf("Final cy: %f\n", finalJumpCy);
-printf("JumpStart cy: %f\n", jumpStartCy);
-printf("FinalJump cy: %f\n", finalJumpCy);
-jumpStartCy = finalJumpCy;
-printf("jumping up\n");
+void jump(Character *player) 
+{
+    if (!char1inAirBool) {
+    	player->vel.y = 10;
+	char1inAirBool = true;
+    }
 }
-// jumping down
-if (char1->cy >= finalJumpCy) {
-printf("jumping down\n");
-char1->vel.y = 0;
-char1->cy += GRAVITY;
-}
-//}
+
+/*float rate = .0006;
+
+void checkJump() 
+{
+    //printf("Char cy: %f\n", char1->cy);
+    //printf("Final cy: %f\n", finalJumpCy);
+
+    //if (inAirBool) {
+    // jumping up
+    if (jumpStartCy <= finalJumpCy) {
+	char1->vel.y = 3.0;
+	//char1->vel.y += 1;
+	//gravityOn = false;
+	//char1->vel.y = 6;
+	printf("Char cy: %f\n", char1->cy);
+	printf("Final cy: %f\n", finalJumpCy);
+	printf("JumpStart cy: %f\n", jumpStartCy);
+	printf("FinalJump cy: %f\n", finalJumpCy);
+	jumpStartCy = finalJumpCy;
+	printf("jumping up\n");
+    }
+    // jumping down
+    if (char1->cy >= finalJumpCy) {
+	printf("jumping down\n");
+	char1->vel.y = 0;
+	char1->cy += GRAVITY;
+    }
+    //}
 }*/
 
 const float DEG2RAD = 3.14159/180;
