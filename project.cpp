@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
 			game.box[i].center.y = 435;
 		} else {
 			game.box[i].center.x = 55*total + 205;
-			game.box[i].center.y = 490;
+			game.box[i].center.y = 487;
 		}
 		total++;
 	}
@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
 			game.box[i].center.y = 435;
 		} else {
 			game.box[i].center.x = 55*total + 750;
-			game.box[i].center.y = 490;
+			game.box[i].center.y = 487;
 		}
 		total++;
 	}
@@ -899,8 +899,8 @@ void physics(Game *game)
 
 	if (char1inAirBool) {
 	    //char1->vel.y = 0.2*gravity;
-	    if (char1->vel.y > -10)
-	    	char1->vel.y += gravity/8;
+	    if (char1->vel.y > -9)
+	    	char1->vel.y += gravity/16;
 	}
 	char2->vel.y += 0.2*gravity;
 
@@ -948,6 +948,7 @@ void physics(Game *game)
 					char1->cy = boxBot[i];
 					//colorChangeFlag = 1;
 					//char1->vel.y = -0.1;	
+					char1->vel.y = -6;
 
 
 					colorChangeFlag = 1;
@@ -969,6 +970,7 @@ void physics(Game *game)
 					char1->cx = boxRight[i];
 					//colorChangeFlag = 1;
 					//char1->vel.y = -0.1;	
+					//char1->vel.y = -5;
 
 
 					colorChangeFlag = 1;
@@ -989,6 +991,7 @@ void physics(Game *game)
 					char1->cx = boxLeft[i];
 					//colorChangeFlag = 1;
 					//char1->vel.y = -0.1;	
+					//char1->vel.y = -5;
 
 
 					colorChangeFlag = 1;
@@ -1023,12 +1026,12 @@ void physics(Game *game)
 		//checkJump();
 		//char1->vel.y = 5;
 		//inAirBool = true;
-		char1->cy += 8;
+		//char1->cy += 8;
 		//gravityOn = true;
 	}
 
-	if (gl.keys[XK_Down]) 
-		char1->cy += -8;
+	//if (gl.keys[XK_Down]) 
+	//	char1->cy += -8;
 
 	// Player 2 Movement Keys
 	if (gl.keys[XK_d]) {
@@ -1049,8 +1052,8 @@ void physics(Game *game)
 		//gravityOn = true;
 	}
 
-	if (gl.keys[XK_s]) 
-		char2->cy += -8;
+	//if (gl.keys[XK_s]) 
+	//	char2->cy += -8;
 
 
 	// Player 1 Animation
@@ -1129,7 +1132,7 @@ void physics(Game *game)
     }
 
     // Jump Updatei
-    //printf("Char 1 vel y: %f\n", char1->vel.y);
+    printf("Char 1 vel y: %f\n", char1->vel.y);
     char1->cy += char1->vel.y;
 
 }
@@ -1233,7 +1236,7 @@ void playerCollision(Character *player)
 void jump(Character *player) 
 {
     if (!char1inAirBool) {
-    	player->vel.y = 10;
+    	player->vel.y = 14;
 	char1inAirBool = true;
     }
 }
