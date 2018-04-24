@@ -519,6 +519,8 @@ void init_opengl(void)
 	system("convert ./images/BlueChar.png ./images/bluechar.ppm");
 	system("convert ./images/GreenChar.png ./images/greenchar.ppm");
 	system("convert ./images/PurpleChar.png ./images/purplechar.ppm");
+	system("convert ./images/BluePortal.png ./images/blueportal.ppm");
+	system("convert ./images/OrangePortal.png ./images/orangeportal.ppm");
 	//==============================================
 
 
@@ -530,6 +532,8 @@ void init_opengl(void)
 	gl.bluecharImage = ppm6GetImage("./images/bluechar.ppm");	
 	gl.greencharImage = ppm6GetImage("./images/greenchar.ppm");	
 	gl.purplecharImage = ppm6GetImage("./images/purplechar.ppm");	
+	gl.blueportalImage = ppm6GetImage("./images/blueportal.ppm");	
+	gl.orangeportalImage = ppm6GetImage("./images/orangeportal.ppm");	
 	//==============================================
 
 
@@ -541,6 +545,8 @@ void init_opengl(void)
 	glGenTextures(1, &gl.bluecharTexture);	
 	glGenTextures(1, &gl.greencharTexture);	
 	glGenTextures(1, &gl.purplecharTexture);	
+	glGenTextures(1, &gl.blueportalTexture);	
+	glGenTextures(1, &gl.orangeportalTexture);	
 	//==============================================
 
 
@@ -613,6 +619,35 @@ void init_opengl(void)
 	free(purplecharData);
 	unlink("./images/purplechar.ppm"); 
 	//==============================================
+
+	//==============================================
+	// Blue Portal
+	w = gl.blueportalImage->width;
+	h = gl.blueportalImage->height;
+	glBindTexture(GL_TEXTURE_2D, gl.blueportalTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *blueportalData = buildAlphaData(gl.blueportalImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, blueportalData);
+	free(blueportalData);
+	unlink("./images/blueportal.ppm"); 
+	//==============================================
+
+	//==============================================
+	// Orange Portal
+	w = gl.orangeportalImage->width;
+	h = gl.orangeportalImage->height;
+	glBindTexture(GL_TEXTURE_2D, gl.orangeportalTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *orangeportalData = buildAlphaData(gl.orangeportalImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, orangeportalData);
+	free(orangeportalData);
+	unlink("./images/orangeportal.ppm"); 
+	//==============================================
+
 }
 
 void makeParticle(Game *game, int x, int y)
@@ -1057,6 +1092,18 @@ void physics(Game *game)
 		}
 	}
 
+    if (gameFrame > 0) {
+		timers.recordTime(&timers.timeCurrent);
+		double timeSpan = timers.timeDiff(&timers.blueportalTime, &timers.timeCurrent);
+		if (timeSpan > gl.delay + 0.5) {
+			//advance
+			++gl.blueportalFrame;
+			if (gl.blueportalFrame >= 2)
+				gl.blueportalFrame -= 2;
+			timers.recordTime(&timers.blueportalTime);
+		}
+
+    }
 }
 
 void playerCollision(Character *player)
@@ -1404,6 +1451,37 @@ void render(Game *game)
 		glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
 		gl.resultChar1 = 1;
 	}
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_ALPHA_TEST); 	
+	
+    // Draw BluePortal
+    float cx = 40;
+    float cy = 400;
+    h = 60;
+    w = 60;
+
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gl.blueportalTexture);
+	//
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	ix = gl.blueportalFrame % 2;
+	iy = 1;
+	if (gl.blueportalFrame >= 2)
+		iy = 0;
+	tx = (float)ix / 2.0;
+	ty = (float)iy / 1.0;
+
+	// Draw
+	glBegin(GL_QUADS);
+		glTexCoord2f(tx + .5, ty + 1); glVertex2i(w+cx,h+cy);
+		glTexCoord2f(tx,       ty + 1); glVertex2i(-w+cx, h+cy);
+		glTexCoord2f(tx,              ty); glVertex2i(-w+cx, -h+cy);
+		glTexCoord2f(tx + .5, ty);        glVertex2i(w+cx, -h+cy);
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);

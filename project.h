@@ -18,7 +18,7 @@ extern class Timers
         double oobillion;
         struct timespec timeStart, timeEnd, timeCurrent;
         struct timespec yellowcharTime, bluecharTime, greencharTime, purplecharTime;
-        struct timespec turt1Time, turt2Time;
+        struct timespec turt1Time, turt2Time, blueportalTime, orangeportalTime;
         struct timespec gameTime;
         struct timespec timeOut;
         Timers()
@@ -71,8 +71,8 @@ struct Particle {
 
 extern class Global {
     public:
-	int vsync;
-	int frameRateOn;
+        int vsync;
+        int frameRateOn;
         int xres;
         int yres;
         int done;
@@ -84,6 +84,8 @@ extern class Global {
         int bluecharFrame;
         int greencharFrame;
         int purplecharFrame;
+	    int blueportalFrame;
+        int orangeportalFrame;    
         int keys[65536];
         double delay;
 
@@ -92,17 +94,21 @@ extern class Global {
         Ppmimage *bluecharImage;
         Ppmimage *greencharImage;
         Ppmimage *purplecharImage;
+        Ppmimage *blueportalImage;
+        Ppmimage *orangeportalImage;	
 
         GLuint mchar1Texture;
         GLuint yellowcharTexture;
         GLuint bluecharTexture;
         GLuint greencharTexture;
         GLuint purplecharTexture;
+        GLuint blueportalTexture;
+        GLuint orangeportalTexture;
 
         Vec box[50];
         Global() {
-	    vsync = 0;
-		frameRateOn = 0;
+            vsync = 0;
+            frameRateOn = 0;
             xres = 1280;
             yres = 720;
             done = 0;
@@ -114,12 +120,16 @@ extern class Global {
             bluecharFrame = 0;
             greencharFrame = 0;
             purplecharFrame = 0;
+            blueportalFrame = 0;
+            orangeportalFrame = 0;
             //
             mainchar1Image = NULL;
             yellowcharImage = NULL;
             bluecharImage = NULL;
             greencharImage = NULL;
             purplecharImage = NULL;
+            blueportalImage = NULL;
+            orangeportalImage = NULL;
 
             //
             delay = 0.06;
@@ -140,8 +150,8 @@ class Character {
         float cy;
         float height;
         float width;
-	int colorID;
-	int points;
+        int colorID;
+        int points;
         Vec dir;
         Vec pos;
         Vec vel;
@@ -150,7 +160,7 @@ class Character {
             cy = gl.yres/2;
             height = 45.0;
             width = 45;
-	    points = 0;
+            points = 0;
         }
 };
 
@@ -159,7 +169,7 @@ class Game {
         Shape box[125];
         Shape platforms[5];
         Shape boxPerimeter[20];
-	Shape backgroundBlock[10];
+        Shape backgroundBlock[10];
         Character player[2];
         Particle particle[MAX_PARTICLES];
         int n;
