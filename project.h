@@ -72,6 +72,7 @@ struct Particle {
 extern class Global {
     public:
 	int vsync;
+	int frameRateOn;
         int xres;
         int yres;
         int done;
@@ -101,6 +102,7 @@ extern class Global {
         Vec box[50];
         Global() {
 	    vsync = 0;
+		frameRateOn = 0;
             xres = 1280;
             yres = 720;
             done = 0;
