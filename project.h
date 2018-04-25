@@ -104,6 +104,22 @@ extern class Global {
 	Ppmimage *blueprofileImage;
 	Ppmimage *greenprofileImage;
 	Ppmimage *purpleprofileImage;
+	Ppmimage *charselectionImage;
+	Ppmimage *colordominationImage;
+	Ppmimage *controlsImage;
+	Ppmimage *creditsImage;
+	Ppmimage *goImage;
+	Ppmimage *heartaddImage;
+	Ppmimage *levelselectImage;
+	Ppmimage *mechabgImage;
+	Ppmimage *menubgImage;
+	Ppmimage *oneImage;
+	Ppmimage *playImage;
+	Ppmimage *quitImage;
+	Ppmimage *splatterImage;
+	Ppmimage *threeImage;
+	Ppmimage *twoImage;
+
 
         GLuint mchar1Texture;
         GLuint yellowcharTexture;
@@ -118,6 +134,22 @@ extern class Global {
 	GLuint blueprofileTexture;
 	GLuint greenprofileTexture;
 	GLuint purpleprofileTexture;
+	GLuint charselectionTexture;
+	GLuint colordominationTexture;
+	GLuint controlsTexture;
+	GLuint creditsTexture;
+	GLuint goTexture;
+	GLuint heartaddTexture;
+	GLuint levelselectTexture;
+	GLuint mechabgTexture;
+	GLuint menubgTexture;
+	GLuint oneTexture;
+	GLuint playTexture;
+	GLuint quitTexture;
+	GLuint splatterTexture;
+	GLuint threeTexture;
+	GLuint twoTexture;
+
 
         Vec box[50];
         Global() {
@@ -152,6 +184,21 @@ extern class Global {
 	    blueprofileImage = NULL;
 	    greenprofileImage = NULL;
 	    purpleprofileImage = NULL;
+	    charselectionImage = NULL;
+	    colordominationImage = NULL;
+	    controlsImage = NULL;
+	    creditsImage = NULL;
+	    goImage = NULL;
+	    heartaddImage = NULL;
+	    levelselectImage = NULL;
+	    mechabgImage = NULL;
+	    menubgImage = NULL;
+	    oneImage = NULL;
+	    playImage = NULL;
+	    quitImage = NULL;
+	    splatterImage = NULL;
+	    threeImage = NULL;
+	    twoImage = NULL;
 
             //
             delay = 0.06;

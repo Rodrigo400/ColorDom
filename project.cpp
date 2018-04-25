@@ -547,6 +547,22 @@ void init_opengl(void)
     system("convert ./images/blueProfile.png ./images/blueprofile.ppm");
     system("convert ./images/greenProfile.png ./images/greenprofile.ppm");
     system("convert ./images/purpleProfile.png ./images/purpleprofile.ppm");
+    
+    system("convert ./images/charselection.png ./images/charselection.ppm");
+    system("convert ./images/colordomination.png ./images/colordomination.ppm");
+    system("convert ./images/controls.png ./images/controls.ppm");
+    system("convert ./images/credits.png ./images/credits.ppm");
+    system("convert ./images/go.png ./images/go.ppm");
+    system("convert ./images/heartadd.png ./images/heartadd.ppm");
+    system("convert ./images/levelselect.png ./images/levelselect.ppm");
+    system("convert ./images/mechabg.png ./images/mechabg.ppm");
+    system("convert ./images/menubg.png ./images/menubg.ppm");
+    system("convert ./images/one.png ./images/one.ppm");
+    system("convert ./images/play.png ./images/play.ppm");
+    system("convert ./images/quit.png ./images/quit.ppm");
+    system("convert ./images/splatter.png ./images/splatter.ppm");
+    system("convert ./images/three.png ./images/three.ppm");
+    system("convert ./images/two.png ./images/two.ppm");
     //==============================================
 
 
@@ -566,6 +582,22 @@ void init_opengl(void)
     gl.blueprofileImage = ppm6GetImage("./images/blueprofile.ppm");	
     gl.greenprofileImage = ppm6GetImage("./images/greenprofile.ppm");	
     gl.purpleprofileImage = ppm6GetImage("./images/purpleprofile.ppm");	
+    
+    gl.charselectionImage = ppm6GetImage("./images/charselection.ppm");	
+    gl.colordominationImage = ppm6GetImage("./images/colordomination.ppm");	
+    gl.controlsImage = ppm6GetImage("./images/controls.ppm");	
+    gl.creditsImage = ppm6GetImage("./images/credits.ppm");	
+    gl.goImage = ppm6GetImage("./images/go.ppm");	
+    gl.heartaddImage = ppm6GetImage("./images/heartadd.ppm");	
+    gl.levelselectImage = ppm6GetImage("./images/levelselect.ppm");	
+    gl.mechabgImage = ppm6GetImage("./images/mechabg.ppm");	
+    gl.menubgImage = ppm6GetImage("./images/menubg.ppm");	
+    gl.oneImage = ppm6GetImage("./images/one.ppm");	
+    gl.playImage = ppm6GetImage("./images/play.ppm");	
+    gl.quitImage = ppm6GetImage("./images/quit.ppm");	
+    gl.splatterImage = ppm6GetImage("./images/splatter.ppm");	
+    gl.threeImage = ppm6GetImage("./images/three.ppm");	
+    gl.twoImage = ppm6GetImage("./images/two.ppm");	
     //==============================================
 
 
@@ -585,6 +617,22 @@ void init_opengl(void)
     glGenTextures(1, &gl.blueprofileTexture);	
     glGenTextures(1, &gl.greenprofileTexture);	
     glGenTextures(1, &gl.purpleprofileTexture);	
+    
+    glGenTextures(1, &gl.charselectionTexture);	
+    glGenTextures(1, &gl.colordominationTexture);	
+    glGenTextures(1, &gl.controlsTexture);	
+    glGenTextures(1, &gl.creditsTexture);	
+    glGenTextures(1, &gl.goTexture);	
+    glGenTextures(1, &gl.heartaddTexture);	
+    glGenTextures(1, &gl.levelselectTexture);	
+    glGenTextures(1, &gl.mechabgTexture);	
+    glGenTextures(1, &gl.menubgTexture);	
+    glGenTextures(1, &gl.oneTexture);	
+    glGenTextures(1, &gl.playTexture);	
+    glGenTextures(1, &gl.quitTexture);	
+    glGenTextures(1, &gl.splatterTexture);	
+    glGenTextures(1, &gl.threeTexture);	
+    glGenTextures(1, &gl.twoTexture);	
     //==============================================
 
 
@@ -768,6 +816,216 @@ void init_opengl(void)
 	    GL_RGBA, GL_UNSIGNED_BYTE, purpleprofileData);
     free(purpleprofileData);
     unlink("./images/purpleprofile.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Char Select Text
+    w = gl.charselectionImage->width;
+    h = gl.charselectionImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.charselectionTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *charselectionData = buildAlphaData(gl.charselectionImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, charselectionData);
+    free(charselectionData);
+    unlink("./images/charselection.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // ColorDom Text
+    w = gl.colordominationImage->width;
+    h = gl.colordominationImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.colordominationTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *colordominationData = buildAlphaData(gl.colordominationImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, colordominationData);
+    free(colordominationData);
+    unlink("./images/colordomination.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Controls Text
+    w = gl.controlsImage->width;
+    h = gl.controlsImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.controlsTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *controlsData = buildAlphaData(gl.controlsImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, controlsData);
+    free(controlsData);
+    unlink("./images/controls.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Credits Text
+    w = gl.creditsImage->width;
+    h = gl.creditsImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.creditsTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *creditsData = buildAlphaData(gl.creditsImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, creditsData);
+    free(creditsData);
+    unlink("./images/credits.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Go Text
+    w = gl.goImage->width;
+    h = gl.goImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.goTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *goData = buildAlphaData(gl.goImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, goData);
+    free(goData);
+    unlink("./images/go.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Heart Add
+    w = gl.heartaddImage->width;
+    h = gl.heartaddImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.heartaddTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *heartaddData = buildAlphaData(gl.heartaddImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, heartaddData);
+    free(heartaddData);
+    unlink("./images/heartadd.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Level Select Frame
+    w = gl.levelselectImage->width;
+    h = gl.levelselectImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.levelselectTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *levelselectData = buildAlphaData(gl.levelselectImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, levelselectData);
+    free(levelselectData);
+    unlink("./images/levelselect.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Mecha BG
+    w = gl.mechabgImage->width;
+    h = gl.mechabgImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.mechabgTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *mechabgData = buildAlphaData(gl.mechabgImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, mechabgData);
+    free(mechabgData);
+    unlink("./images/mechabg.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Menu BG
+    w = gl.menubgImage->width;
+    h = gl.menubgImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.menubgTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *menubgData = buildAlphaData(gl.menubgImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, menubgData);
+    free(menubgData);
+    unlink("./images/menubg.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // One text
+    w = gl.oneImage->width;
+    h = gl.oneImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.oneTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *oneData = buildAlphaData(gl.oneImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, oneData);
+    free(oneData);
+    unlink("./images/one.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Play text
+    w = gl.playImage->width;
+    h = gl.playImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.playTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *playData = buildAlphaData(gl.playImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, playData);
+    free(playData);
+    unlink("./images/play.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Quit text
+    w = gl.quitImage->width;
+    h = gl.quitImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.quitTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *quitData = buildAlphaData(gl.quitImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, quitData);
+    free(quitData);
+    unlink("./images/quit.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Splatter
+    w = gl.splatterImage->width;
+    h = gl.splatterImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.splatterTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *splatterData = buildAlphaData(gl.splatterImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, splatterData);
+    free(splatterData);
+    unlink("./images/splatter.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Three text
+    w = gl.threeImage->width;
+    h = gl.threeImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.threeTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *threeData = buildAlphaData(gl.threeImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, threeData);
+    free(threeData);
+    unlink("./images/three.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Two text
+    w = gl.twoImage->width;
+    h = gl.twoImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.twoTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *twoData = buildAlphaData(gl.twoImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, twoData);
+    free(twoData);
+    unlink("./images/two.ppm"); 
     //==============================================
 
 }
