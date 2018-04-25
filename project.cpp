@@ -134,6 +134,8 @@ void drawBluePortal();
 void drawOrangePortal();
 void drawProfile1(); 
 void drawProfile2();
+void drawHealthVal1();
+void drawHealthVal2();
 // ==============================================
 
 // ==============================================
@@ -1490,6 +1492,8 @@ void render(Game *game)
 	drawTimerBackground();
 	drawHealthBar1();
 	drawHealthBar2();
+	drawHealthVal1();
+	drawHealthVal2();
 	drawCircleUI1();
 	drawCircleUI2();
 	drawProfile1();
@@ -1778,4 +1782,56 @@ void drawProfile2()
 	glDisable(GL_ALPHA_TEST); 	
 	//
 
+}
+
+void drawHealthVal1()
+{
+    Shape s;
+    Shape boxes[100];
+    for (int i = 0; i < 53; i++) {
+	boxes[i].width = 3;
+	boxes[i].height = 39;
+	boxes[i].center.x = 198 + (i*7);
+	boxes[i].center.y = 65;
+	boxes[i].center.z = 0;
+	s = boxes[i];
+	glPushMatrix();
+	glColor3ub(255-(4.9*i), 4.9*i, 0);
+	glTranslatef(s.center.x, s.center.y, s.center.z);
+	float w = s.width;
+	float h = s.height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i(w, h);
+	glVertex2i(w, -h);
+	glEnd();
+	glPopMatrix();
+    }	
+}
+
+void drawHealthVal2()
+{
+    Shape s;
+    Shape boxes[100];
+    for (int i = 0; i < 53; i++) {
+	boxes[i].width = 3;
+	boxes[i].height = 39;
+	boxes[i].center.x = 737 + (i*7);
+	boxes[i].center.y = 65;
+	boxes[i].center.z = 0;
+	s = boxes[i];
+	glPushMatrix();
+	glColor3ub(255-(4.9*i), 4.9*i, 0);
+	glTranslatef(s.center.x, s.center.y, s.center.z);
+	float w = s.width;
+	float h = s.height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i(w, h);
+	glVertex2i(w, -h);
+	glEnd();
+	glPopMatrix();
+    }	
 }
