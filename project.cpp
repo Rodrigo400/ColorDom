@@ -123,11 +123,17 @@ void changeColor(Character*, Shape*);
 void awardPoint(Character*, Shape*);
 void removePoint(Character*, Shape*);
 //void playerCollision(Character*);
+
+// UI FUNCTIONS
 void drawTimerBackground(); 
 void drawCircleUI1(); 
 void drawCircleUI2();
 void drawHealthBar1(); 
 void drawHealthBar2(); 
+void drawBluePortal();
+void drawOrangePortal();
+void drawProfile1(); 
+void drawProfile2();
 // ==============================================
 
 // ==============================================
@@ -161,8 +167,8 @@ int main(int argc, char *argv[])
 	//Game game;
 	char1 = &game.player[0];
 	char2 = &game.player[1];
-	char1->cx = 210;
-	char2->cx = 920;
+	char1->cx = 920;
+	char2->cx = 210;
 	char1->cy = gl.yres/2 + 15;
 	char2->cy = gl.yres/2 + 15;
 
@@ -535,6 +541,10 @@ void init_opengl(void)
 	system("convert ./images/OrangePortal.png ./images/orangeportal.ppm");
 	system("convert ./images/Timer.png ./images/timer.ppm");
 	system("convert ./images/HealthBar.png ./images/healthbar.ppm");
+	system("convert ./images/yellowProfile.png ./images/yellowprofile.ppm");
+	system("convert ./images/blueProfile.png ./images/blueprofile.ppm");
+	system("convert ./images/greenProfile.png ./images/greenprofile.ppm");
+	system("convert ./images/purpleProfile.png ./images/purpleprofile.ppm");
 	//==============================================
 
 
@@ -550,6 +560,10 @@ void init_opengl(void)
 	gl.orangeportalImage = ppm6GetImage("./images/orangeportal.ppm");	
 	gl.timerImage = ppm6GetImage("./images/timer.ppm");	
 	gl.healthbarImage = ppm6GetImage("./images/healthbar.ppm");	
+	gl.yellowprofileImage = ppm6GetImage("./images/yellowprofile.ppm");	
+	gl.blueprofileImage = ppm6GetImage("./images/blueprofile.ppm");	
+	gl.greenprofileImage = ppm6GetImage("./images/greenprofile.ppm");	
+	gl.purpleprofileImage = ppm6GetImage("./images/purpleprofile.ppm");	
 	//==============================================
 
 
@@ -565,6 +579,10 @@ void init_opengl(void)
 	glGenTextures(1, &gl.orangeportalTexture);	
 	glGenTextures(1, &gl.timerTexture);	
 	glGenTextures(1, &gl.healthbarTexture);	
+	glGenTextures(1, &gl.yellowprofileTexture);	
+	glGenTextures(1, &gl.blueprofileTexture);	
+	glGenTextures(1, &gl.greenprofileTexture);	
+	glGenTextures(1, &gl.purpleprofileTexture);	
 	//==============================================
 
 
@@ -692,6 +710,62 @@ void init_opengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, healthbarData);
 	free(healthbarData);
 	unlink("./images/healthbar.ppm"); 
+	//==============================================
+	
+	//==============================================
+	// Yellow Profile
+	w = gl.yellowprofileImage->width;
+	h = gl.yellowprofileImage->height;
+	glBindTexture(GL_TEXTURE_2D, gl.yellowprofileTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *yellowprofileData = buildAlphaData(gl.yellowprofileImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, yellowprofileData);
+	free(yellowprofileData);
+	unlink("./images/yellowprofile.ppm"); 
+	//==============================================
+	
+	//==============================================
+	// Blue Profile
+	w = gl.blueprofileImage->width;
+	h = gl.blueprofileImage->height;
+	glBindTexture(GL_TEXTURE_2D, gl.blueprofileTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *blueprofileData = buildAlphaData(gl.blueprofileImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, blueprofileData);
+	free(blueprofileData);
+	unlink("./images/blueprofile.ppm"); 
+	//==============================================
+	
+	//==============================================
+	// Green Profile
+	w = gl.greenprofileImage->width;
+	h = gl.greenprofileImage->height;
+	glBindTexture(GL_TEXTURE_2D, gl.greenprofileTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *greenprofileData = buildAlphaData(gl.greenprofileImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, greenprofileData);
+	free(greenprofileData);
+	unlink("./images/greenprofile.ppm"); 
+	//==============================================
+	
+	//==============================================
+	// Purple Profile
+	w = gl.purpleprofileImage->width;
+	h = gl.purpleprofileImage->height;
+	glBindTexture(GL_TEXTURE_2D, gl.purpleprofileTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	unsigned char *purpleprofileData = buildAlphaData(gl.purpleprofileImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, purpleprofileData);
+	free(purpleprofileData);
+	unlink("./images/purpleprofile.ppm"); 
 	//==============================================
 
 }
@@ -1369,76 +1443,6 @@ void render(Game *game)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_ALPHA_TEST); 	
 	
-	// Draw BluePortal
-	float cx = 40;
-	float cy = 400;
-	h = 60;
-	w = 60;
-
-	glPushMatrix();
-	glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, gl.blueportalTexture);
-	//
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	ix = gl.blueportalFrame % 2;
-	iy = 1;
-	if (gl.blueportalFrame >= 2)
-	    iy = 0;
-	tx = (float)ix / 2.0;
-	ty = (float)iy / 1.0;
-	// Draw
-	glBegin(GL_QUADS);
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(w+cx,h+cy);
-	glTexCoord2f(tx,       ty + 1); glVertex2i(-w+cx, h+cy);
-	glTexCoord2f(tx,              ty); glVertex2i(-w+cx, -h+cy);
-	glTexCoord2f(tx + .5, ty);        glVertex2i(w+cx, -h+cy);
-	glEnd();
-	glPopMatrix();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_ALPHA_TEST); 	
-	//
-
-	// Draw OrangePortal
-	cx = 1240;
-	cy = 400;
-	h = 60;
-	w = 60;
-
-	glPushMatrix();
-	glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, gl.orangeportalTexture);
-	//
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	ix = gl.orangeportalFrame % 2;
-	iy = 1;
-	if (gl.orangeportalFrame >= 2)
-	    iy = 0;
-	tx = (float)ix / 2.0;
-	ty = (float)iy / 1.0;
-	// Draw
-	glBegin(GL_QUADS);
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(-w+cx, h+cy);
-	glTexCoord2f(tx,       ty + 1); glVertex2i(w+cx,h+cy);
-	glTexCoord2f(tx,              ty); glVertex2i(w+cx, -h+cy);
-	glTexCoord2f(tx + .5, ty);        glVertex2i(-w+cx, -h+cy);
-	glEnd();
-	glPopMatrix();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_ALPHA_TEST); 	
-	//
-	
-	// UI DRAWING
-	drawTimerBackground();
-	drawHealthBar1();
-	drawHealthBar2();
-	drawCircleUI1();
-	drawCircleUI2();
-	//
-
 	// Player 2    
 	glPushMatrix();
 	glColor3f(1.0, 1.0, 1.0);
@@ -1478,12 +1482,21 @@ void render(Game *game)
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_ALPHA_TEST); 	
-
-
+	
+	
+	// UI DRAWING
+	drawBluePortal();
+	drawOrangePortal();
+	drawTimerBackground();
+	drawHealthBar1();
+	drawHealthBar2();
+	drawCircleUI1();
+	drawCircleUI2();
+	drawProfile1();
+	drawProfile2();
 	drawCircle(30);
-
-	// countdown timer
 	countdown();
+	//
 
     if (gl.frameRateOn) {
         // Frame Rate	
@@ -1494,6 +1507,74 @@ void render(Game *game)
         r.center = 0;
         ggprint16(&r, 32, c, "Frame Rate : %f", fps);
     }
+}
+
+void drawBluePortal() 
+{
+    // Draw BluePortal
+    float cx = 40;
+	float cy = 400;
+	float h = 60;
+	float w = 60;
+
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gl.blueportalTexture);
+	//
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	float ix = gl.blueportalFrame % 2;
+	float iy = 1;
+	if (gl.blueportalFrame >= 2)
+	    iy = 0;
+	float tx = (float)ix / 2.0;
+	float ty = (float)iy / 1.0;
+	// Draw
+	glBegin(GL_QUADS);
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(w+cx,h+cy);
+	glTexCoord2f(tx,       ty + 1); glVertex2i(-w+cx, h+cy);
+	glTexCoord2f(tx,              ty); glVertex2i(-w+cx, -h+cy);
+	glTexCoord2f(tx + .5, ty);        glVertex2i(w+cx, -h+cy);
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_ALPHA_TEST); 	
+	//
+}
+
+void drawOrangePortal()
+{
+    // Draw OrangePortal
+    float cx = 1240;
+    float cy = 400;
+	float h = 60;
+	float w = 60;
+
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gl.orangeportalTexture);
+	//
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	float ix = gl.orangeportalFrame % 2;
+	float iy = 1;
+	if (gl.orangeportalFrame >= 2)
+	    iy = 0;
+	float tx = (float)ix / 2.0;
+	float ty = (float)iy / 1.0;
+	// Draw
+	glBegin(GL_QUADS);
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(-w+cx, h+cy);
+	glTexCoord2f(tx,       ty + 1); glVertex2i(w+cx,h+cy);
+	glTexCoord2f(tx,              ty); glVertex2i(w+cx, -h+cy);
+	glTexCoord2f(tx + .5, ty);        glVertex2i(-w+cx, -h+cy);
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_ALPHA_TEST); 	
+	//
 }
 
 void drawTimerBackground() 
@@ -1633,6 +1714,64 @@ void drawHealthBar2()
 	glTexCoord2f(0, 1); glVertex2i(w+cx,h+cy);
 	glTexCoord2f(0, 0); glVertex2i(w+cx, -h+cy);
 	glTexCoord2f(1, 0); glVertex2i(-w+cx, -h+cy);
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_ALPHA_TEST); 	
+	//
+
+}
+
+void drawProfile1() 
+{
+	// Draw Timer Background
+	float cx = 150;
+	float cy = 65;
+	float h = 46;
+	float w = 46;
+
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gl.yellowprofileTexture);
+	//
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	// Draw
+	glBegin(GL_QUADS);
+	glTexCoord2f(1, 1); glVertex2i(w+cx, -h+cy);
+	glTexCoord2f(0, 1); glVertex2i(-w+cx, -h+cy);
+	glTexCoord2f(0, 0); glVertex2i(-w+cx,h+cy);
+	glTexCoord2f(1, 0); glVertex2i(w+cx, h+cy);
+	glEnd();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_ALPHA_TEST); 	
+	//
+
+}
+
+void drawProfile2() 
+{
+	// Draw Timer Background
+	float cx = gl.xres/2 + 50;
+	float cy = 65;
+	float h = 50;
+	float w = 50;
+
+	glPushMatrix();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gl.blueprofileTexture);
+	//
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	// Draw
+	glBegin(GL_QUADS);
+	glTexCoord2f(1, 1); glVertex2i(w+cx, -h+cy);
+	glTexCoord2f(0, 1); glVertex2i(-w+cx, -h+cy);
+	glTexCoord2f(0, 0); glVertex2i(-w+cx,h+cy);
+	glTexCoord2f(1, 0); glVertex2i(w+cx, h+cy);
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);

@@ -85,9 +85,9 @@ extern class Global {
         int greencharFrame;
         int purplecharFrame;
 	int blueportalFrame;
+        int orangeportalFrame;    
 	int timerFrame;
 	int healthbarFrame;
-        int orangeportalFrame;    
         int keys[65536];
         double delay;
 
@@ -100,6 +100,10 @@ extern class Global {
         Ppmimage *orangeportalImage;	
 	Ppmimage *timerImage;
 	Ppmimage *healthbarImage;
+	Ppmimage *yellowprofileImage;
+	Ppmimage *blueprofileImage;
+	Ppmimage *greenprofileImage;
+	Ppmimage *purpleprofileImage;
 
         GLuint mchar1Texture;
         GLuint yellowcharTexture;
@@ -110,6 +114,10 @@ extern class Global {
         GLuint orangeportalTexture;
 	GLuint timerTexture;
 	GLuint healthbarTexture;
+	GLuint yellowprofileTexture;
+	GLuint blueprofileTexture;
+	GLuint greenprofileTexture;
+	GLuint purpleprofileTexture;
 
         Vec box[50];
         Global() {
@@ -138,8 +146,12 @@ extern class Global {
             purplecharImage = NULL;
             blueportalImage = NULL;
             orangeportalImage = NULL;
-	    timerFrame = 0;
-	    healthbarFrame = 0;
+	    timerImage = NULL;
+	    healthbarImage = NULL;
+	    yellowprofileImage = NULL;
+	    blueprofileImage = NULL;
+	    greenprofileImage = NULL;
+	    purpleprofileImage = NULL;
 
             //
             delay = 0.06;
