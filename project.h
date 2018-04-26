@@ -10,6 +10,16 @@ typedef double Flt;
 // Constants
 const int MAX_PARTICLES = 10000;
 
+enum State {
+    STATE_NONE,
+    STATE_STARTMENU,
+    STATE_CHARSELECT,
+    STATE_GAMEPLAY,
+    STATE_PAUSE,
+    STATE_GAMEOVER,
+    STATE_WON
+};
+
 // Extern Classes
 extern class Timers
 {
@@ -119,6 +129,8 @@ extern class Global {
 	Ppmimage *splatterImage;
 	Ppmimage *threeImage;
 	Ppmimage *twoImage;
+	Ppmimage *charselectbgImage;
+	Ppmimage *ingamebgImage;
 
 
         GLuint mchar1Texture;
@@ -149,6 +161,8 @@ extern class Global {
 	GLuint splatterTexture;
 	GLuint threeTexture;
 	GLuint twoTexture;
+	GLuint charselectbgTexture;
+	GLuint ingamebgTexture;
 
 
         Vec box[50];
@@ -199,6 +213,8 @@ extern class Global {
 	    splatterImage = NULL;
 	    threeImage = NULL;
 	    twoImage = NULL;
+	    charselectbgImage = NULL;
+	    ingamebgImage = NULL;
 
             //
             delay = 0.06;
@@ -239,6 +255,7 @@ class Character {
 
 class Game {
     public:
+	State state;
         Shape box[125];
         Shape platforms[5];
         Shape boxPerimeter[20];
@@ -249,6 +266,8 @@ class Game {
         Game()
         {
             n = 0;
+	    state = STATE_STARTMENU;
+
         }
 };
 #endif

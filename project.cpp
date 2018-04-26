@@ -61,6 +61,7 @@ const float gravity = -9;
 //===============================================
 // Global Instance
 // ==============================================
+
 Timers timers;
 Global gl;
 Character *char1, *char2;
@@ -113,7 +114,9 @@ void check_mouse(XEvent *e, Game *game);
 void check_keys(XEvent *e);
 void physics(Game *game);
 void render(Game *game);
-
+void rWithoutAlpha(GLuint, int, int);
+void rWithAlpha(int, int, int, int, GLuint);
+void renderFrame(int, int, int, int, GLuint);
 // ==============================================
 // Functions
 // ==============================================
@@ -136,6 +139,11 @@ void drawProfile1();
 void drawProfile2();
 void drawHealthVal1();
 void drawHealthVal2();
+void drawPlayerOne();
+void drawPlayerTwo();
+void drawFrameRate();
+void drawStartMenu();
+void drawCharSelectMenu();
 // ==============================================
 
 // ==============================================
@@ -563,6 +571,10 @@ void init_opengl(void)
     system("convert ./images/splatter.png ./images/splatter.ppm");
     system("convert ./images/three.png ./images/three.ppm");
     system("convert ./images/two.png ./images/two.ppm");
+    
+    system("convert ./images/charselectbg.png ./images/charselectbg.ppm");
+    system("convert ./images/ingamebg.png ./images/ingamebg.ppm");
+    system("convert ./images/menubg.png ./images/menubg.ppm");
     //==============================================
 
 
@@ -582,7 +594,6 @@ void init_opengl(void)
     gl.blueprofileImage = ppm6GetImage("./images/blueprofile.ppm");	
     gl.greenprofileImage = ppm6GetImage("./images/greenprofile.ppm");	
     gl.purpleprofileImage = ppm6GetImage("./images/purpleprofile.ppm");	
-    
     gl.charselectionImage = ppm6GetImage("./images/charselection.ppm");	
     gl.colordominationImage = ppm6GetImage("./images/colordomination.ppm");	
     gl.controlsImage = ppm6GetImage("./images/controls.ppm");	
@@ -598,6 +609,9 @@ void init_opengl(void)
     gl.splatterImage = ppm6GetImage("./images/splatter.ppm");	
     gl.threeImage = ppm6GetImage("./images/three.ppm");	
     gl.twoImage = ppm6GetImage("./images/two.ppm");	
+    gl.charselectbgImage = ppm6GetImage("./images/charselectbg.ppm");	
+    gl.ingamebgImage = ppm6GetImage("./images/ingamebg.ppm");	
+    gl.menubgImage = ppm6GetImage("./images/menubg.ppm");	
     //==============================================
 
 
@@ -633,6 +647,9 @@ void init_opengl(void)
     glGenTextures(1, &gl.splatterTexture);	
     glGenTextures(1, &gl.threeTexture);	
     glGenTextures(1, &gl.twoTexture);	
+    glGenTextures(1, &gl.charselectbgTexture);	
+    glGenTextures(1, &gl.ingamebgTexture);	
+    glGenTextures(1, &gl.menubgTexture);	
     //==============================================
 
 
@@ -1027,7 +1044,34 @@ void init_opengl(void)
     free(twoData);
     unlink("./images/two.ppm"); 
     //==============================================
-
+    
+    //==============================================
+    // Char select bg
+    w = gl.charselectbgImage->width;
+    h = gl.charselectbgImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.charselectbgTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *charselectbgData = buildAlphaData(gl.charselectbgImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, charselectbgData);
+    free(charselectbgData);
+    unlink("./images/charselectbg.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Ingamebg
+    w = gl.ingamebgImage->width;
+    h = gl.ingamebgImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.ingamebgTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *ingamebgData = buildAlphaData(gl.ingamebgImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, ingamebgData);
+    free(ingamebgData);
+    unlink("./images/ingamebg.ppm"); 
+    //==============================================
 }
 
 void makeParticle(Game *game, int x, int y)
@@ -1138,6 +1182,16 @@ void check_keys(XEvent *e)
 	case XK_f:
 		   gl.frameRateOn ^= 1;
 		   break;
+	case XK_Return:
+		   if (game.state == STATE_STARTMENU) { 
+		       game.state = STATE_CHARSELECT;
+		       break;
+		   }
+		   if (game.state == STATE_CHARSELECT) {
+		       game.state = STATE_GAMEPLAY;
+		       break;
+		   }
+		   break;
 	case XK_equal:
 		   gl.delay -= 0.005;
 		   if (gl.delay < 0.005)
@@ -1151,372 +1205,373 @@ void check_keys(XEvent *e)
 
 void physics(Game *game)
 {
-    char1->colorID = 1;		// YELLOW
-    char2->colorID = 2;         // BLUE
+    if (game->state == STATE_GAMEPLAY) {
+	char1->colorID = 1;		// YELLOW
+	char2->colorID = 2;         // BLUE
 
-    // this is good
-    //char1->cy += 0.2*gravity;
-    //char2->cy += 0.2*gravity;
+	// this is good
+	//char1->cy += 0.2*gravity;
+	//char2->cy += 0.2*gravity;
 
 
-    if (char1->inAirBool) {
-	//char1->vel.y = 0.2*gravity;
-	if (char1->vel.y > -9)
-	    char1->vel.y += gravity/16;
-    }
-
-    if (char2->inAirBool) {
-	//char1->vel.y = 0.2*gravity;
-	if (char2->vel.y > -9)
-	    char2->vel.y += gravity/16;
-    }
-
-    // COLLISION
-    int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
-
-    for (int i = 0; i < totalCubes; i++) {
-	Shape *s = &game->box[i];
-	boxTop[i] = s->center.y + s->height + (char1->height-5);
-	boxBot[i] = s->center.y - s->height - (char1->height-10);
-	boxLeft[i] = s->center.x - s->width - (char1->width-10);
-	boxRight[i] = s->center.x + s->width + (char1->width-10);
-    }
-
-    for (int i = 0; i < totalCubes; i++) {
-	Shape *s = &game->box[i];
-	if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
-	    if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
-		// Top Collision
-		if (char1->cy < boxTop[i] &&
-			char1->cy > boxTop[i] - 10 &&
-			char1->cx < boxRight[i] - 10 &&
-			char1->cx > boxLeft[i] + 10) {
-		    char1->cy = boxTop[i];
-		    char1->inAirBool = false;
-		    char1->jumpCount = 1;
-		    char1->vel.y = -1;	
-		    colorChangeFlag = 1;
-
-		    // Point System 
-		    awardPoint(char1, s);    
-		    removePoint(char2, s);    
-
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
-		} else {
-		    char1->inAirBool = true;
-		}
-		// Bot Collision
-		if (char1->cy > boxBot[i] &&
-			char1->cy < boxBot[i] + 10 &&
-			char1->cx < boxRight[i] - 10 &&
-			char1->cx > boxLeft[i] + 10) {
-		    char1->cy = boxBot[i];
-		    char1->vel.y = -3;
-
-		    colorChangeFlag = 1;
-
-		    // Point System 
-		    awardPoint(char1, s);    
-		    removePoint(char2, s);    
-
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
-		}
-		// Right Collision
-		if (char1->cx < boxRight[i] && 
-			char1->cx > s->center.x &&
-			char1->cy < boxTop[i] - 10 &&
-			char1->cy > boxBot[i] + 10) {
-		    char1->cx = boxRight[i];
-		    //colorChangeFlag = 1;
-
-		    colorChangeFlag = 1;
-
-		    // Point System 
-		    awardPoint(char1, s);    
-
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
-		}
-		// Left Collision
-		if (char1->cx > boxLeft[i] &&
-			char1->cx < s->center.x &&
-			char1->cy < boxTop[i] - 10 &&
-			char1->cy > boxBot[i] + 10) {
-		    char1->cx = boxLeft[i];
-		    //colorChangeFlag = 1;
-
-		    colorChangeFlag = 1;
-
-		    // Point System 
-		    awardPoint(char1, s);    
-		    removePoint(char2, s);    
-
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char1->colorID;
-		}
-	    }
+	if (char1->inAirBool) {
+	    //char1->vel.y = 0.2*gravity;
+	    if (char1->vel.y > -9)
+		char1->vel.y += gravity/16;
 	}
-    }
 
-    // Player Collision char2
-    for (int i = 0; i < totalCubes; i++) {
-	Shape *s = &game->box[i];
-	if (char2->cy < boxTop[i] && char2->cy > boxBot[i]) {
-	    if (char2->cx > boxLeft[i] && char2->cx < boxRight[i]) {
-		// Top Collision
-		if (char2->cy < boxTop[i] &&
-			char2->cy > boxTop[i] - 10 &&
-			char2->cx < boxRight[i] - 10 &&
-			char2->cx > boxLeft[i] + 10) {
-		    char2->cy = boxTop[i];
-		    char2->inAirBool = false;
-		    char2->jumpCount = 1;
-		    char2->vel.y = -1;	
-		    colorChangeFlag = 2;
+	if (char2->inAirBool) {
+	    //char1->vel.y = 0.2*gravity;
+	    if (char2->vel.y > -9)
+		char2->vel.y += gravity/16;
+	}
 
-		    // Point System 
-		    awardPoint(char2, s);    
-		    removePoint(char1, s);    
+	// COLLISION
+	int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
 
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char2->colorID;
-		} else {
-		    char2->inAirBool = true;
-		}
-		// Bot Collision
-		if (char2->cy > boxBot[i] &&
-			char2->cy < boxBot[i] + 10 &&
-			char2->cx < boxRight[i] - 10 &&
-			char2->cx > boxLeft[i] + 10) {
-		    char2->cy = boxBot[i];
-		    char2->vel.y = -3;
+	for (int i = 0; i < totalCubes; i++) {
+	    Shape *s = &game->box[i];
+	    boxTop[i] = s->center.y + s->height + (char1->height-5);
+	    boxBot[i] = s->center.y - s->height - (char1->height-10);
+	    boxLeft[i] = s->center.x - s->width - (char1->width-10);
+	    boxRight[i] = s->center.x + s->width + (char1->width-10);
+	}
 
-		    colorChangeFlag = 2;
+	for (int i = 0; i < totalCubes; i++) {
+	    Shape *s = &game->box[i];
+	    if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
+		if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
+		    // Top Collision
+		    if (char1->cy < boxTop[i] &&
+			    char1->cy > boxTop[i] - 10 &&
+			    char1->cx < boxRight[i] - 10 &&
+			    char1->cx > boxLeft[i] + 10) {
+			char1->cy = boxTop[i];
+			char1->inAirBool = false;
+			char1->jumpCount = 1;
+			char1->vel.y = -1;	
+			colorChangeFlag = 1;
 
-		    // Point System 
-		    awardPoint(char2, s);    
-		    removePoint(char1, s);    
+			// Point System 
+			awardPoint(char1, s);    
+			removePoint(char2, s);    
 
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char2->colorID;
-		}
-		// Right Collision
-		if (char2->cx < boxRight[i] && 
-			char2->cx > s->center.x &&
-			char2->cy < boxTop[i] - 10 &&
-			char2->cy > boxBot[i] + 10) {
-		    char2->cx = boxRight[i];
-		    //colorChangeFlag = 1;
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char1->colorID;
+		    } else {
+			char1->inAirBool = true;
+		    }
+		    // Bot Collision
+		    if (char1->cy > boxBot[i] &&
+			    char1->cy < boxBot[i] + 10 &&
+			    char1->cx < boxRight[i] - 10 &&
+			    char1->cx > boxLeft[i] + 10) {
+			char1->cy = boxBot[i];
+			char1->vel.y = -3;
 
-		    colorChangeFlag = 2;
+			colorChangeFlag = 1;
 
-		    // Point System 
-		    awardPoint(char2, s);    
-		    removePoint(char1, s);    
+			// Point System 
+			awardPoint(char1, s);    
+			removePoint(char2, s);    
 
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char2->colorID;
-		}
-		// Left Collision
-		if (char2->cx > boxLeft[i] &&
-			char2->cx < s->center.x &&
-			char2->cy < boxTop[i] - 10 &&
-			char2->cy > boxBot[i] + 10) {
-		    char2->cx = boxLeft[i];
-		    //colorChangeFlag = 1;
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char1->colorID;
+		    }
+		    // Right Collision
+		    if (char1->cx < boxRight[i] && 
+			    char1->cx > s->center.x &&
+			    char1->cy < boxTop[i] - 10 &&
+			    char1->cy > boxBot[i] + 10) {
+			char1->cx = boxRight[i];
+			//colorChangeFlag = 1;
 
-		    colorChangeFlag = 2;
+			colorChangeFlag = 1;
 
-		    // Point System 
-		    awardPoint(char2, s);    
-		    removePoint(char1, s);    
+			// Point System 
+			awardPoint(char1, s);    
 
-		    // Save box index # and location
-		    boxIndex = i;
-		    globalSaveBox = s;
-		    s->boxColorID = char2->colorID;
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char1->colorID;
+		    }
+		    // Left Collision
+		    if (char1->cx > boxLeft[i] &&
+			    char1->cx < s->center.x &&
+			    char1->cy < boxTop[i] - 10 &&
+			    char1->cy > boxBot[i] + 10) {
+			char1->cx = boxLeft[i];
+			//colorChangeFlag = 1;
+
+			colorChangeFlag = 1;
+
+			// Point System 
+			awardPoint(char1, s);    
+			removePoint(char2, s);    
+
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char1->colorID;
+		    }
 		}
 	    }
-	} 
-    }
-
-
-    // Blue Portal Collision
-    if (char1->cy < 425 && char1->cy > 380) {
-	if (char1->cx > 20 && char1->cx < 45) {
-	    // translate location
-	    printf("im here\n");
-	    char1->cx = 1190;
-	    char1->cy = 400;
 	}
-    }
-    // char 2
-    if (char2->cy < 425 && char2->cy > 380) {
-	if (char2->cx > 20 && char2->cx < 45) {
-	    // translate location
-	    printf("im here\n");
-	    char2->cx = 1190;
-	    char2->cy = 400;
+
+	// Player Collision char2
+	for (int i = 0; i < totalCubes; i++) {
+	    Shape *s = &game->box[i];
+	    if (char2->cy < boxTop[i] && char2->cy > boxBot[i]) {
+		if (char2->cx > boxLeft[i] && char2->cx < boxRight[i]) {
+		    // Top Collision
+		    if (char2->cy < boxTop[i] &&
+			    char2->cy > boxTop[i] - 10 &&
+			    char2->cx < boxRight[i] - 10 &&
+			    char2->cx > boxLeft[i] + 10) {
+			char2->cy = boxTop[i];
+			char2->inAirBool = false;
+			char2->jumpCount = 1;
+			char2->vel.y = -1;	
+			colorChangeFlag = 2;
+
+			// Point System 
+			awardPoint(char2, s);    
+			removePoint(char1, s);    
+
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char2->colorID;
+		    } else {
+			char2->inAirBool = true;
+		    }
+		    // Bot Collision
+		    if (char2->cy > boxBot[i] &&
+			    char2->cy < boxBot[i] + 10 &&
+			    char2->cx < boxRight[i] - 10 &&
+			    char2->cx > boxLeft[i] + 10) {
+			char2->cy = boxBot[i];
+			char2->vel.y = -3;
+
+			colorChangeFlag = 2;
+
+			// Point System 
+			awardPoint(char2, s);    
+			removePoint(char1, s);    
+
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char2->colorID;
+		    }
+		    // Right Collision
+		    if (char2->cx < boxRight[i] && 
+			    char2->cx > s->center.x &&
+			    char2->cy < boxTop[i] - 10 &&
+			    char2->cy > boxBot[i] + 10) {
+			char2->cx = boxRight[i];
+			//colorChangeFlag = 1;
+
+			colorChangeFlag = 2;
+
+			// Point System 
+			awardPoint(char2, s);    
+			removePoint(char1, s);    
+
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char2->colorID;
+		    }
+		    // Left Collision
+		    if (char2->cx > boxLeft[i] &&
+			    char2->cx < s->center.x &&
+			    char2->cy < boxTop[i] - 10 &&
+			    char2->cy > boxBot[i] + 10) {
+			char2->cx = boxLeft[i];
+			//colorChangeFlag = 1;
+
+			colorChangeFlag = 2;
+
+			// Point System 
+			awardPoint(char2, s);    
+			removePoint(char1, s);    
+
+			// Save box index # and location
+			boxIndex = i;
+			globalSaveBox = s;
+			s->boxColorID = char2->colorID;
+		    }
+		}
+	    } 
 	}
-    }
-    //
-    // Orange Portal Collision
-    if (char1->cy < 425 && char1->cy > 380) {
-	if (char1->cx > 1220 && char1->cx < 1250) {
-	    // translate location
-	    printf("im here\n");
-	    char1->cx = 55;
-	    char1->cy = 400;
+
+
+	// Blue Portal Collision
+	if (char1->cy < 425 && char1->cy > 380) {
+	    if (char1->cx > 20 && char1->cx < 45) {
+		// translate location
+		printf("im here\n");
+		char1->cx = 1190;
+		char1->cy = 400;
+	    }
 	}
-    }
-    // char 2
-    if (char2->cy < 425 && char2->cy > 380) {
-	if (char2->cx > 1220 && char2->cx < 1250) {
-	    // translate location
-	    printf("im here\n");
-	    char2->cx = 55;
-	    char2->cy = 400;
+	// char 2
+	if (char2->cy < 425 && char2->cy > 380) {
+	    if (char2->cx > 20 && char2->cx < 45) {
+		// translate location
+		printf("im here\n");
+		char2->cx = 1190;
+		char2->cy = 400;
+	    }
 	}
-    }
-    //	
-
-
-    // Player 1 Movement Keys
-    if (gl.keys[XK_Right]) {
-	char1->cx += 8;
-    }
-
-    if (gl.keys[XK_Left]) {
-	char1->cx += -8;
-    }
-
-    if (gl.keys[XK_Up] && char1->jumpCount == 1) {
-	jump(char1);
-    }
-
-
-    // Player 2 Movement Keys
-    if (gl.keys[XK_d]) {
-	char2->cx += 8;
-    }
-
-    if (gl.keys[XK_a]) {
-	char2->cx += -8;
-    }
-
-    if (gl.keys[XK_w] && char2->jumpCount == 1 ) {
-	jump(char2);
-    }
-
-
-    // Player 1 Animation
-    if (gl.keys[XK_Right]) {
-	leftFaceChar1 = 0;
-	//man is walking...
-	//when time is up, advance the frame.
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay) {
-	    //advance
-	    ++gl.yellowcharFrame;
-	    if (gl.yellowcharFrame >= 2)
-		gl.yellowcharFrame -= 2;
-	    timers.recordTime(&timers.yellowcharTime);
+	//
+	// Orange Portal Collision
+	if (char1->cy < 425 && char1->cy > 380) {
+	    if (char1->cx > 1220 && char1->cx < 1250) {
+		// translate location
+		printf("im here\n");
+		char1->cx = 55;
+		char1->cy = 400;
+	    }
 	}
-    }
-
-    if (gl.keys[XK_Left]) {
-	leftFaceChar1 = 1;
-	//man is walking...
-	//when time is up, advance the frame.
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay) {
-	    //advance
-	    ++gl.yellowcharFrame;
-	    if (gl.yellowcharFrame >= 2)
-		gl.yellowcharFrame -= 2;
-	    timers.recordTime(&timers.yellowcharTime);
+	// char 2
+	if (char2->cy < 425 && char2->cy > 380) {
+	    if (char2->cx > 1220 && char2->cx < 1250) {
+		// translate location
+		printf("im here\n");
+		char2->cx = 55;
+		char2->cy = 400;
+	    }
 	}
-    }
+	//	
 
-    // Player 2 Animation 
-    if (gl.keys[XK_d]) {
-	leftFaceChar2 = 0;
-	//man is walking...
-	//when time is up, advance the frame.
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay) {
-	    //advance
-	    ++gl.bluecharFrame;
-	    if (gl.bluecharFrame >= 2)
-		gl.bluecharFrame -= 2;
-	    timers.recordTime(&timers.bluecharTime);
+
+	// Player 1 Movement Keys
+	if (gl.keys[XK_Right]) {
+	    char1->cx += 8;
 	}
-    }
 
-    if (gl.keys[XK_a]) {
-	leftFaceChar2 = 1;
-	//man is walking...
-	//when time is up, advance the frame.
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay) {
-	    //advance
-	    ++gl.bluecharFrame;
-	    if (gl.bluecharFrame >= 2)
-		gl.bluecharFrame -= 2;
-	    timers.recordTime(&timers.bluecharTime);
+	if (gl.keys[XK_Left]) {
+	    char1->cx += -8;
 	}
-    }
 
-    if (gameFrame > 0) {
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.blueportalTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay + 0.5) {
-	    //advance
-	    ++gl.blueportalFrame;
-	    if (gl.blueportalFrame >= 2)
-		gl.blueportalFrame -= 2;
-	    timers.recordTime(&timers.blueportalTime);
+	if (gl.keys[XK_Up] && char1->jumpCount == 1) {
+	    jump(char1);
 	}
-    }
 
-    if (gameFrame > 0) {
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.orangeportalTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay + 0.5) {
-	    //advance
-	    ++gl.orangeportalFrame;
-	    if (gl.orangeportalFrame >= 2)
-		gl.orangeportalFrame -= 2;
-	    timers.recordTime(&timers.orangeportalTime);
+
+	// Player 2 Movement Keys
+	if (gl.keys[XK_d]) {
+	    char2->cx += 8;
 	}
+
+	if (gl.keys[XK_a]) {
+	    char2->cx += -8;
+	}
+
+	if (gl.keys[XK_w] && char2->jumpCount == 1 ) {
+	    jump(char2);
+	}
+
+
+	// Player 1 Animation
+	if (gl.keys[XK_Right]) {
+	    leftFaceChar1 = 0;
+	    //man is walking...
+	    //when time is up, advance the frame.
+	    timers.recordTime(&timers.timeCurrent);
+	    double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
+	    if (timeSpan > gl.delay) {
+		//advance
+		++gl.yellowcharFrame;
+		if (gl.yellowcharFrame >= 2)
+		    gl.yellowcharFrame -= 2;
+		timers.recordTime(&timers.yellowcharTime);
+	    }
+	}
+
+	if (gl.keys[XK_Left]) {
+	    leftFaceChar1 = 1;
+	    //man is walking...
+	    //when time is up, advance the frame.
+	    timers.recordTime(&timers.timeCurrent);
+	    double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
+	    if (timeSpan > gl.delay) {
+		//advance
+		++gl.yellowcharFrame;
+		if (gl.yellowcharFrame >= 2)
+		    gl.yellowcharFrame -= 2;
+		timers.recordTime(&timers.yellowcharTime);
+	    }
+	}
+
+	// Player 2 Animation 
+	if (gl.keys[XK_d]) {
+	    leftFaceChar2 = 0;
+	    //man is walking...
+	    //when time is up, advance the frame.
+	    timers.recordTime(&timers.timeCurrent);
+	    double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
+	    if (timeSpan > gl.delay) {
+		//advance
+		++gl.bluecharFrame;
+		if (gl.bluecharFrame >= 2)
+		    gl.bluecharFrame -= 2;
+		timers.recordTime(&timers.bluecharTime);
+	    }
+	}
+
+	if (gl.keys[XK_a]) {
+	    leftFaceChar2 = 1;
+	    //man is walking...
+	    //when time is up, advance the frame.
+	    timers.recordTime(&timers.timeCurrent);
+	    double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
+	    if (timeSpan > gl.delay) {
+		//advance
+		++gl.bluecharFrame;
+		if (gl.bluecharFrame >= 2)
+		    gl.bluecharFrame -= 2;
+		timers.recordTime(&timers.bluecharTime);
+	    }
+	}
+
+	if (gameFrame > 0) {
+	    timers.recordTime(&timers.timeCurrent);
+	    double timeSpan = timers.timeDiff(&timers.blueportalTime, &timers.timeCurrent);
+	    if (timeSpan > gl.delay + 0.5) {
+		//advance
+		++gl.blueportalFrame;
+		if (gl.blueportalFrame >= 2)
+		    gl.blueportalFrame -= 2;
+		timers.recordTime(&timers.blueportalTime);
+	    }
+	}
+
+	if (gameFrame > 0) {
+	    timers.recordTime(&timers.timeCurrent);
+	    double timeSpan = timers.timeDiff(&timers.orangeportalTime, &timers.timeCurrent);
+	    if (timeSpan > gl.delay + 0.5) {
+		//advance
+		++gl.orangeportalFrame;
+		if (gl.orangeportalFrame >= 2)
+		    gl.orangeportalFrame -= 2;
+		timers.recordTime(&timers.orangeportalTime);
+	    }
+	}
+
+	// Jump Update
+	//printf("Char 1 vel y: %f\n", char1->vel.y);
+	//printf("Char 2 vel y: %f\n", char2->vel.y);
+	char1->cy += char1->vel.y;
+	char2->cy += char2->vel.y;
     }
-
-    // Jump Updatei
-    //printf("Char 1 vel y: %f\n", char1->vel.y);
-    //printf("Char 2 vel y: %f\n", char2->vel.y);
-    char1->cy += char1->vel.y;
-    char2->cy += char2->vel.y;
-
 }
 
 void jump(Character *player) 
@@ -1627,27 +1682,67 @@ void removePoint(Character *player, Shape *s)
 
 void render(Game *game)
 {
-    float w, h;
-    glClear(GL_COLOR_BUFFER_BIT);
+    if (game->state == STATE_STARTMENU)
+	drawStartMenu();
 
-    //renderViewport(0, gl.xres, gl.yres);
+    if (game->state == STATE_CHARSELECT)
+	drawCharSelectMenu();
 
-    //Draw shapes...
-    Shape *s;
+    if (game->state == STATE_GAMEPLAY)
+    {
+	float w, h;
+	glClear(GL_COLOR_BUFFER_BIT);
 
-    //==============================================
-    // Draw Map
-    //
-    // BOTTOM SCREEN
+	//renderViewport(0, gl.xres, gl.yres);
 
-    // Init map first
-    if (initializeFlag) { 
+	//Draw shapes...
+	Shape *s;
+
+	//==============================================
+	// Draw Map
+	//
+	// BOTTOM SCREEN
+
+	// Init map first
+	if (initializeFlag) { 
+	    for (int i = 1; i < totalCubes; i++) {
+		glColor3ub(10,255,0);
+
+		s = &game->box[i];
+		s->boxColorID = 0;
+		//cout << s->boxColorID << endl;
+		glPushMatrix();
+		glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+		w = s->width;
+		h = s->height;
+		glBegin(GL_QUADS);
+		glVertex2i(-w, -h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w, -h);
+		glEnd();
+		glPopMatrix();
+	    }
+	}
+	initializeFlag = 0;
+
+	// Changing Color
 	for (int i = 1; i < totalCubes; i++) {
-	    glColor3ub(10,255,0);
-
 	    s = &game->box[i];
-	    s->boxColorID = 0;
-	    //cout << s->boxColorID << endl;
+	    if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
+		changeColor(char1, globalSaveBox);
+		//awardPoint(pointFlag);
+		//pointFlag = false;
+	    } else if (colorChangeFlag == 2 && boxIndex == i) {
+		changeColor(char2, globalSaveBox);
+	    } else if (s->boxColorID == 1) {
+		glColor3ub(255,255,0);
+	    } else if (s->boxColorID == 2) {
+		glColor3ub(30,144,255);
+	    } else {
+		glColor3ub(10,255,0);
+	    }
+
 	    glPushMatrix();
 	    glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
 	    w = s->width;
@@ -1660,49 +1755,136 @@ void render(Game *game)
 	    glEnd();
 	    glPopMatrix();
 	}
+
+
+	// UI DRAWING
+	drawPlayerOne();
+	drawPlayerTwo();
+	drawBluePortal();
+	drawOrangePortal();
+	drawTimerBackground();
+	drawHealthBar1();
+	drawHealthBar2();
+	drawHealthVal1();
+	drawHealthVal2();
+	drawCircleUI1();
+	drawCircleUI2();
+	drawProfile1();
+	drawProfile2();
+	drawCircle(30);
+	countdown();
+	//
+	drawFrameRate();
     }
-    initializeFlag = 0;
+}
 
+void drawStartMenu()
+{
+    // background of start menu
+    rWithoutAlpha(gl.menubgTexture, gl.xres, gl.yres);
+    // draw title text
+    rWithAlpha(90, 500, gl.xres/2, 580, gl.colordominationTexture);	
+    // draw play text
+    rWithAlpha(50, 200, gl.xres/2, 400, gl.playTexture);	
+    // draw title text
+    rWithAlpha(50, 200, gl.xres/2, 300, gl.controlsTexture);	
+    // draw title text
+    rWithAlpha(50, 200, gl.xres/2, 200, gl.creditsTexture);	
+    // draw title text
+    rWithAlpha(50, 200, gl.xres/2, 100, gl.quitTexture);	
+}
 
-    // Changing Color
-    for (int i = 1; i < totalCubes; i++) {
-	s = &game->box[i];
-	if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
-	    changeColor(char1, globalSaveBox);
-	    //awardPoint(pointFlag);
-	    //pointFlag = false;
-	} else if (colorChangeFlag == 2 && boxIndex == i) {
-	    changeColor(char2, globalSaveBox);
-	} else if (s->boxColorID == 1) {
-	    glColor3ub(255,255,0);
-	} else if (s->boxColorID == 2) {
-	    glColor3ub(30,144,255);
-	} else {
-	    glColor3ub(10,255,0);
-	}
+/*void drawControlsMenu()
+{
 
-	glPushMatrix();
-	glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
-	w = s->width;
-	h = s->height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i( w, h);
-	glVertex2i( w, -h);
-	glEnd();
-	glPopMatrix();
+}
+*/
+
+void drawCharSelectMenu()
+{
+    // draw char select background
+    rWithoutAlpha(gl.charselectbgTexture, gl.xres, gl.yres);
+    // draw char select text
+    rWithAlpha(80, 500, gl.xres/2, 580, gl.charselectionTexture);	
+    // draw frame top left
+    renderFrame(90, 90, gl.xres/3, 375, gl.levelselectTexture);
+    // draw frame top right
+    renderFrame(90, 90, gl.xres*2/3, 375, gl.levelselectTexture);
+    // draw frame bot left
+    renderFrame(90, 90, gl.xres/3, 150, gl.levelselectTexture);
+    // draw frame bot right
+    renderFrame(90, 90, gl.xres*2/3, 150, gl.levelselectTexture);
+}
+
+void renderFrame(int h, int w, int trans_x, int trans_y, GLuint texture) 
+{
+    glPushMatrix();
+    glColor3f(1.0,1.0,1.0);
+    glTranslatef(trans_x, trans_y, 0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 1.0); glVertex2i(-w,-h);
+    glTexCoord2f(0.0, 0.0); glVertex2i(-w,h);
+    glTexCoord2f(1.0, 0.0); glVertex2i(w,h);
+    glTexCoord2f(1.0, 1.0); glVertex2i(w,-h);
+    glEnd();
+    glPopMatrix();
+}
+
+void rWithAlpha(int h, int w, int trans_x, int trans_y, GLuint texture) 
+{
+    glPushMatrix();
+    glColor3f(1.0,1.0,1.0);
+    glTranslatef(trans_x, trans_y, 0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 1.0); glVertex2i(-w,-h);
+    glTexCoord2f(0.0, 0.0); glVertex2i(-w,h);
+    glTexCoord2f(1.0, 0.0); glVertex2i(w,h);
+    glTexCoord2f(1.0, 1.0); glVertex2i(w,-h);
+    glEnd();
+    glPopMatrix();
+    glDisable(GL_ALPHA_TEST);	
+}
+
+void rWithoutAlpha(GLuint texture, int xres, int yres)
+{
+    glPushMatrix();
+    glColor3f(1.0,1.0,1.0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glEnable(GL_TEXTURE_2D);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 1.0); glVertex2i(0,0);
+    glTexCoord2f(0.0, 0.0); glVertex2i(0,yres);
+    glTexCoord2f(1.0, 0.0); glVertex2i(xres,yres);
+    glTexCoord2f(1.0, 1.0); glVertex2i(xres,0);
+    glEnd();
+    glPopMatrix();        
+}
+
+void drawFrameRate() 
+{
+    if (gl.frameRateOn) {
+	// Frame Rate	
+	Rect r;
+	unsigned int c = 0x002d88d8;
+	r.bot = gl.yres - 40;
+	r.left = (50);
+	r.center = 0;
+	ggprint16(&r, 32, c, "Frame Rate : %f", fps);
     }
+}
 
+void drawPlayerOne() 
+{
     // CHARACTER
-    //Character *char1;
-    //float cx = gl.xres/2.0;
-    //float cy = gl.yres/2.0;
-    //h = 200.0;
-    //w = h * 0.5;
-    //
-    //char1->cx = gl.xres/2;
-    //char1->cy = gl.yres/2;
     //
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
@@ -1742,7 +1924,10 @@ void render(Game *game)
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_ALPHA_TEST); 	
+}
 
+void drawPlayerTwo()
+{
     // Player 2    
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
@@ -1751,12 +1936,12 @@ void render(Game *game)
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
     glColor4ub(255,255,255,255);
-    ix = gl.bluecharFrame % 2;
-    iy = 1;
+    int ix = gl.bluecharFrame % 2;
+    int iy = 1;
     if (gl.bluecharFrame >= 2)
 	iy = 0;
-    tx = (float)ix / 2.0;
-    ty = (float)iy / 1.0;
+    float tx = (float)ix / 2.0;
+    float ty = (float)iy / 1.0;
 
     glBegin(GL_QUADS);
     if (gl.keys[XK_d] || !leftFaceChar2)
@@ -1776,39 +1961,10 @@ void render(Game *game)
 	glTexCoord2f(tx, ty + 1);       glVertex2i(char2->cx + char2->width, char2->cy - char2->height);
 	gl.resultChar2 = 1;
     }
-
-
     glEnd();
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_ALPHA_TEST); 	
-
-
-    // UI DRAWING
-    drawBluePortal();
-    drawOrangePortal();
-    drawTimerBackground();
-    drawHealthBar1();
-    drawHealthBar2();
-    drawHealthVal1();
-    drawHealthVal2();
-    drawCircleUI1();
-    drawCircleUI2();
-    drawProfile1();
-    drawProfile2();
-    drawCircle(30);
-    countdown();
-    //
-
-    if (gl.frameRateOn) {
-	// Frame Rate	
-	Rect r;
-	unsigned int c = 0x002d88d8;
-	r.bot = gl.yres - 40;
-	r.left = (50);
-	r.center = 0;
-	ggprint16(&r, 32, c, "Frame Rate : %f", fps);
-    }
 }
 
 void drawBluePortal() 
