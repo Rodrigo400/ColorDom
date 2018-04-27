@@ -99,6 +99,7 @@ extern class Global {
 	int timerFrame;
 	int healthbarFrame;
         int keys[65536];
+	int cursorLocation;
         double delay;
 
         Ppmimage *mainchar1Image;
@@ -174,6 +175,7 @@ extern class Global {
             done = 0;
             resultChar1 = 0;
             resultChar2 = 0;
+	    cursorLocation = 0;
             //
             mainchar1Frame = 0;
             yellowcharFrame = 0;

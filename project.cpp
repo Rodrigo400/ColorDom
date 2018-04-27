@@ -61,7 +61,6 @@ const float gravity = -9;
 //===============================================
 // Global Instance
 // ==============================================
-
 Timers timers;
 Global gl;
 Character *char1, *char2;
@@ -1183,7 +1182,7 @@ void check_keys(XEvent *e)
 		   gl.frameRateOn ^= 1;
 		   break;
 	case XK_Return:
-		   if (game.state == STATE_STARTMENU) { 
+		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
 		       game.state = STATE_CHARSELECT;
 		       break;
 		   }
@@ -1196,6 +1195,19 @@ void check_keys(XEvent *e)
 		   gl.delay -= 0.005;
 		   if (gl.delay < 0.005)
 		       gl.delay = 0.005;
+	case XK_Up:
+		   if (game.state == STATE_STARTMENU) {
+		       if (gl.cursorLocation != 0) {
+			   gl.cursorLocation -= 1;
+		       }
+		   }
+		   break;
+	case XK_Down:
+		   if (game.state == STATE_STARTMENU) {
+		       if (gl.cursorLocation != 3) {
+			   gl.cursorLocation += 1;
+		       }
+		   }
 		   break;
 	case XK_minus:
 		   gl.delay += 0.005;
@@ -1595,9 +1607,9 @@ void drawCircle(float radius)
 	if (char1->points > char2->points) 
 	    glColor3ub(255,255,0);
 	else if (char1->points < char2->points)
-	    glColor3ub(30,144,255);
+	    glColor3ub(19,13,255);
 	else
-	    glColor3ub(128,128,128);
+	    glColor3ub(80,80,80);
 
 	glVertex2f(cos(degInRad)*radius + gl.xres/2, sin(degInRad)*radius + gl.yres-50);
     }
@@ -1642,7 +1654,7 @@ void changeColor(Character *player, Shape *box)
 	glColor3ub(255,255,0);
     } 
     if (player->colorID == 2) {			// BLUE
-	glColor3ub(30,144,255);
+	glColor3ub(69,255,255);
     }
 
     Shape *s;
@@ -1701,12 +1713,17 @@ void render(Game *game)
 	//==============================================
 	// Draw Map
 	//
+	// draw ingame background
+	//rWithoutAlpha(gl.ingamebgTexture, gl.xres, gl.yres);
+	rWithoutAlpha(gl.mechabgTexture, gl.xres, gl.yres);
+
+	
 	// BOTTOM SCREEN
 
 	// Init map first
 	if (initializeFlag) { 
 	    for (int i = 1; i < totalCubes; i++) {
-		glColor3ub(10,255,0);
+		glColor3ub(100,100,100);
 
 		s = &game->box[i];
 		s->boxColorID = 0;
@@ -1738,9 +1755,9 @@ void render(Game *game)
 	    } else if (s->boxColorID == 1) {
 		glColor3ub(255,255,0);
 	    } else if (s->boxColorID == 2) {
-		glColor3ub(30,144,255);
+		glColor3ub(69,255,255);
 	    } else {
-		glColor3ub(10,255,0);
+		glColor3ub(100,100,100);
 	    }
 
 	    glPushMatrix();
@@ -1780,18 +1797,48 @@ void render(Game *game)
 
 void drawStartMenu()
 {
+    float h = 40;
+    float w = 170;
+    float multiplier = 1.25;
+
+    //gl.cursorLocation = 0;
+
     // background of start menu
     rWithoutAlpha(gl.menubgTexture, gl.xres, gl.yres);
+   
+    printf("Cursor value: %d\n", gl.cursorLocation); 
+    // draw splatter left
+    rWithAlpha(60, 60, gl.xres/4 + 40, 400-(gl.cursorLocation*100), gl.splatterTexture);	
+    // draw splatter right
+    rWithAlpha(60, 60, gl.xres*3/4 -50, 400-(gl.cursorLocation*100), gl.splatterTexture);	
+    
     // draw title text
     rWithAlpha(90, 500, gl.xres/2, 580, gl.colordominationTexture);	
+   
     // draw play text
-    rWithAlpha(50, 200, gl.xres/2, 400, gl.playTexture);	
-    // draw title text
-    rWithAlpha(50, 200, gl.xres/2, 300, gl.controlsTexture);	
-    // draw title text
-    rWithAlpha(50, 200, gl.xres/2, 200, gl.creditsTexture);	
-    // draw title text
-    rWithAlpha(50, 200, gl.xres/2, 100, gl.quitTexture);	
+    if (gl.cursorLocation == 0) {
+	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 400, gl.playTexture);
+    } else {	
+	rWithAlpha(h, w, gl.xres/2, 400, gl.playTexture);
+    }   
+    // draw controls text
+    if (gl.cursorLocation == 1) {
+    	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 300, gl.controlsTexture);
+    } else {	
+    rWithAlpha(h, w, gl.xres/2, 300, gl.controlsTexture);
+    }    
+    // draw credits text
+    if (gl.cursorLocation == 2) {
+	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 200, gl.creditsTexture);
+    } else {
+	rWithAlpha(h, w, gl.xres/2, 200, gl.creditsTexture);
+    }
+    // draw quit text
+    if (gl.cursorLocation == 3) {
+	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 100, gl.quitTexture);
+    } else {    
+	rWithAlpha(h, w, gl.xres/2, 100, gl.quitTexture);
+    }    
 }
 
 /*void drawControlsMenu()
