@@ -100,6 +100,7 @@ extern class Global {
 	int healthbarFrame;
         int keys[65536];
 	int cursorLocation;
+	int cursorLocation2;
         double delay;
 
         Ppmimage *mainchar1Image;
@@ -127,7 +128,10 @@ extern class Global {
 	Ppmimage *oneImage;
 	Ppmimage *playImage;
 	Ppmimage *quitImage;
-	Ppmimage *splatterImage;
+	Ppmimage *splatteryellowImage;
+	Ppmimage *splatterblueImage;
+	Ppmimage *splattergreenImage;
+	Ppmimage *splatterpurpleImage;
 	Ppmimage *threeImage;
 	Ppmimage *twoImage;
 	Ppmimage *charselectbgImage;
@@ -159,7 +163,10 @@ extern class Global {
 	GLuint oneTexture;
 	GLuint playTexture;
 	GLuint quitTexture;
-	GLuint splatterTexture;
+	GLuint splatteryellowTexture;
+	GLuint splatterblueTexture;
+	GLuint splattergreenTexture;
+	GLuint splatterpurpleTexture;
 	GLuint threeTexture;
 	GLuint twoTexture;
 	GLuint charselectbgTexture;
@@ -176,6 +183,7 @@ extern class Global {
             resultChar1 = 0;
             resultChar2 = 0;
 	    cursorLocation = 0;
+	    cursorLocation2 = 1;
             //
             mainchar1Frame = 0;
             yellowcharFrame = 0;
@@ -212,7 +220,10 @@ extern class Global {
 	    oneImage = NULL;
 	    playImage = NULL;
 	    quitImage = NULL;
-	    splatterImage = NULL;
+	    splatteryellowImage = NULL;
+	    splatterblueImage = NULL;
+	    splattergreenImage = NULL;
+	    splatterpurpleImage = NULL;
 	    threeImage = NULL;
 	    twoImage = NULL;
 	    charselectbgImage = NULL;
@@ -241,6 +252,7 @@ class Character {
         int points;
 	int inAirBool;
 	int jumpCount;
+	int health;
         Vec dir;
         Vec pos;
         Vec vel;
@@ -252,6 +264,7 @@ class Character {
             points = 0;
 	    inAirBool = 1;
 	    jumpCount = 1;
+	    health = 53;
         }
 };
 

@@ -116,6 +116,7 @@ void render(Game *game);
 void rWithoutAlpha(GLuint, int, int);
 void rWithAlpha(int, int, int, int, GLuint);
 void renderFrame(int, int, int, int, GLuint);
+void sCharPose(int, int, int, int, GLuint, int, int);
 // ==============================================
 // Functions
 // ==============================================
@@ -554,7 +555,6 @@ void init_opengl(void)
     system("convert ./images/blueProfile.png ./images/blueprofile.ppm");
     system("convert ./images/greenProfile.png ./images/greenprofile.ppm");
     system("convert ./images/purpleProfile.png ./images/purpleprofile.ppm");
-    
     system("convert ./images/charselection.png ./images/charselection.ppm");
     system("convert ./images/colordomination.png ./images/colordomination.ppm");
     system("convert ./images/controls.png ./images/controls.ppm");
@@ -567,15 +567,16 @@ void init_opengl(void)
     system("convert ./images/one.png ./images/one.ppm");
     system("convert ./images/play.png ./images/play.ppm");
     system("convert ./images/quit.png ./images/quit.ppm");
-    system("convert ./images/splatter.png ./images/splatter.ppm");
+    system("convert ./images/splatteryellow.png ./images/splatteryellow.ppm");
+    system("convert ./images/splatterblue.png ./images/splatterblue.ppm");
+    system("convert ./images/splattergreen.png ./images/splattergreen.ppm");
+    system("convert ./images/splatterpurple.png ./images/splatterpurple.ppm");
     system("convert ./images/three.png ./images/three.ppm");
     system("convert ./images/two.png ./images/two.ppm");
-    
     system("convert ./images/charselectbg.png ./images/charselectbg.ppm");
     system("convert ./images/ingamebg.png ./images/ingamebg.ppm");
     system("convert ./images/menubg.png ./images/menubg.ppm");
     //==============================================
-
 
     //==============================================
     // Get Images
@@ -605,14 +606,16 @@ void init_opengl(void)
     gl.oneImage = ppm6GetImage("./images/one.ppm");	
     gl.playImage = ppm6GetImage("./images/play.ppm");	
     gl.quitImage = ppm6GetImage("./images/quit.ppm");	
-    gl.splatterImage = ppm6GetImage("./images/splatter.ppm");	
+    gl.splatteryellowImage = ppm6GetImage("./images/splatteryellow.ppm");	
+    gl.splatterblueImage = ppm6GetImage("./images/splatterblue.ppm");	
+    gl.splattergreenImage = ppm6GetImage("./images/splattergreen.ppm");	
+    gl.splatterpurpleImage = ppm6GetImage("./images/splatterpurple.ppm");	
     gl.threeImage = ppm6GetImage("./images/three.ppm");	
     gl.twoImage = ppm6GetImage("./images/two.ppm");	
     gl.charselectbgImage = ppm6GetImage("./images/charselectbg.ppm");	
     gl.ingamebgImage = ppm6GetImage("./images/ingamebg.ppm");	
     gl.menubgImage = ppm6GetImage("./images/menubg.ppm");	
     //==============================================
-
 
     //==============================================
     // Generate Textures
@@ -643,14 +646,16 @@ void init_opengl(void)
     glGenTextures(1, &gl.oneTexture);	
     glGenTextures(1, &gl.playTexture);	
     glGenTextures(1, &gl.quitTexture);	
-    glGenTextures(1, &gl.splatterTexture);	
+    glGenTextures(1, &gl.splatteryellowTexture);	
+    glGenTextures(1, &gl.splatterblueTexture);	
+    glGenTextures(1, &gl.splattergreenTexture);	
+    glGenTextures(1, &gl.splatterpurpleTexture);	
     glGenTextures(1, &gl.threeTexture);	
     glGenTextures(1, &gl.twoTexture);	
     glGenTextures(1, &gl.charselectbgTexture);	
     glGenTextures(1, &gl.ingamebgTexture);	
     glGenTextures(1, &gl.menubgTexture);	
     //==============================================
-
 
     //==============================================
     // Main Character 1
@@ -765,7 +770,7 @@ void init_opengl(void)
     //==============================================
 
     //==============================================
-    // Orange Portal
+    // Health Bar
     w = gl.healthbarImage->width;
     h = gl.healthbarImage->height;
     glBindTexture(GL_TEXTURE_2D, gl.healthbarTexture);
@@ -1003,17 +1008,59 @@ void init_opengl(void)
     //==============================================
     
     //==============================================
-    // Splatter
-    w = gl.splatterImage->width;
-    h = gl.splatterImage->height;
-    glBindTexture(GL_TEXTURE_2D, gl.splatterTexture);
+    // Splatter Yellow
+    w = gl.splatteryellowImage->width;
+    h = gl.splatteryellowImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.splatteryellowTexture);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    unsigned char *splatterData = buildAlphaData(gl.splatterImage);
+    unsigned char *splatteryellowData = buildAlphaData(gl.splatteryellowImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, splatterData);
-    free(splatterData);
-    unlink("./images/splatter.ppm"); 
+	    GL_RGBA, GL_UNSIGNED_BYTE, splatteryellowData);
+    free(splatteryellowData);
+    unlink("./images/splatteryellow.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Splatter Blue
+    w = gl.splatterblueImage->width;
+    h = gl.splatterblueImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.splatterblueTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *splatterblueData = buildAlphaData(gl.splatterblueImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, splatterblueData);
+    free(splatterblueData);
+    unlink("./images/splatterblue.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Splatter Green
+    w = gl.splattergreenImage->width;
+    h = gl.splattergreenImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.splattergreenTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *splattergreenData = buildAlphaData(gl.splattergreenImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, splattergreenData);
+    free(splattergreenData);
+    unlink("./images/splattergreen.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Splatter Purple
+    w = gl.splatterpurpleImage->width;
+    h = gl.splatterpurpleImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.splatterpurpleTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *splatterpurpleData = buildAlphaData(gl.splatterpurpleImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, splatterpurpleData);
+    free(splatterpurpleData);
+    unlink("./images/splatterpurple.ppm"); 
     //==============================================
     
     //==============================================
@@ -1181,9 +1228,13 @@ void check_keys(XEvent *e)
 	case XK_f:
 		   gl.frameRateOn ^= 1;
 		   break;
+	case XK_minus:
+		   char1->health -= 5;
+		   break;
 	case XK_Return:
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
 		       game.state = STATE_CHARSELECT;
+		       gl.cursorLocation = 0;
 		       break;
 		   }
 		   if (game.state == STATE_CHARSELECT) {
@@ -1201,6 +1252,11 @@ void check_keys(XEvent *e)
 			   gl.cursorLocation -= 1;
 		       }
 		   }
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation2 > 1) {
+			   gl.cursorLocation2 -= 2;
+		       }
+		   }
 		   break;
 	case XK_Down:
 		   if (game.state == STATE_STARTMENU) {
@@ -1208,9 +1264,53 @@ void check_keys(XEvent *e)
 			   gl.cursorLocation += 1;
 		       }
 		   }
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation2 < 2) {
+			   gl.cursorLocation2 += 2;
+		       }
+		   }
 		   break;
-	case XK_minus:
-		   gl.delay += 0.005;
+	case XK_Left: 
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation2 != 0) {
+			   gl.cursorLocation2 -= 1;
+		       }
+		   }
+		   break;
+	case XK_Right: 
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation2 != 3) {
+			   gl.cursorLocation2 += 1;
+		       }
+		   }
+		   break;
+	case XK_w:
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation > 1 ) {
+			   gl.cursorLocation -= 2;
+		       }
+		   }
+		   break;
+	case XK_s:
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation < 2) {
+			   gl.cursorLocation += 2;
+		       }
+		   }
+		   break;
+	case XK_d:
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation != 3) {
+			   gl.cursorLocation += 1;
+		       }
+		   }
+		   break;
+	case XK_a:
+		   if (game.state == STATE_CHARSELECT) {
+		       if (gl.cursorLocation != 0) {
+			   gl.cursorLocation -= 1;
+		       }
+		   }
 		   break;
     }		
 }
@@ -1808,9 +1908,9 @@ void drawStartMenu()
    
     printf("Cursor value: %d\n", gl.cursorLocation); 
     // draw splatter left
-    rWithAlpha(60, 60, gl.xres/4 + 40, 400-(gl.cursorLocation*100), gl.splatterTexture);	
+    rWithAlpha(60, 60, gl.xres/4 + 40, 400-(gl.cursorLocation*100), gl.splattergreenTexture);	
     // draw splatter right
-    rWithAlpha(60, 60, gl.xres*3/4 -50, 400-(gl.cursorLocation*100), gl.splatterTexture);	
+    rWithAlpha(60, 60, gl.xres*3/4 -50, 400-(gl.cursorLocation*100), gl.splattergreenTexture);	
     
     // draw title text
     rWithAlpha(90, 500, gl.xres/2, 580, gl.colordominationTexture);	
@@ -1849,19 +1949,91 @@ void drawStartMenu()
 
 void drawCharSelectMenu()
 {
+    int w, h;
+    w = 150; 
+    h = 150; 
+    printf("Cursor value2: %d\n", gl.cursorLocation2); 
+    
     // draw char select background
     rWithoutAlpha(gl.charselectbgTexture, gl.xres, gl.yres);
     // draw char select text
     rWithAlpha(80, 500, gl.xres/2, 580, gl.charselectionTexture);	
+    
+    // draw player one left splatter
+    if (gl.cursorLocation == 0) {
+    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatteryellowTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
+    }
+    if (gl.cursorLocation == 1) {
+    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterblueTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
+    }
+    if (gl.cursorLocation == 2) {
+    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splattergreenTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
+    }
+    if (gl.cursorLocation == 3) {
+    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterpurpleTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
+    }
+    // draw player two right splatter
+    if (gl.cursorLocation2 == 0) {
+    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatteryellowTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
+    }
+    if (gl.cursorLocation2 == 1) {
+    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterblueTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
+    }
+    if (gl.cursorLocation2 == 2) {
+    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splattergreenTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
+    }
+    if (gl.cursorLocation2 == 3) {
+    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterpurpleTexture);	
+    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
+    }
+    //
     // draw frame top left
-    renderFrame(90, 90, gl.xres/3, 375, gl.levelselectTexture);
+    renderFrame(80, 80, gl.xres/3+50, 375, gl.levelselectTexture);
     // draw frame top right
-    renderFrame(90, 90, gl.xres*2/3, 375, gl.levelselectTexture);
+    renderFrame(80, 80, gl.xres*2/3-50, 375, gl.levelselectTexture);
     // draw frame bot left
-    renderFrame(90, 90, gl.xres/3, 150, gl.levelselectTexture);
+    renderFrame(80, 80, gl.xres/3+50, 150, gl.levelselectTexture);
     // draw frame bot right
-    renderFrame(90, 90, gl.xres*2/3, 150, gl.levelselectTexture);
+    renderFrame(80, 80, gl.xres*2/3-50, 150, gl.levelselectTexture);
+    // draw top left char
+    sCharPose(gl.xres/3+50, 380, 55, 55, gl.yellowcharTexture, gl.yellowcharFrame%2, 1);
+    // draw top right char
+    sCharPose(gl.xres*2/3-50, 380, 55, 55, gl.bluecharTexture, gl.bluecharFrame%2, 1);
+    // draw bot left char
+    sCharPose(gl.xres/3+50, 155, 55, 55, gl.greencharTexture, gl.greencharFrame%2, 1);
+    // draw bot right char
+    sCharPose(gl.xres*2/3-50, 155, 55, 55, gl.purplecharTexture, gl.purplecharFrame%2, 1);
+    
+    
+    // draw p1 text
+    rWithAlpha(70, 40, gl.xres/6-40, gl.yres/2-100, gl.oneTexture);	
+    // draw p2 text
+    rWithAlpha(70, 50, gl.xres*5/6+40, gl.yres/2-100, gl.twoTexture);	
 }
+
+void sCharPose(int cx, int cy, int h, int w, GLuint texture, int ix, int iy)
+{
+    glPushMatrix();
+    glColor3f(1.0,1.0,1.0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(ix + .5, iy+1); glVertex2i(cx+w,cy-h);
+    glTexCoord2f(ix      , iy+1); glVertex2i(cx-w,cy-h);
+    glTexCoord2f(ix      , iy       ); glVertex2i(cx-w,cy+h);
+    glTexCoord2f(ix + .5, iy       ); glVertex2i(cx+w,cy+h);
+    glEnd();
+    glPopMatrix();
+} 
 
 void renderFrame(int h, int w, int trans_x, int trans_y, GLuint texture) 
 {
@@ -2289,7 +2461,7 @@ void drawHealthVal1()
 {
     Shape s;
     Shape boxes[100];
-    for (int i = 0; i < 53; i++) {
+    for (int i = 0; i < char1->health; i++) {
 	boxes[i].width = 3;
 	boxes[i].height = 39;
 	boxes[i].center.x = 198 + (i*7);
@@ -2315,7 +2487,7 @@ void drawHealthVal2()
 {
     Shape s;
     Shape boxes[100];
-    for (int i = 0; i < 53; i++) {
+    for (int i = 0; i < char2->health; i++) {
 	boxes[i].width = 3;
 	boxes[i].height = 39;
 	boxes[i].center.x = 737 + (i*7);
