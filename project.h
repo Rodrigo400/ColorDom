@@ -68,10 +68,19 @@ struct Shape {
     }
 };
 
-struct Particle {
-    Shape s;
-    Vec velocity;
-};
+extern class Bullet {
+    public:
+	float pos[2];
+	float vel[2];
+	float color[3];
+	float w;
+	float h;
+	float velValue;
+
+	void draw();
+	Bullet();
+
+}b;
 
 /*extern class Weapon {
   public:
@@ -101,7 +110,18 @@ extern class Global {
         int keys[65536];
 	int cursorLocation;
 	int cursorLocation2;
+	int activateFlicker;
+	//Particle particle[30];
+	//int particleVelocity;
+	//int particleCount;
         double delay;
+	int nbullets;
+	int pushingUp;
+	int pushingDown;
+	int pushingRight;
+	int pushingLeft;
+	int heartFlag;
+	Bullet *bullets;
 
         Ppmimage *mainchar1Image;
         Ppmimage *yellowcharImage;
@@ -171,6 +191,10 @@ extern class Global {
 	GLuint twoTexture;
 	GLuint charselectbgTexture;
 	GLuint ingamebgTexture;
+	GLuint tempTexture;
+	GLuint tempTexture2;
+	GLuint tempProfileTexture;
+	GLuint tempProfileTexture2;
 
 
         Vec box[50];
@@ -184,6 +208,15 @@ extern class Global {
             resultChar2 = 0;
 	    cursorLocation = 0;
 	    cursorLocation2 = 1;
+	    activateFlicker = 0;
+	    heartFlag = 0;
+	    //particleVelocity = 5;
+	    //particleCount = 7;
+	    pushingUp = 0;
+	    pushingDown = 0;
+	    pushingRight = 0;
+	    pushingLeft = 0;
+	    nbullets = 0;
             //
             mainchar1Frame = 0;
             yellowcharFrame = 0;
@@ -253,6 +286,7 @@ class Character {
 	int inAirBool;
 	int jumpCount;
 	int health;
+	int facingLeft;
         Vec dir;
         Vec pos;
         Vec vel;
@@ -265,6 +299,7 @@ class Character {
 	    inAirBool = 1;
 	    jumpCount = 1;
 	    health = 53;
+	    facingLeft = 0;
         }
 };
 
@@ -276,13 +311,12 @@ class Game {
         Shape boxPerimeter[20];
         Shape backgroundBlock[10];
         Character player[2];
-        Particle particle[MAX_PARTICLES];
+        //Particle particle[MAX_PARTICLES];
         int n;
         Game()
         {
             n = 0;
 	    state = STATE_STARTMENU;
-
         }
 };
 #endif

@@ -67,8 +67,8 @@ Character *char1, *char2;
 Shape *globalSaveBox;
 Game game;
 //Shape *s;
-bool leftFaceChar1 = 0; 
-bool leftFaceChar2 = 0; 
+//bool leftFaceChar1 = 0; 
+//bool leftFaceChar2 = 0; 
 int colorChangeFlag = 0;
 bool gravityOn = true;
 bool char1inAirBool = true;
@@ -109,7 +109,7 @@ void initXWindows(int w, int h);
 void init_opengl(void);
 void cleanupXWindows(void);
 void check_resize(XEvent *e);
-void check_mouse(XEvent *e, Game *game);
+void check_mouse(XEvent *e);
 void check_keys(XEvent *e);
 void physics(Game *game);
 void render(Game *game);
@@ -117,6 +117,9 @@ void rWithoutAlpha(GLuint, int, int);
 void rWithAlpha(int, int, int, int, GLuint);
 void renderFrame(int, int, int, int, GLuint);
 void sCharPose(int, int, int, int, GLuint, int, int);
+void physicsPortal();
+void bulletPhysics();
+void heartCollision(Character *);
 // ==============================================
 // Functions
 // ==============================================
@@ -135,21 +138,37 @@ void drawHealthBar1();
 void drawHealthBar2(); 
 void drawBluePortal();
 void drawOrangePortal();
-void drawProfile1(); 
-void drawProfile2();
+void drawProfile1(GLuint); 
+void drawProfile2(GLuint);
 void drawHealthVal1();
 void drawHealthVal2();
-void drawPlayerOne();
-void drawPlayerTwo();
+void drawPlayerOne(GLuint);
+void drawPlayerTwo(GLuint);
 void drawFrameRate();
 void drawStartMenu();
 void drawCharSelectMenu();
 // ==============================================
+Bullet::Bullet()
+{
+    velValue = 10;
+    pos[0] = char1->cx;
+    pos[1] = char1->cy;
+    vel[0] = 0;
+    vel[1] = 0;
+    w = 5;
+    h = 5;
+}
 
-// ==============================================
-// Ppm Images
-// ==============================================
-
+void Bullet::draw()
+{
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_QUADS);
+    glVertex2i(pos[0] - (w/2), pos[1] + (h/2));
+    glVertex2i(pos[0] + (w/2), pos[1] + (h/2));
+    glVertex2i(pos[0] + (w/2), pos[1] - (h/2));
+    glVertex2i(pos[0] - (w/2), pos[1] - (h/2));
+    glEnd();
+}
 
 
 // ==============================================
@@ -177,8 +196,8 @@ int main(int argc, char *argv[])
     //Game game;
     char1 = &game.player[0];
     char2 = &game.player[1];
-    char1->cx = 920;
-    char2->cx = 210;
+    char1->cx = 210;
+    char2->cx = 920;
     char1->cy = gl.yres/2 + 15;
     char2->cy = gl.yres/2 + 15;
 
@@ -325,7 +344,7 @@ int main(int argc, char *argv[])
 	    XEvent e;
 	    XNextEvent(dpy, &e);
 	    check_resize(&e);
-	    check_mouse(&e, &game);
+	    check_mouse(&e);
 	    check_keys(&e);
 	}
 	if (gameFrame > 0)
@@ -1120,21 +1139,7 @@ void init_opengl(void)
     //==============================================
 }
 
-void makeParticle(Game *game, int x, int y)
-{
-    if (game->n >= MAX_PARTICLES)
-	return;
-    //std::cout << "makeParticle() " << x << " " << y << std::endl;
-    //position of particle
-    Particle *p = &game->particle[game->n];
-    p->s.center.x = x;
-    p->s.center.y = y;
-    p->velocity.y = rnd() * 2.0 - 1.0;
-    p->velocity.x = rnd() * 2.0 - 1.0;
-    game->n++;
-}
-
-void check_mouse(XEvent *e, Game *game)
+void check_mouse(XEvent *e)
 {
     static int savex = 0;
     static int savey = 0;
@@ -1146,12 +1151,7 @@ void check_mouse(XEvent *e, Game *game)
     if (e->type == ButtonPress) {
 	if (e->xbutton.button==1) {
 	    //Left button was pressed
-	    int y = WINDOW_HEIGHT - e->xbutton.y;	
-	    makeParticle(game, e->xbutton.x, y);
-	    makeParticle(game, e->xbutton.x, y);
-	    makeParticle(game, e->xbutton.x, y);
-	    makeParticle(game, e->xbutton.x, y);
-	    makeParticle(game, e->xbutton.x, y);
+	    //int y = WINDOW_HEIGHT - e->xbutton.y;	
 	    return;
 	}
 	if (e->xbutton.button==3) {
@@ -1165,10 +1165,10 @@ void check_mouse(XEvent *e, Game *game)
 	savey = e->xbutton.y;
 	if (++n < 10)
 	    return;
-	int y = WINDOW_HEIGHT - e->xbutton.y;
+	//int y = WINDOW_HEIGHT - e->xbutton.y;
 	for (int i = 0; i < 10; i++)
 	{
-	    makeParticle(game, e->xbutton.x, y);
+	    //makeParticle(game, e->xbutton.x, y);
 	}
     }
 }
@@ -1231,15 +1231,29 @@ void check_keys(XEvent *e)
 	case XK_minus:
 		   char1->health -= 5;
 		   break;
+	case XK_Tab:
+		   if (game.state == STATE_GAMEPLAY) {
+		       game.state = STATE_CHARSELECT;
+		       gameFrame = 30;
+		   }
+		   break;
 	case XK_Return:
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
 		       game.state = STATE_CHARSELECT;
 		       gl.cursorLocation = 0;
 		       break;
 		   }
-		   if (game.state == STATE_CHARSELECT) {
+		   if (game.state == STATE_CHARSELECT &&
+			   gl.cursorLocation != gl.cursorLocation2) {
 		       game.state = STATE_GAMEPLAY;
 		       break;
+		   }
+		   break;
+	case XK_space:
+		   Bullet *b;
+		   for (int i = 0; i < gl.nbullets; i++) {
+		       b = &gl.bullets[i];
+		       b->draw();
 		   }
 		   break;
 	case XK_equal:
@@ -1318,8 +1332,26 @@ void check_keys(XEvent *e)
 void physics(Game *game)
 {
     if (game->state == STATE_GAMEPLAY) {
-	char1->colorID = 1;		// YELLOW
-	char2->colorID = 2;         // BLUE
+	if (gl.cursorLocation == 0)
+		char1->colorID = 1;		// YELLOW
+	if (gl.cursorLocation == 1)
+		char1->colorID = 2;	
+	if (gl.cursorLocation == 2)
+		char1->colorID = 3;	
+	if (gl.cursorLocation == 3)
+		char1->colorID = 4;	
+	    
+	if (gl.cursorLocation2 == 0)
+		char2->colorID = 1;		// YELLOW
+	if (gl.cursorLocation2 == 1)
+		char2->colorID = 2;	
+	if (gl.cursorLocation2 == 2)
+		char2->colorID = 3;	
+	if (gl.cursorLocation2 == 3)
+		char2->colorID = 4;	
+	    
+	//char1->colorID = 1;		// YELLOW
+	//char2->colorID = 2;         // BLUE
 
 	// this is good
 	//char1->cy += 0.2*gravity;
@@ -1528,7 +1560,6 @@ void physics(Game *game)
 	if (char1->cy < 425 && char1->cy > 380) {
 	    if (char1->cx > 20 && char1->cx < 45) {
 		// translate location
-		printf("im here\n");
 		char1->cx = 1190;
 		char1->cy = 400;
 	    }
@@ -1537,7 +1568,6 @@ void physics(Game *game)
 	if (char2->cy < 425 && char2->cy > 380) {
 	    if (char2->cx > 20 && char2->cx < 45) {
 		// translate location
-		printf("im here\n");
 		char2->cx = 1190;
 		char2->cy = 400;
 	    }
@@ -1547,7 +1577,6 @@ void physics(Game *game)
 	if (char1->cy < 425 && char1->cy > 380) {
 	    if (char1->cx > 1220 && char1->cx < 1250) {
 		// translate location
-		printf("im here\n");
 		char1->cx = 55;
 		char1->cy = 400;
 	    }
@@ -1556,45 +1585,51 @@ void physics(Game *game)
 	if (char2->cy < 425 && char2->cy > 380) {
 	    if (char2->cx > 1220 && char2->cx < 1250) {
 		// translate location
-		printf("im here\n");
 		char2->cx = 55;
 		char2->cy = 400;
 	    }
 	}
 	//	
 
-
+	printf("Char 1 facing: %d\n", char1->facingLeft);
+	printf("Char 2 facing: %d\n", char2->facingLeft);
 	// Player 1 Movement Keys
-	if (gl.keys[XK_Right]) {
+	if (gl.keys[XK_d]) {
+	    //leftFaceChar1 = 0;
+	    char1->facingLeft = 0;
 	    char1->cx += 8;
 	}
 
-	if (gl.keys[XK_Left]) {
+	if (gl.keys[XK_a]) {
+	    //leftFaceChar1 = 1;
+	    char1->facingLeft = 1;
 	    char1->cx += -8;
 	}
 
-	if (gl.keys[XK_Up] && char1->jumpCount == 1) {
+	if (gl.keys[XK_w] && char1->jumpCount == 1) {
 	    jump(char1);
 	}
-
-
 	// Player 2 Movement Keys
-	if (gl.keys[XK_d]) {
+	if (gl.keys[XK_Right]) {
+	    //leftFaceChar2 = 0;
+	    char2->facingLeft = 0;
 	    char2->cx += 8;
 	}
 
-	if (gl.keys[XK_a]) {
+	if (gl.keys[XK_Left]) {
+	    //leftFaceChar2 = 1;
+	    char2->facingLeft = 1;
 	    char2->cx += -8;
 	}
 
-	if (gl.keys[XK_w] && char2->jumpCount == 1 ) {
+	if (gl.keys[XK_Up] && char2->jumpCount == 1 ) {
 	    jump(char2);
 	}
-
+	//
 
 	// Player 1 Animation
-	if (gl.keys[XK_Right]) {
-	    leftFaceChar1 = 0;
+	if (gl.keys[XK_d]) {
+	    //leftFaceChar1 = 0;
 	    //man is walking...
 	    //when time is up, advance the frame.
 	    timers.recordTime(&timers.timeCurrent);
@@ -1608,8 +1643,8 @@ void physics(Game *game)
 	    }
 	}
 
-	if (gl.keys[XK_Left]) {
-	    leftFaceChar1 = 1;
+	if (gl.keys[XK_a]) {
+	    //leftFaceChar1 = 1;
 	    //man is walking...
 	    //when time is up, advance the frame.
 	    timers.recordTime(&timers.timeCurrent);
@@ -1624,8 +1659,23 @@ void physics(Game *game)
 	}
 
 	// Player 2 Animation 
-	if (gl.keys[XK_d]) {
-	    leftFaceChar2 = 0;
+	if (gl.keys[XK_Right]) {
+	    //leftFaceChar2 = 0;
+	    //man is waling...
+	    //when time is up, advance the frame.
+	    timers.recordTime(&timers.timeCurrent);
+	    double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
+	    if (timeSpan > gl.delay) {
+		//advance
+		++gl.bluecharFrame;
+		if (gl.bluecharFrame >= 2)
+		    gl.bluecharFrame -= 2;
+		timers.recordTime(&timers.bluecharTime);
+	    }
+	}
+
+	if (gl.keys[XK_Left]) {
+	    //leftFaceChar2 = 1;
 	    //man is walking...
 	    //when time is up, advance the frame.
 	    timers.recordTime(&timers.timeCurrent);
@@ -1639,53 +1689,45 @@ void physics(Game *game)
 	    }
 	}
 
-	if (gl.keys[XK_a]) {
-	    leftFaceChar2 = 1;
-	    //man is walking...
-	    //when time is up, advance the frame.
-	    timers.recordTime(&timers.timeCurrent);
-	    double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
-	    if (timeSpan > gl.delay) {
-		//advance
-		++gl.bluecharFrame;
-		if (gl.bluecharFrame >= 2)
-		    gl.bluecharFrame -= 2;
-		timers.recordTime(&timers.bluecharTime);
-	    }
-	}
-
-	if (gameFrame > 0) {
-	    timers.recordTime(&timers.timeCurrent);
-	    double timeSpan = timers.timeDiff(&timers.blueportalTime, &timers.timeCurrent);
-	    if (timeSpan > gl.delay + 0.5) {
-		//advance
-		++gl.blueportalFrame;
-		if (gl.blueportalFrame >= 2)
-		    gl.blueportalFrame -= 2;
-		timers.recordTime(&timers.blueportalTime);
-	    }
-	}
-
-	if (gameFrame > 0) {
-	    timers.recordTime(&timers.timeCurrent);
-	    double timeSpan = timers.timeDiff(&timers.orangeportalTime, &timers.timeCurrent);
-	    if (timeSpan > gl.delay + 0.5) {
-		//advance
-		++gl.orangeportalFrame;
-		if (gl.orangeportalFrame >= 2)
-		    gl.orangeportalFrame -= 2;
-		timers.recordTime(&timers.orangeportalTime);
-	    }
-	}
-
+	physicsPortal();
+	
+	
 	// Jump Update
-	//printf("Char 1 vel y: %f\n", char1->vel.y);
-	//printf("Char 2 vel y: %f\n", char2->vel.y);
+	heartCollision(char1);
+	heartCollision(char2);
+	bulletPhysics();	
 	char1->cy += char1->vel.y;
 	char2->cy += char2->vel.y;
     }
 }
 
+void physicsPortal() 
+{
+    if (gameFrame > 0) {
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.blueportalTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay + 0.5) {
+	    //advance
+	    ++gl.blueportalFrame;
+	    if (gl.blueportalFrame >= 2)
+		gl.blueportalFrame -= 2;
+	    timers.recordTime(&timers.blueportalTime);
+	}
+    }
+
+    if (gameFrame > 0) {
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.orangeportalTime, &timers.timeCurrent);
+	if (timeSpan > gl.delay + 0.5) {
+	    //advance
+	    ++gl.orangeportalFrame;
+	    if (gl.orangeportalFrame >= 2)
+		gl.orangeportalFrame -= 2;
+	    timers.recordTime(&timers.orangeportalTime);
+	}
+    }
+
+}
 void jump(Character *player) 
 {
     if (!player->inAirBool || player->jumpCount == 1) {
@@ -1703,18 +1745,83 @@ void drawCircle(float radius)
 
     for (int i = 0; i < 360; i++) {
 	float degInRad = i*DEG2RAD;
-	//float degInRad = DEG2RAD*gameFrame;
-	if (char1->points > char2->points) 
-	    glColor3ub(255,255,0);
-	else if (char1->points < char2->points)
-	    glColor3ub(19,13,255);
+	if (char1->points > char2->points) { 
+	    //glColor3ub(255,255,0);
+	    if (char1->colorID == 1) {			// YELLOW
+		glColor3ub(255,255,0);
+	    } 
+	    if (char1->colorID == 2) {			// BLUE
+		glColor3ub(69,255,255);
+	    }
+	    if (char1->colorID == 3) {
+		glColor3ub(155,238,46);			// GREEN
+	    }
+	    if (char1->colorID == 4) {	    
+		glColor3ub(216,12,225);			// PURPLE
+	    }
+	} else if (char1->points < char2->points) {
+	    //glColor3ub(19,13,255);
+	    if (char2->colorID == 1) {			// YELLOW
+		glColor3ub(255,255,0);
+	    } 
+	    if (char2->colorID == 2) {			// BLUE
+		glColor3ub(69,255,255);
+	    }
+	    if (char2->colorID == 3) {
+		glColor3ub(155,238,46);			// GREEN
+	    }
+	    if (char2->colorID == 4) {	    
+		glColor3ub(216,12,225);			// PURPLE
+	    }
+	}
 	else
-	    glColor3ub(80,80,80);
+	    glColor3ub(100,100,100);
 
 	glVertex2f(cos(degInRad)*radius + gl.xres/2, sin(degInRad)*radius + gl.yres-50);
     }
 
     glEnd();
+}
+
+void heartCollision(Character *player)
+{
+    float xleft = gl.xres/2-15;
+    float xright = gl.xres/2+15;
+    float ytop = gl.yres/2+110;
+    float ybot = gl.yres/2+90;
+
+    if (player->cx > xleft && player->cx < xright &&
+	    player->cy > ybot && player->cy < ytop) {
+	if (player->health < 53) {
+	    gl.heartFlag = 1;
+	    player->health += 5; 
+	}
+    }       
+}
+
+void bulletPhysics()
+{
+	int i = 0;
+	while (i < gl.nbullets) {
+	    Bullet *b = &gl.bullets[i];
+	    b->pos[0] += b->vel[0];
+	    b->pos[1] += b->vel[1];
+
+	    i++;
+	}
+
+	//if (gl.keys[XK_space]) {
+	//    gl.nbullets++;
+	//}
+}
+
+void shootBullet() 
+{
+    Bullet *b = &gl.bullets[gl.nbullets];
+    b->color[0] = 1.0f;
+    b->color[1] = 1.0f;
+    b->color[2] = 1.0f;
+    gl.nbullets++;
 }
 
 void countdown() 
@@ -1755,6 +1862,12 @@ void changeColor(Character *player, Shape *box)
     } 
     if (player->colorID == 2) {			// BLUE
 	glColor3ub(69,255,255);
+    }
+    if (player->colorID == 3) {
+	glColor3ub(155,238,46);			// GREEN
+    }
+    if (player->colorID == 4) {	    
+	glColor3ub(216,12,225);			// PURPLE
     }
 
     Shape *s;
@@ -1814,12 +1927,9 @@ void render(Game *game)
 	// Draw Map
 	//
 	// draw ingame background
-	//rWithoutAlpha(gl.ingamebgTexture, gl.xres, gl.yres);
 	rWithoutAlpha(gl.mechabgTexture, gl.xres, gl.yres);
 
-	
 	// BOTTOM SCREEN
-
 	// Init map first
 	if (initializeFlag) { 
 	    for (int i = 1; i < totalCubes; i++) {
@@ -1856,6 +1966,10 @@ void render(Game *game)
 		glColor3ub(255,255,0);
 	    } else if (s->boxColorID == 2) {
 		glColor3ub(69,255,255);
+	    } else if (s->boxColorID == 3) {
+		glColor3ub(155,238,46);
+	    } else if (s->boxColorID == 4) {
+		glColor3ub(216,12,225);
 	    } else {
 		glColor3ub(100,100,100);
 	    }
@@ -1874,9 +1988,44 @@ void render(Game *game)
 	}
 
 
+	if (gl.cursorLocation == 0) { 
+	    gl.tempTexture = gl.yellowcharTexture;
+	    gl.tempProfileTexture = gl.yellowprofileTexture;
+	}
+	if (gl.cursorLocation == 1) {
+	    gl.tempTexture = gl.bluecharTexture;
+		gl.tempProfileTexture = gl.blueprofileTexture;	
+	}
+	if (gl.cursorLocation == 2) {
+	    gl.tempTexture = gl.greencharTexture;
+	    gl.tempProfileTexture = gl.greenprofileTexture;
+	}
+	if (gl.cursorLocation == 3) {
+	    gl.tempTexture = gl.purplecharTexture;
+	    gl.tempProfileTexture = gl.purpleprofileTexture;
+	}
+	
+	if (gl.cursorLocation2 == 0) {
+	    gl.tempTexture2 = gl.yellowcharTexture;
+	    gl.tempProfileTexture2 = gl.yellowprofileTexture;
+	}
+	if (gl.cursorLocation2 == 1) {
+	    gl.tempTexture2 = gl.bluecharTexture;
+	    gl.tempProfileTexture2 = gl.blueprofileTexture;
+	}
+	if (gl.cursorLocation2 == 2) {
+	    gl.tempTexture2 = gl.greencharTexture;
+	    gl.tempProfileTexture2 = gl.greenprofileTexture;
+	}
+	if (gl.cursorLocation2 == 3) {
+	    gl.tempTexture2 = gl.purplecharTexture;
+	    gl.tempProfileTexture2 = gl.purpleprofileTexture;
+	}
+
+
 	// UI DRAWING
-	drawPlayerOne();
-	drawPlayerTwo();
+	drawPlayerOne(gl.tempTexture);
+	drawPlayerTwo(gl.tempTexture2);
 	drawBluePortal();
 	drawOrangePortal();
 	drawTimerBackground();
@@ -1886,12 +2035,27 @@ void render(Game *game)
 	drawHealthVal2();
 	drawCircleUI1();
 	drawCircleUI2();
-	drawProfile1();
-	drawProfile2();
+	drawProfile1(gl.tempProfileTexture);
+	drawProfile2(gl.tempProfileTexture2);
 	drawCircle(30);
 	countdown();
+    
+	// Heart
+	if (gl.heartFlag)
+	    rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.heartaddTexture);	
+	else
+	    rWithAlpha(30, 30, gl.xres/2, gl.yres/2+100, gl.heartaddTexture);	
+
+	Bullet *b;
+	for (int i = 0; i < gl.nbullets; i++) {
+	    b = &gl.bullets[i];
+	    b->draw();
+	}
+
 	//
 	drawFrameRate();
+	//printf("Left Char 1: %d\n", leftFaceChar1);
+//	printf("Left Char 2: %d\n", leftFaceChar2);
     }
 }
 
@@ -2101,13 +2265,14 @@ void drawFrameRate()
     }
 }
 
-void drawPlayerOne() 
+void drawPlayerOne(GLuint tempTexture) 
 {
     // CHARACTER
     //
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
-    glBindTexture(GL_TEXTURE_2D, gl.yellowcharTexture);
+    //glBindTexture(GL_TEXTURE_2D, gl.yellowcharTexture);
+    glBindTexture(GL_TEXTURE_2D, tempTexture);
     //
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
@@ -2122,22 +2287,26 @@ void drawPlayerOne()
     //int result;
     // Player 1 Draw
     glBegin(GL_QUADS);
-    if (gl.keys[XK_Right] || !leftFaceChar1)
+    if (gl.keys[XK_Right] || !char1->facingLeft)
     {
+	//printf("Left Char 1: %d\n", leftFaceChar1);
+	//printf("Left Char 2: %d\n", leftFaceChar2);
 	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
 	glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
 	glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
 	glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-	gl.resultChar1 = 0;	
+	//leftFaceChar2 = 0;
     }
 
-    if (gl.keys[XK_Left] || leftFaceChar1)
+    if (gl.keys[XK_Left] || char1->facingLeft)
     {
+	//printf("Left Char 1: %d\n", leftFaceChar1);
+	//printf("Left Char 2: %d\n", leftFaceChar2);
 	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
 	glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
 	glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
 	glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-	gl.resultChar1 = 1;
+	//leftFaceChar2 = 1;
     }
     glEnd();
     glPopMatrix();
@@ -2145,12 +2314,12 @@ void drawPlayerOne()
     glDisable(GL_ALPHA_TEST); 	
 }
 
-void drawPlayerTwo()
+void drawPlayerTwo(GLuint tempTexture2)
 {
     // Player 2    
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
-    glBindTexture(GL_TEXTURE_2D, gl.bluecharTexture);
+    glBindTexture(GL_TEXTURE_2D, tempTexture2);
     //
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
@@ -2163,22 +2332,22 @@ void drawPlayerTwo()
     float ty = (float)iy / 1.0;
 
     glBegin(GL_QUADS);
-    if (gl.keys[XK_d] || !leftFaceChar2)
+    if (gl.keys[XK_d] || !char2->facingLeft)
     {
 	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char2->cx + char2->width, char2->cy - char2->height);
 	glTexCoord2f(tx,       ty + 1); glVertex2i(char2->cx - char2->width, char2->cy - char2->height);
 	glTexCoord2f(tx,              ty); glVertex2i(char2->cx - char2->width, char2->cy + char2->height);
 	glTexCoord2f(tx + .5, ty);        glVertex2i(char2->cx + char2->width, char2->cy + char2->height);
-	gl.resultChar2 = 0;	
+	//leftFaceChar1 = 0;
     }
 
-    if (gl.keys[XK_a] || leftFaceChar2)
+    if (gl.keys[XK_a] || char2->facingLeft)
     {
 	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char2->cx - char2->width, char2->cy - char2->height);
 	glTexCoord2f(tx + .5,        ty); glVertex2i(char2->cx - char2->width, char2->cy + char2->height);
 	glTexCoord2f(tx,              ty); glVertex2i(char2->cx + char2->width, char2->cy + char2->height);
 	glTexCoord2f(tx, ty + 1);       glVertex2i(char2->cx + char2->width, char2->cy - char2->height);
-	gl.resultChar2 = 1;
+	//leftFaceChar1 = 1;
     }
     glEnd();
     glPopMatrix();
@@ -2399,7 +2568,7 @@ void drawHealthBar2()
 
 }
 
-void drawProfile1() 
+void drawProfile1(GLuint tempProfileTexture) 
 {
     // Draw Timer Background
     float cx = 150;
@@ -2409,7 +2578,7 @@ void drawProfile1()
 
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
-    glBindTexture(GL_TEXTURE_2D, gl.yellowprofileTexture);
+    glBindTexture(GL_TEXTURE_2D, tempProfileTexture);
     //
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
@@ -2428,7 +2597,7 @@ void drawProfile1()
 
 }
 
-void drawProfile2() 
+void drawProfile2(GLuint tempProfileTexture2) 
 {
     // Draw Timer Background
     float cx = gl.xres/2 + 50;
@@ -2438,7 +2607,7 @@ void drawProfile2()
 
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
-    glBindTexture(GL_TEXTURE_2D, gl.blueprofileTexture);
+    glBindTexture(GL_TEXTURE_2D, tempProfileTexture2);
     //
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
