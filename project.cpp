@@ -37,6 +37,64 @@ using namespace std;
 #define WINDOW_HEIGHT 720
 #define GRAVITY 0.1
 
+//===============================================
+// SOUND
+// ==============================================
+#ifdef USE_OPENAL_SOUND
+ALuint alSource;
+ALuint themeSource;
+ALuint alBuffer;
+
+void initialize_sounds() 
+{
+    alutInit(0, NULL);
+    if ( alGetError() != AL_NO_ERROR ) {
+	printf("error initializing sound\n");
+	return;
+    }
+    alGetError();
+
+    float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+    alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+    alListenerfv(AL_ORIENTATION, vec);
+    alListenerf(AL_GAIN, 1.0f);
+
+}
+
+extern void cleanup_sounds()
+{
+    ALCcontext *Context = alcGetCurrentContext();
+    ALCdevice *Device = alcGetContextsDevice(Context);
+
+    alcMakeContextCurrent(NULL);
+
+    alcDestroyContext(Context);
+
+    alcCloseDevice(Device);
+}
+
+extern void playTitleMusic()
+{
+    //ALuint alBuffer;
+    alBuffer = alutCreateBufferFromFile("./sound/selectSound.wav");
+
+    //ALuint alSource;
+    alGenSources(1, &alSource);
+    alSourcei(alSource, AL_BUFFER, alBuffer);
+
+    alSourcef(alSource, AL_GAIN, 1.0f);
+    alSourcef(alSource, AL_PITCH, 1.0f);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
+    if (alGetError() != AL_NO_ERROR) {
+	printf("ERROR setting sound source\n");
+	return;
+    }
+
+    alSourcePlay(alSource);
+}
+#endif
+
+
 //defined types
 //typedef double Vec[3];
 typedef double Flt;
@@ -656,7 +714,7 @@ void init_opengl(void)
     glGenTextures(1, &gl.blueprofileTexture);	
     glGenTextures(1, &gl.greenprofileTexture);	
     glGenTextures(1, &gl.purpleprofileTexture);	
-    
+
     glGenTextures(1, &gl.charselectionTexture);	
     glGenTextures(1, &gl.colordominationTexture);	
     glGenTextures(1, &gl.controlsTexture);	
@@ -861,7 +919,7 @@ void init_opengl(void)
     free(purpleprofileData);
     unlink("./images/purpleprofile.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Char Select Text
     w = gl.charselectionImage->width;
@@ -875,7 +933,7 @@ void init_opengl(void)
     free(charselectionData);
     unlink("./images/charselection.ppm"); 
     //==============================================
-    
+
     //==============================================
     // ColorDom Text
     w = gl.colordominationImage->width;
@@ -889,7 +947,7 @@ void init_opengl(void)
     free(colordominationData);
     unlink("./images/colordomination.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Controls Text
     w = gl.controlsImage->width;
@@ -903,7 +961,7 @@ void init_opengl(void)
     free(controlsData);
     unlink("./images/controls.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Credits Text
     w = gl.creditsImage->width;
@@ -917,7 +975,7 @@ void init_opengl(void)
     free(creditsData);
     unlink("./images/credits.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Go Text
     w = gl.goImage->width;
@@ -931,7 +989,7 @@ void init_opengl(void)
     free(goData);
     unlink("./images/go.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Heart Add
     w = gl.heartaddImage->width;
@@ -945,7 +1003,7 @@ void init_opengl(void)
     free(heartaddData);
     unlink("./images/heartadd.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Level Select Frame
     w = gl.levelselectImage->width;
@@ -959,7 +1017,7 @@ void init_opengl(void)
     free(levelselectData);
     unlink("./images/levelselect.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Mecha BG
     w = gl.mechabgImage->width;
@@ -973,7 +1031,7 @@ void init_opengl(void)
     free(mechabgData);
     unlink("./images/mechabg.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Menu BG
     w = gl.menubgImage->width;
@@ -987,7 +1045,7 @@ void init_opengl(void)
     free(menubgData);
     unlink("./images/menubg.ppm"); 
     //==============================================
-    
+
     //==============================================
     // One text
     w = gl.oneImage->width;
@@ -1001,7 +1059,7 @@ void init_opengl(void)
     free(oneData);
     unlink("./images/one.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Play text
     w = gl.playImage->width;
@@ -1015,7 +1073,7 @@ void init_opengl(void)
     free(playData);
     unlink("./images/play.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Quit text
     w = gl.quitImage->width;
@@ -1029,7 +1087,7 @@ void init_opengl(void)
     free(quitData);
     unlink("./images/quit.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Splatter Yellow
     w = gl.splatteryellowImage->width;
@@ -1043,7 +1101,7 @@ void init_opengl(void)
     free(splatteryellowData);
     unlink("./images/splatteryellow.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Splatter Blue
     w = gl.splatterblueImage->width;
@@ -1057,7 +1115,7 @@ void init_opengl(void)
     free(splatterblueData);
     unlink("./images/splatterblue.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Splatter Green
     w = gl.splattergreenImage->width;
@@ -1071,7 +1129,7 @@ void init_opengl(void)
     free(splattergreenData);
     unlink("./images/splattergreen.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Splatter Purple
     w = gl.splatterpurpleImage->width;
@@ -1085,7 +1143,7 @@ void init_opengl(void)
     free(splatterpurpleData);
     unlink("./images/splatterpurple.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Three text
     w = gl.threeImage->width;
@@ -1099,7 +1157,7 @@ void init_opengl(void)
     free(threeData);
     unlink("./images/three.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Two text
     w = gl.twoImage->width;
@@ -1113,7 +1171,7 @@ void init_opengl(void)
     free(twoData);
     unlink("./images/two.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Char select bg
     w = gl.charselectbgImage->width;
@@ -1127,7 +1185,7 @@ void init_opengl(void)
     free(charselectbgData);
     unlink("./images/charselectbg.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Ingamebg
     w = gl.ingamebgImage->width;
@@ -1233,6 +1291,7 @@ void check_keys(XEvent *e)
 		   gl.frameRateOn ^= 1;
 		   break;
 	case XK_minus:
+			playTitleMusic();
 		   char1->health -= 5;
 		   break;
 	case XK_Tab:
@@ -1337,23 +1396,23 @@ void physics(Game *game)
 {
     if (game->state == STATE_GAMEPLAY) {
 	if (gl.cursorLocation == 0)
-		char1->colorID = 1;		// YELLOW
+	    char1->colorID = 1;		// YELLOW
 	if (gl.cursorLocation == 1)
-		char1->colorID = 2;	
+	    char1->colorID = 2;	
 	if (gl.cursorLocation == 2)
-		char1->colorID = 3;	
+	    char1->colorID = 3;	
 	if (gl.cursorLocation == 3)
-		char1->colorID = 4;	
-	    
+	    char1->colorID = 4;	
+
 	if (gl.cursorLocation2 == 0)
-		char2->colorID = 1;		// YELLOW
+	    char2->colorID = 1;		// YELLOW
 	if (gl.cursorLocation2 == 1)
-		char2->colorID = 2;	
+	    char2->colorID = 2;	
 	if (gl.cursorLocation2 == 2)
-		char2->colorID = 3;	
+	    char2->colorID = 3;	
 	if (gl.cursorLocation2 == 3)
-		char2->colorID = 4;	
-	    
+	    char2->colorID = 4;	
+
 	//char1->colorID = 1;		// YELLOW
 	//char2->colorID = 2;         // BLUE
 
@@ -1695,8 +1754,8 @@ void physics(Game *game)
 	}
 
 	physicsPortal();
-	
-	
+
+
 	// Jump Update
 	heartCollision(char1);
 	heartCollision(char2);
@@ -1790,34 +1849,36 @@ void drawCircle(float radius)
 
 void heartCollision(Character *player)
 {
-    float xleft = gl.xres/2-15;
-    float xright = gl.xres/2+15;
-    float ytop = gl.yres/2+110;
-    float ybot = gl.yres/2+90;
+    if (!gl.heartFlag) {
+	float xleft = gl.xres/2-45;
+	float xright = gl.xres/2+45;
+	float ytop = gl.yres/2+110;
+	float ybot = gl.yres/2+90;
 
-    if (player->cx > xleft && player->cx < xright &&
-	    player->cy > ybot && player->cy < ytop) {
-	if (player->health < 53) {
-	    gl.heartFlag = 1;
-	    player->health += 5; 
-	}
-    }       
+	if (player->cx > xleft && player->cx < xright &&
+		player->cy > ybot && player->cy < ytop) {
+	    if (player->health < 53) {
+		gl.heartFlag = 1;
+		player->health += 5; 
+	    }
+	}       
+    }
 }
 
 void bulletPhysics()
 {
-	int i = 0;
-	while (i < gl.nbullets) {
-	    Bullet *b = &gl.bullets[i];
-	    b->pos[0] += b->vel[0];
-	    b->pos[1] += b->vel[1];
+    int i = 0;
+    while (i < gl.nbullets) {
+	Bullet *b = &gl.bullets[i];
+	b->pos[0] += b->vel[0];
+	b->pos[1] += b->vel[1];
 
-	    i++;
-	}
+	i++;
+    }
 
-	//if (gl.keys[XK_space]) {
-	//    gl.nbullets++;
-	//}
+    //if (gl.keys[XK_space]) {
+    //    gl.nbullets++;
+    //}
 }
 
 void shootBullet() 
@@ -2005,7 +2066,7 @@ void render(Game *game)
 	}
 	if (gl.cursorLocation == 1) {
 	    gl.tempTexture = gl.bluecharTexture;
-		gl.tempProfileTexture = gl.blueprofileTexture;	
+	    gl.tempProfileTexture = gl.blueprofileTexture;	
 	}
 	if (gl.cursorLocation == 2) {
 	    gl.tempTexture = gl.greencharTexture;
@@ -2015,7 +2076,7 @@ void render(Game *game)
 	    gl.tempTexture = gl.purplecharTexture;
 	    gl.tempProfileTexture = gl.purpleprofileTexture;
 	}
-	
+
 	if (gl.cursorLocation2 == 0) {
 	    gl.tempTexture2 = gl.yellowcharTexture;
 	    gl.tempProfileTexture2 = gl.yellowprofileTexture;
@@ -2050,7 +2111,7 @@ void render(Game *game)
 	drawProfile2(gl.tempProfileTexture2);
 	drawCircle(30);
 	countdown();
-    
+
 	// Heart
 	if (gl.heartFlag)
 	    rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.heartaddTexture);	
@@ -2066,7 +2127,7 @@ void render(Game *game)
 	//
 	drawFrameRate();
 	//printf("Left Char 1: %d\n", leftFaceChar1);
-//	printf("Left Char 2: %d\n", leftFaceChar2);
+	//	printf("Left Char 2: %d\n", leftFaceChar2);
     }
 }
 
@@ -2080,16 +2141,16 @@ void drawStartMenu()
 
     // background of start menu
     rWithoutAlpha(gl.menubgTexture, gl.xres, gl.yres);
-   
+
     printf("Cursor value: %d\n", gl.cursorLocation); 
     // draw splatter left
     rWithAlpha(60, 60, gl.xres/4 + 40, 400-(gl.cursorLocation*100), gl.splattergreenTexture);	
     // draw splatter right
     rWithAlpha(60, 60, gl.xres*3/4 -50, 400-(gl.cursorLocation*100), gl.splattergreenTexture);	
-    
+
     // draw title text
     rWithAlpha(90, 500, gl.xres/2, 580, gl.colordominationTexture);	
-   
+
     // draw play text
     if (gl.cursorLocation == 0) {
 	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 400, gl.playTexture);
@@ -2098,9 +2159,9 @@ void drawStartMenu()
     }   
     // draw controls text
     if (gl.cursorLocation == 1) {
-    	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 300, gl.controlsTexture);
+	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 300, gl.controlsTexture);
     } else {	
-    rWithAlpha(h, w, gl.xres/2, 300, gl.controlsTexture);
+	rWithAlpha(h, w, gl.xres/2, 300, gl.controlsTexture);
     }    
     // draw credits text
     if (gl.cursorLocation == 2) {
@@ -2117,10 +2178,10 @@ void drawStartMenu()
 }
 
 /*void drawControlsMenu()
-{
+  {
 
-}
-*/
+  }
+  */
 
 void drawCharSelectMenu()
 {
@@ -2128,45 +2189,45 @@ void drawCharSelectMenu()
     w = 150; 
     h = 150; 
     printf("Cursor value2: %d\n", gl.cursorLocation2); 
-    
+
     // draw char select background
     rWithoutAlpha(gl.charselectbgTexture, gl.xres, gl.yres);
     // draw char select text
     rWithAlpha(80, 500, gl.xres/2, 580, gl.charselectionTexture);	
-    
+
     // draw player one left splatter
     if (gl.cursorLocation == 0) {
-    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatteryellowTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
+	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatteryellowTexture);	
+	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
     }
     if (gl.cursorLocation == 1) {
-    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterblueTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
+	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterblueTexture);	
+	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
     }
     if (gl.cursorLocation == 2) {
-    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splattergreenTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
+	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splattergreenTexture);	
+	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
     }
     if (gl.cursorLocation == 3) {
-    	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterpurpleTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
+	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterpurpleTexture);	
+	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
     }
     // draw player two right splatter
     if (gl.cursorLocation2 == 0) {
-    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatteryellowTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
+	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatteryellowTexture);	
+	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
     }
     if (gl.cursorLocation2 == 1) {
-    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterblueTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
+	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterblueTexture);	
+	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
     }
     if (gl.cursorLocation2 == 2) {
-    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splattergreenTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
+	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splattergreenTexture);	
+	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
     }
     if (gl.cursorLocation2 == 3) {
-    	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterpurpleTexture);	
-    	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
+	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterpurpleTexture);	
+	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
     }
     //
     // draw frame top left
@@ -2185,8 +2246,8 @@ void drawCharSelectMenu()
     sCharPose(gl.xres/3+50, 155, 55, 55, gl.greencharTexture, gl.greencharFrame%2, 1);
     // draw bot right char
     sCharPose(gl.xres*2/3-50, 155, 55, 55, gl.purplecharTexture, gl.purplecharFrame%2, 1);
-    
-    
+
+
     // draw p1 text
     rWithAlpha(70, 40, gl.xres/6-40, gl.yres/2-100, gl.oneTexture);	
     // draw p2 text

@@ -17,6 +17,8 @@ enum State {
     STATE_GAMEPLAY,
     STATE_PAUSE,
     STATE_GAMEOVER,
+    STATE_CREDITS,
+    STATE_CONTROLS,
     STATE_WON
 };
 
