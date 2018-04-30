@@ -127,7 +127,7 @@ void jump(Character *);
 void checkJump();
 void changeColor(Character*, Shape*);
 void awardPoint(Character*, Shape*);
-void removePoint(Character*, Shape*);
+void removePoint(Character*, Character*, Shape*);
 //void playerCollision(Character*);
 
 // UI FUNCTIONS
@@ -213,6 +213,10 @@ int main(int argc, char *argv[])
 	game.box[i].height = 25;
 	game.box[i].center.x = 55*i + 35;
 	game.box[i].center.y = 155;
+	if (i == 11) {
+	    game.box[i].center.x = 55*i + 35;
+	    game.box[i].center.y = 155+60;
+	}
     }
     int total = 1;
     // top row
@@ -1398,7 +1402,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char1, s);    
-			removePoint(char2, s);    
+			removePoint(char2, char2, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1419,7 +1423,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char1, s);    
-			removePoint(char2, s);    
+			removePoint(char2, char2, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1438,6 +1442,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char1, s);    
+			removePoint(char2, char2, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1456,7 +1461,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char1, s);    
-			removePoint(char2, s);    
+			removePoint(char2, char2, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1485,7 +1490,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char2, s);    
-			removePoint(char1, s);    
+			removePoint(char1, char1, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1506,7 +1511,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char2, s);    
-			removePoint(char1, s);    
+			removePoint(char1, char1, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1525,7 +1530,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char2, s);    
-			removePoint(char1, s);    
+			removePoint(char1, char1, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1544,7 +1549,7 @@ void physics(Game *game)
 
 			// Point System 
 			awardPoint(char2, s);    
-			removePoint(char1, s);    
+			removePoint(char1, char1, s);    
 
 			// Save box index # and location
 			boxIndex = i;
@@ -1591,8 +1596,8 @@ void physics(Game *game)
 	}
 	//	
 
-	printf("Char 1 facing: %d\n", char1->facingLeft);
-	printf("Char 2 facing: %d\n", char2->facingLeft);
+	//printf("Char 1 facing: %d\n", char1->facingLeft);
+	//printf("Char 2 facing: %d\n", char2->facingLeft);
 	// Player 1 Movement Keys
 	if (gl.keys[XK_d]) {
 	    //leftFaceChar1 = 0;
@@ -1893,14 +1898,20 @@ void awardPoint(Character *player, Shape *s)
 {
     if (player->colorID != s->boxColorID) {
 	player->points++;
+	if (player->health < 49)
+	    player->health += 5;	
+	printf("Player Health: %d\n", player->health);	
 	cout << "Player " << player->colorID << " Points: " << player->points << endl;
     }
 }
 
-void removePoint(Character *player, Shape *s) 
+void removePoint(Character *player, Character *player2, Shape *s) 
 {
     if (player->colorID == s->boxColorID && s->boxColorID != 0) {
-	player->points--;	
+	player->points--;
+	if (player2->health > 0)
+	    player2->health -= 5;
+	printf("Player 2 Health: %d\n", player2->health);	
 	cout << "Player " << player->colorID << " Points: " << player->points << endl;
     }
 }
