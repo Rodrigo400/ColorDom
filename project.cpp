@@ -37,63 +37,123 @@ using namespace std;
 #define WINDOW_HEIGHT 720
 #define GRAVITY 0.1
 
+
 //===============================================
 // SOUND
 // ==============================================
-#ifdef USE_OPENAL_SOUND
-ALuint alSource;
-ALuint themeSource;
-ALuint alBuffer;
-
-void initialize_sounds() 
+void initialize_sound() 
 {
     alutInit(0, NULL);
-    if ( alGetError() != AL_NO_ERROR ) {
-	printf("error initializing sound\n");
-	return;
-    }
-    alGetError();
 
-    float vec[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+    float vec[6] = {0.0f,0.0f,1.0f, 0.0f,1.0f,0.0f};
     alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
     alListenerfv(AL_ORIENTATION, vec);
     alListenerf(AL_GAIN, 1.0f);
-
 }
 
-extern void cleanup_sounds()
+void musicTitle() 
 {
+    Sound s;
+
+    s.alBuffer = alutCreateBufferFromFile("./GameMusic.wav");
+
+    alGenSources(1, &s.alSource);
+    alSourcei(s.alSource, AL_BUFFER, s.alBuffer);
+    
+    alSourcef(s.alSource, AL_GAIN, 1.0f);
+    alSourcef(s.alSource, AL_PITCH, 1.0f);
+    alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
+
+    alSourcePlay(s.alSource);
+
+    //for (int i = 0; i < 10; i++) {
+//	alSourcePlay(s.alSource);
+	//usleep(2500000);
+  //  }
+}
+
+void pleasePlay()
+{
+//Get started right here.
+#ifdef USE_OPENAL_SOUND
+        alutInit(0, NULL);
+        if (alGetError() != AL_NO_ERROR) {
+                printf("ERROR: alutInit()\n");
+                //return 0;
+        }
+        //Clear error state.
+        alGetError();
+        //
+        //Setup the listener.
+        //Forward and up vectors are used.
+        float vec[6] = {0.0f,0.0f,1.0f, 0.0f,1.0f,0.0f};
+        alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+        alListenerfv(AL_ORIENTATION, vec);
+        alListenerf(AL_GAIN, 1.0f);
+        //
+        //Buffer holds the sound information.
+        ALuint alBuffer;
+        //alBuffer = alutCreateBufferFromFile("./test.wav");
+        alBuffer = alutCreateBufferFromFile("./GameMusic.wav");
+        //
+        //Source refers to the sound.
+        ALuint alSource;
+        //Generate a source, and store it in a buffer.
+        alGenSources(1, &alSource);
+        alSourcei(alSource, AL_BUFFER, alBuffer);
+        //Set volume and pitch to normal, no looping of sound.
+        alSourcef(alSource, AL_GAIN, 1.0f);
+        alSourcef(alSource, AL_PITCH, 1.0f);
+        alSourcei(alSource, AL_LOOPING, AL_FALSE);
+        if (alGetError() != AL_NO_ERROR) {
+                printf("ERROR: setting source\n");
+                //return 0;
+        }
+
+        alSourcePlay(alSource);
+
+        for (int i=0; i<10; i++) {
+                alSourcePlay(alSource);
+                //usleep(250000);
+                //usleep(2500000000);
+        }
+
+	printf("called\n");
+/*
+        //Cleanup.
+        //First delete the source.
+        alDeleteSources(1, &alSource);
+        //Delete the buffer.
+        alDeleteBuffers(1, &alBuffer);
+        //Close out OpenAL itself.
+        //Get active context.
+        ALCcontext *Context = alcGetCurrentContext();
+        //Get device for active context.
+        ALCdevice *Device = alcGetContextsDevice(Context);
+        //Disable context.
+        alcMakeContextCurrent(NULL);
+        //Release context(s).
+        alcDestroyContext(Context);
+        //Close device.
+        alcCloseDevice(Device);*/
+#endif //USE_OPENAL_SOUND
+        //return 0;
+}
+
+
+
+void finish_sound() 
+{
+    Sound s;
+    alDeleteSources(1, &s.alSource);
+    alDeleteBuffers(1, &s.alBuffer);
+
     ALCcontext *Context = alcGetCurrentContext();
     ALCdevice *Device = alcGetContextsDevice(Context);
-
     alcMakeContextCurrent(NULL);
-
     alcDestroyContext(Context);
-
     alcCloseDevice(Device);
 }
-
-extern void playTitleMusic()
-{
-    //ALuint alBuffer;
-    alBuffer = alutCreateBufferFromFile("./sound/selectSound.wav");
-
-    //ALuint alSource;
-    alGenSources(1, &alSource);
-    alSourcei(alSource, AL_BUFFER, alBuffer);
-
-    alSourcef(alSource, AL_GAIN, 1.0f);
-    alSourcef(alSource, AL_PITCH, 1.0f);
-    alSourcei(alSource, AL_LOOPING, AL_FALSE);
-    if (alGetError() != AL_NO_ERROR) {
-	printf("ERROR setting sound source\n");
-	return;
-    }
-
-    alSourcePlay(alSource);
-}
-#endif
-
 
 //defined types
 //typedef double Vec[3];
@@ -400,6 +460,12 @@ int main(int argc, char *argv[])
     //int done = 0;
     gettimeofday(&gamestarttv, NULL);
 
+    //===================================
+    // MUSIC HERE
+    //===================================
+    initialize_sound();
+    musicTitle();
+    //===================================
 
     while (!gl.done) {
 	while (XPending(dpy)) {
@@ -409,13 +475,14 @@ int main(int argc, char *argv[])
 	    check_mouse(&e);
 	    check_keys(&e);
 	}
-	if (gameFrame > 0)
+	if (gameFrame > 0) 
 	    physics(&game);
 	render(&game);
 	glXSwapBuffers(dpy, win);
 	showFrameRate();
     }
     cleanupXWindows();
+    finish_sound();
     return 0;
 }
 
@@ -1291,7 +1358,8 @@ void check_keys(XEvent *e)
 		   gl.frameRateOn ^= 1;
 		   break;
 	case XK_minus:
-			playTitleMusic();
+			//playTitleMusic();
+			//titleMusic();
 		   char1->health -= 5;
 		   break;
 	case XK_Tab:
@@ -1299,6 +1367,9 @@ void check_keys(XEvent *e)
 		       game.state = STATE_CHARSELECT;
 		       gameFrame = 30;
 		   }
+		   break;
+	case XK_m:
+		   //pleasePlay();
 		   break;
 	case XK_Return:
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 

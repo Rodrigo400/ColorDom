@@ -2,7 +2,9 @@
 #define _GAME_H_
 #include "ppm.h"
 // Header File
-
+#ifdef USE_OPENAL_SOUND
+#include </usr/include/AL/alut.h>
+#endif //USE_OPENAL_SOUND
 #include <time.h>
 typedef double Flt;
 #define rnd() (((double)rand())/(double)RAND_MAX)
@@ -89,6 +91,12 @@ extern class Bullet {
   Shape s;
   Vec vel;
   };*/
+
+extern class Sound {
+    public:
+	ALuint alBuffer;
+	ALuint alSource;
+}s;
 
 extern class Global {
     public:
