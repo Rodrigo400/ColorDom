@@ -25,9 +25,10 @@
 #include <GL/glx.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#ifdef USE_OPENAL_SOUND
+#ifdef USE_OPENAL_SOUND  
 #include </usr/include/AL/alut.h>
-#endif
+#endif //USE_OPENAL_SOUND
+
 #include "ppm.h"
 #include "fonts.h"
 #include "project.h"                    // header file
@@ -37,7 +38,7 @@ using namespace std;
 #define WINDOW_HEIGHT 720
 #define GRAVITY 0.1
 
-
+Sound s;
 //===============================================
 // SOUND
 // ==============================================
@@ -49,26 +50,34 @@ void initialize_sound()
     alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
     alListenerfv(AL_ORIENTATION, vec);
     alListenerf(AL_GAIN, 1.0f);
+
+    s.alBuffer = alutCreateBufferFromFile("./sound/GameMusic.wav");
+
+    alGenSources(1, &s.alSource);
+    alSourcei(s.alSource, AL_BUFFER, s.alBuffer);
+
+    alSourcef(s.alSource, AL_GAIN, 1.0f);
+    alSourcef(s.alSource, AL_PITCH, 1.0f);
+    alSourcei(s.alSource, AL_LOOPING, AL_TRUE);
 }
 
 void musicTitle() 
 {
-    Sound s;
 
-    s.alBuffer = alutCreateBufferFromFile("./GameMusic.wav");
+    /*s.alBuffer = alutCreateBufferFromFile("./GameMusic.wav");
 
     alGenSources(1, &s.alSource);
     alSourcei(s.alSource, AL_BUFFER, s.alBuffer);
-    
+
     alSourcef(s.alSource, AL_GAIN, 1.0f);
     alSourcef(s.alSource, AL_PITCH, 1.0f);
     alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
-
+*/
     alSourcePlay(s.alSource);
 
     //for (int i = 0; i < 10; i++) {
 //	alSourcePlay(s.alSource);
-	//usleep(2500000);
+//	usleep(2500000);
   //  }
 }
 
@@ -76,7 +85,6 @@ void pleasePlay()
 {
 //Get started right here.
 #ifdef USE_OPENAL_SOUND
-        alutInit(0, NULL);
         if (alGetError() != AL_NO_ERROR) {
                 printf("ERROR: alutInit()\n");
                 //return 0;
@@ -110,16 +118,16 @@ void pleasePlay()
                 //return 0;
         }
 
-        alSourcePlay(alSource);
-
+	//while (true)
+	  //  alSourcePlay(alSource);
+	   
         for (int i=0; i<10; i++) {
                 alSourcePlay(alSource);
                 //usleep(250000);
-                //usleep(2500000000);
+                usleep(2500000000);
         }
-
 	printf("called\n");
-/*
+
         //Cleanup.
         //First delete the source.
         alDeleteSources(1, &alSource);
@@ -127,7 +135,7 @@ void pleasePlay()
         alDeleteBuffers(1, &alBuffer);
         //Close out OpenAL itself.
         //Get active context.
-        ALCcontext *Context = alcGetCurrentContext();
+        /*ALCcontext *Context = alcGetCurrentContext();
         //Get device for active context.
         ALCdevice *Device = alcGetContextsDevice(Context);
         //Disable context.
@@ -144,17 +152,10 @@ void pleasePlay()
 
 void finish_sound() 
 {
-    Sound s;
     alDeleteSources(1, &s.alSource);
     alDeleteBuffers(1, &s.alBuffer);
-
-    ALCcontext *Context = alcGetCurrentContext();
-    ALCdevice *Device = alcGetContextsDevice(Context);
-    alcMakeContextCurrent(NULL);
-    alcDestroyContext(Context);
-    alcCloseDevice(Device);
+    alutExit();
 }
-
 //defined types
 //typedef double Vec[3];
 typedef double Flt;
@@ -306,6 +307,7 @@ int xxGetTicks() {
 
 int main(int argc, char *argv[])
 {
+    alutInit(0, NULL);
     srand(time(NULL));
     //initXWindows();
     //init_opengl();
@@ -463,6 +465,7 @@ int main(int argc, char *argv[])
     //===================================
     // MUSIC HERE
     //===================================
+    //pleasePlay();
     initialize_sound();
     musicTitle();
     //===================================
@@ -1369,7 +1372,7 @@ void check_keys(XEvent *e)
 		   }
 		   break;
 	case XK_m:
-		   //pleasePlay();
+		   pleasePlay();
 		   break;
 	case XK_Return:
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
