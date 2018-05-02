@@ -38,7 +38,18 @@ using namespace std;
 #define WINDOW_HEIGHT 720
 #define GRAVITY 0.1
 
-Sound s;
+class Sound {
+    public:
+        ALuint alBufferTitle;
+        ALuint alBufferScroll;
+        ALuint alBufferSelect;
+
+        ALuint alSourceTitle;
+        ALuint alSourceScroll;
+        ALuint alSourceSelect;
+};
+
+
 //===============================================
 // SOUND
 // ==============================================
@@ -51,18 +62,19 @@ void initialize_sound()
     alListenerfv(AL_ORIENTATION, vec);
     alListenerf(AL_GAIN, 1.0f);
 
-    s.alBuffer = alutCreateBufferFromFile("./sound/GameMusic.wav");
+    /*s.alBufferTitle = alutCreateBufferFromFile("./sound/GameMusic.wav");
 
-    alGenSources(1, &s.alSource);
-    alSourcei(s.alSource, AL_BUFFER, s.alBuffer);
+    alGenSources(1, &s.alSourceTitle);
+    alSourcei(s.alSource, AL_BUFFER, s.alBufferTitle);
 
-    alSourcef(s.alSource, AL_GAIN, 1.0f);
-    alSourcef(s.alSource, AL_PITCH, 1.0f);
-    alSourcei(s.alSource, AL_LOOPING, AL_TRUE);
+    alSourcef(s.alSourceTitle, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceTitle, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceTitle, AL_LOOPING, AL_TRUE);*/
 }
 
-void musicTitle() 
+void playMusicTitle() 
 {
+    Sound s;
 
     /*s.alBuffer = alutCreateBufferFromFile("./GameMusic.wav");
 
@@ -73,89 +85,83 @@ void musicTitle()
     alSourcef(s.alSource, AL_PITCH, 1.0f);
     alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
 */
-    alSourcePlay(s.alSource);
+    s.alBufferTitle = alutCreateBufferFromFile("./sound/GameMusic.wav");
 
-    //for (int i = 0; i < 10; i++) {
-//	alSourcePlay(s.alSource);
-//	usleep(2500000);
-  //  }
+    alGenSources(1, &s.alSourceTitle);
+    alSourcei(s.alSourceTitle, AL_BUFFER, s.alBufferTitle);
+
+    alSourcef(s.alSourceTitle, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceTitle, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceTitle, AL_LOOPING, AL_TRUE);
+    
+    alSourcePlay(s.alSourceTitle);
 }
 
-void pleasePlay()
+void playScroll() 
 {
-//Get started right here.
-#ifdef USE_OPENAL_SOUND
-        if (alGetError() != AL_NO_ERROR) {
-                printf("ERROR: alutInit()\n");
-                //return 0;
-        }
-        //Clear error state.
-        alGetError();
-        //
-        //Setup the listener.
-        //Forward and up vectors are used.
-        float vec[6] = {0.0f,0.0f,1.0f, 0.0f,1.0f,0.0f};
-        alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
-        alListenerfv(AL_ORIENTATION, vec);
-        alListenerf(AL_GAIN, 1.0f);
-        //
-        //Buffer holds the sound information.
-        ALuint alBuffer;
-        //alBuffer = alutCreateBufferFromFile("./test.wav");
-        alBuffer = alutCreateBufferFromFile("./GameMusic.wav");
-        //
-        //Source refers to the sound.
-        ALuint alSource;
-        //Generate a source, and store it in a buffer.
-        alGenSources(1, &alSource);
-        alSourcei(alSource, AL_BUFFER, alBuffer);
-        //Set volume and pitch to normal, no looping of sound.
-        alSourcef(alSource, AL_GAIN, 1.0f);
-        alSourcef(alSource, AL_PITCH, 1.0f);
-        alSourcei(alSource, AL_LOOPING, AL_FALSE);
-        if (alGetError() != AL_NO_ERROR) {
-                printf("ERROR: setting source\n");
-                //return 0;
-        }
+    Sound s;
 
-	//while (true)
-	  //  alSourcePlay(alSource);
-	   
-        for (int i=0; i<10; i++) {
-                alSourcePlay(alSource);
-                //usleep(250000);
-                usleep(2500000000);
-        }
-	printf("called\n");
+    s.alBufferScroll = alutCreateBufferFromFile("./GameMusic.wav");
 
-        //Cleanup.
-        //First delete the source.
-        alDeleteSources(1, &alSource);
-        //Delete the buffer.
-        alDeleteBuffers(1, &alBuffer);
-        //Close out OpenAL itself.
-        //Get active context.
-        /*ALCcontext *Context = alcGetCurrentContext();
-        //Get device for active context.
-        ALCdevice *Device = alcGetContextsDevice(Context);
-        //Disable context.
-        alcMakeContextCurrent(NULL);
-        //Release context(s).
-        alcDestroyContext(Context);
-        //Close device.
-        alcCloseDevice(Device);*/
-#endif //USE_OPENAL_SOUND
-        //return 0;
+    alGenSources(1, &s.alSourceScroll);
+    alSourcei(s.alSourceScroll, AL_BUFFER, s.alBufferScroll);
+
+    alSourcef(s.alSourceScroll, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceScroll, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceScroll, AL_LOOPING, AL_FALSE);
+
+    s.alBufferScroll = alutCreateBufferFromFile("./sound/scrollSound.wav");
+
+    alGenSources(1, &s.alSourceScroll);
+    alSourcei(s.alSourceScroll, AL_BUFFER, s.alBufferScroll);
+
+    alSourcef(s.alSourceScroll, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceScroll, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceScroll, AL_LOOPING, AL_FALSE);
+
+    alSourcePlay(s.alSourceScroll);
 }
 
+void playSelect() 
+{
+    Sound s;
 
+    s.alBufferSelect = alutCreateBufferFromFile("./sound/selectSound.wav");
+
+    alGenSources(1, &s.alSourceSelect);
+    alSourcei(s.alSourceSelect, AL_BUFFER, s.alBufferSelect);
+
+    alSourcef(s.alSourceSelect, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceSelect, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceSelect, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceSelect);
+}
 
 void finish_sound() 
 {
-    alDeleteSources(1, &s.alSource);
-    alDeleteBuffers(1, &s.alBuffer);
+    Sound s;
+    alDeleteSources(1, &s.alSourceTitle);
+    alDeleteSources(1, &s.alSourceScroll);
+    alDeleteSources(1, &s.alSourceSelect);
+
+    alDeleteBuffers(1, &s.alBufferTitle);
+    alDeleteBuffers(1, &s.alBufferScroll);
+    alDeleteBuffers(1, &s.alBufferSelect);
+
+    ALCcontext *Context = alcGetCurrentContext();
+    ALCdevice *Device = alcGetContextsDevice(Context);
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(Context);
+    alcCloseDevice(Device);
+
     alutExit();
 }
+//===============================================
+// SOUND END
+// ==============================================
+
+
 //defined types
 //typedef double Vec[3];
 typedef double Flt;
@@ -467,7 +473,7 @@ int main(int argc, char *argv[])
     //===================================
     //pleasePlay();
     initialize_sound();
-    musicTitle();
+    playMusicTitle();
     //===================================
 
     while (!gl.done) {
@@ -1372,12 +1378,13 @@ void check_keys(XEvent *e)
 		   }
 		   break;
 	case XK_m:
-		   pleasePlay();
+		   //pleasePlay();
 		   break;
 	case XK_Return:
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
 		       game.state = STATE_CHARSELECT;
 		       gl.cursorLocation = 0;
+		       playSelect();
 		       break;
 		   }
 		   if (game.state == STATE_CHARSELECT &&
@@ -1399,11 +1406,13 @@ void check_keys(XEvent *e)
 		       gl.delay = 0.005;
 	case XK_Up:
 		   if (game.state == STATE_STARTMENU) {
+		       playScroll();
 		       if (gl.cursorLocation != 0) {
 			   gl.cursorLocation -= 1;
 		       }
 		   }
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation2 > 1) {
 			   gl.cursorLocation2 -= 2;
 		       }
@@ -1411,11 +1420,13 @@ void check_keys(XEvent *e)
 		   break;
 	case XK_Down:
 		   if (game.state == STATE_STARTMENU) {
+		       playScroll();
 		       if (gl.cursorLocation != 3) {
 			   gl.cursorLocation += 1;
 		       }
 		   }
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation2 < 2) {
 			   gl.cursorLocation2 += 2;
 		       }
@@ -1423,6 +1434,7 @@ void check_keys(XEvent *e)
 		   break;
 	case XK_Left: 
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation2 != 0) {
 			   gl.cursorLocation2 -= 1;
 		       }
@@ -1430,6 +1442,7 @@ void check_keys(XEvent *e)
 		   break;
 	case XK_Right: 
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation2 != 3) {
 			   gl.cursorLocation2 += 1;
 		       }

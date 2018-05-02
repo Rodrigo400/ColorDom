@@ -92,12 +92,15 @@ extern class Bullet {
   Vec vel;
   };*/
 
-extern class Sound {
+/*extern class Sound {
     public:
-	ALuint alBuffer;
-	ALuint alSource;
-}s;
-
+	ALuint alBufferTitle;
+	ALuint alBufferScroll;
+	
+	ALuint alSourceTitle;
+	ALuint alSourceScroll;
+};
+*/
 extern class Global {
     public:
         int vsync;
