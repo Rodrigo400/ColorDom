@@ -2433,6 +2433,10 @@ void drawPlayerOne(GLuint tempTexture)
     //glBindTexture(GL_TEXTURE_2D, gl.yellowcharTexture);
     glBindTexture(GL_TEXTURE_2D, tempTexture);
     //
+    //~ if (gl.keys[XK_a])
+		//~ glRotatef(10.0f, 0.0, 0.0, 1.0);
+    //~ if (gl.keys[XK_d])
+		//~ glRotatef(-10.0f, 0.0, 0.0, 1.0);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
     glColor4ub(255,255,255,255);
@@ -2445,15 +2449,43 @@ void drawPlayerOne(GLuint tempTexture)
 
     //int result;
     // Player 1 Draw
+    glTranslated(char1->cx, char1->cy,0);
+    if (gl.keys[XK_a])
+		glRotatef(10.0f, 0.0, 0.0, 1.0);
+    if (gl.keys[XK_d])
+		glRotatef(-10.0f, 0.0, 0.0, 1.0);
     glBegin(GL_QUADS);
+    //~ if (gl.keys[XK_Right] || !char1->facingLeft)
+    //~ {
+	//~ //printf("Left Char 1: %d\n", leftFaceChar1);
+	//~ //printf("Left Char 2: %d\n", leftFaceChar2);
+	//~ glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+	//~ glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+	//~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+	//~ glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+	//~ //leftFaceChar2 = 0;
+    //~ }
+
+    //~ if (gl.keys[XK_Left] || char1->facingLeft)
+    //~ {
+	//~ //printf("Left Char 1: %d\n", leftFaceChar1);
+	//~ //printf("Left Char 2: %d\n", leftFaceChar2);
+	//~ glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+	//~ glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+	//~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+	//~ glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+	//~ //leftFaceChar2 = 1;
+    //~ }
     if (gl.keys[XK_Right] || !char1->facingLeft)
     {
+		
+		
 	//printf("Left Char 1: %d\n", leftFaceChar1);
 	//printf("Left Char 2: %d\n", leftFaceChar2);
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-	glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-	glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-	glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(50,  -50 );
+	glTexCoord2f(tx,       ty + 1); glVertex2i( -50 ,-50 );
+	glTexCoord2f(tx,              ty); glVertex2i( -50 , 50);
+	glTexCoord2f(tx + .5, ty);        glVertex2i(50 , 50 );
 	//leftFaceChar2 = 0;
     }
 
@@ -2461,12 +2493,13 @@ void drawPlayerOne(GLuint tempTexture)
     {
 	//printf("Left Char 1: %d\n", leftFaceChar1);
 	//printf("Left Char 2: %d\n", leftFaceChar2);
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-	glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-	glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-	glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+	//~ glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+	//~ glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+	//~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+	//~ glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
 	//leftFaceChar2 = 1;
     }
+    
     glEnd();
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, 0);
