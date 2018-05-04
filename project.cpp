@@ -271,6 +271,7 @@ void drawPlayerOne(GLuint);
 void drawPlayerTwo(GLuint);
 void drawFrameRate();
 void drawStartMenu();
+void drawControlsMenu();
 void drawCharSelectMenu();
 // ==============================================
 Bullet::Bullet()
@@ -1381,12 +1382,35 @@ void check_keys(XEvent *e)
 		   //pleasePlay();
 		   break;
 	case XK_Return:
+		   // START BUTTON
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
 		       game.state = STATE_CHARSELECT;
 		       gl.cursorLocation = 0;
 		       playSelect();
 		       break;
 		   }
+		   // CONTROLS BUTTON
+		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 1) { 
+		       game.state = STATE_CONTROLS;
+		       gl.cursorLocation = 0;
+		       playSelect();
+		       break;
+		   }
+		   // CREDITS BUTTON
+		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 2) { 
+		       game.state = STATE_CREDITS;
+		       gl.cursorLocation = 0;
+		       playSelect();
+		       break;
+		   }
+		   // EXIT BUTTON
+		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 3) { 
+		       game.state = STATE_GAMEOVER;
+		       gl.done = 1;
+		       playSelect();
+		       break;
+		   }
+		   // Approve Char select
 		   if (game.state == STATE_CHARSELECT &&
 			   gl.cursorLocation != gl.cursorLocation2) {
 		       game.state = STATE_GAMEPLAY;
@@ -2072,6 +2096,9 @@ void render(Game *game)
     if (game->state == STATE_CHARSELECT)
 	drawCharSelectMenu();
 
+    if (game->state == STATE_CONTROLS)
+	drawControlsMenu();
+
     if (game->state == STATE_GAMEPLAY)
     {
 	float w, h;
@@ -2264,12 +2291,13 @@ void drawStartMenu()
     }    
 }
 
-/*void drawControlsMenu()
-  {
+void drawControlsMenu()
+{
+    float w, h;
+    glClear(GL_COLOR_BUFFER_BIT);
 
-  }
-  */
-
+}
+  
 void drawCharSelectMenu()
 {
     int w, h;
@@ -2448,48 +2476,26 @@ void drawPlayerOne(GLuint tempTexture)
     float ty = (float)iy / 1.0;
 
     //int result;
+    int size = 45;
     // Player 1 Draw
     glTranslated(char1->cx, char1->cy,0);
     if (gl.keys[XK_a])
-		glRotatef(10.0f, 0.0, 0.0, 1.0);
+		glRotatef(9.0f, 0.0, 0.0, 1.0);
     if (gl.keys[XK_d])
-		glRotatef(-10.0f, 0.0, 0.0, 1.0);
+		glRotatef(-9.0f, 0.0, 0.0, 1.0);
     glBegin(GL_QUADS);
-    //~ if (gl.keys[XK_Right] || !char1->facingLeft)
-    //~ {
-	//~ //printf("Left Char 1: %d\n", leftFaceChar1);
-	//~ //printf("Left Char 2: %d\n", leftFaceChar2);
-	//~ glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-	//~ glTexCoord2f(tx,       ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-	//~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-	//~ glTexCoord2f(tx + .5, ty);        glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-	//~ //leftFaceChar2 = 0;
-    //~ }
-
-    //~ if (gl.keys[XK_Left] || char1->facingLeft)
-    //~ {
-	//~ //printf("Left Char 1: %d\n", leftFaceChar1);
-	//~ //printf("Left Char 2: %d\n", leftFaceChar2);
-	//~ glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-	//~ glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-	//~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-	//~ glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-	//~ //leftFaceChar2 = 1;
-    //~ }
-    if (gl.keys[XK_Right] || !char1->facingLeft)
+    if (gl.keys[XK_d] || !char1->facingLeft)
     {
-		
-		
 	//printf("Left Char 1: %d\n", leftFaceChar1);
 	//printf("Left Char 2: %d\n", leftFaceChar2);
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(50,  -50 );
-	glTexCoord2f(tx,       ty + 1); glVertex2i( -50 ,-50 );
-	glTexCoord2f(tx,              ty); glVertex2i( -50 , 50);
-	glTexCoord2f(tx + .5, ty);        glVertex2i(50 , 50 );
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(size,  -size);
+	glTexCoord2f(tx,       ty + 1); glVertex2i(-size ,-size);
+	glTexCoord2f(tx,              ty); glVertex2i( -size , size);
+	glTexCoord2f(tx + .5, ty);        glVertex2i(size , size );
 	//leftFaceChar2 = 0;
     }
 
-    if (gl.keys[XK_Left] || char1->facingLeft)
+    if (gl.keys[XK_a] || char1->facingLeft)
     {
 	//printf("Left Char 1: %d\n", leftFaceChar1);
 	//printf("Left Char 2: %d\n", leftFaceChar2);
@@ -2498,6 +2504,10 @@ void drawPlayerOne(GLuint tempTexture)
 	//~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
 	//~ glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
 	//leftFaceChar2 = 1;
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(-size, -size);
+	glTexCoord2f(tx + .5,        ty); glVertex2i(-size, size);
+	glTexCoord2f(tx,              ty); glVertex2i(size, size);
+	glTexCoord2f(tx, ty + 1);       glVertex2i(size, -size);
     }
     
     glEnd();
@@ -2522,23 +2532,30 @@ void drawPlayerTwo(GLuint tempTexture2)
 	iy = 0;
     float tx = (float)ix / 2.0;
     float ty = (float)iy / 1.0;
+    
+    int size = 45;
+    glTranslated(char2->cx, char2->cy,0);
+    if (gl.keys[XK_Left])
+		glRotatef(9.0f, 0.0, 0.0, 1.0);
+    if (gl.keys[XK_Right])
+		glRotatef(-9.0f, 0.0, 0.0, 1.0);
 
     glBegin(GL_QUADS);
-    if (gl.keys[XK_d] || !char2->facingLeft)
+    if (gl.keys[XK_Right] || !char2->facingLeft)
     {
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char2->cx + char2->width, char2->cy - char2->height);
-	glTexCoord2f(tx,       ty + 1); glVertex2i(char2->cx - char2->width, char2->cy - char2->height);
-	glTexCoord2f(tx,              ty); glVertex2i(char2->cx - char2->width, char2->cy + char2->height);
-	glTexCoord2f(tx + .5, ty);        glVertex2i(char2->cx + char2->width, char2->cy + char2->height);
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(size,  -size);
+	glTexCoord2f(tx,       ty + 1); glVertex2i(-size ,-size);
+	glTexCoord2f(tx,              ty); glVertex2i( -size , size);
+	glTexCoord2f(tx + .5, ty);        glVertex2i(size , size );
 	//leftFaceChar1 = 0;
     }
 
-    if (gl.keys[XK_a] || char2->facingLeft)
+    if (gl.keys[XK_Left] || char2->facingLeft)
     {
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(char2->cx - char2->width, char2->cy - char2->height);
-	glTexCoord2f(tx + .5,        ty); glVertex2i(char2->cx - char2->width, char2->cy + char2->height);
-	glTexCoord2f(tx,              ty); glVertex2i(char2->cx + char2->width, char2->cy + char2->height);
-	glTexCoord2f(tx, ty + 1);       glVertex2i(char2->cx + char2->width, char2->cy - char2->height);
+	glTexCoord2f(tx + .5, ty + 1); glVertex2i(-size, -size);
+	glTexCoord2f(tx + .5,        ty); glVertex2i(-size, size);
+	glTexCoord2f(tx,              ty); glVertex2i(size, size);
+	glTexCoord2f(tx, ty + 1);       glVertex2i(size, -size);
 	//leftFaceChar1 = 1;
     }
     glEnd();
