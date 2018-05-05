@@ -35,6 +35,7 @@ extern class Timers
         struct timespec turt1Time, turt2Time, blueportalTime, orangeportalTime;
         struct timespec gameTime;
         struct timespec timeOut;
+        struct timespec countdown_start, countdown_current;
         Timers()
         {
             physicsRate = 1.0 / 30.0;

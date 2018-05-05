@@ -204,6 +204,9 @@ bool moveRightBool = true;
 bool moveLeftBool = true;
 bool initializeFlag = 1;
 bool pointFlag = 0;
+bool one = true;
+bool two = true;
+bool three = true;
 float finalJumpCy;
 float jumpStartCy;
 int boxIndex;
@@ -253,6 +256,11 @@ void checkJump();
 void changeColor(Character*, Shape*);
 void awardPoint(Character*, Shape*);
 void removePoint(Character*, Character*, Shape*);
+void countdown3(int, int);
+void countdown2(int, int);
+void countdown1(int, int);
+void startCountdown();
+bool checkCountdown();
 //void playerCollision(Character*);
 
 // UI FUNCTIONS
@@ -1420,9 +1428,16 @@ void check_keys(XEvent *e)
 		   // Approve Char select
 		   if (game.state == STATE_CHARSELECT &&
 			   gl.cursorLocation != gl.cursorLocation2) {
+		       startCountdown();
+		       checkCountdown();
 		       game.state = STATE_GAMEPLAY;
 		       break;
 		   }
+		   break;
+	case XK_i:
+		   rWithAlpha(70, 40, gl.xres, gl.yres, gl.threeTexture);	
+		   countdown3(gl.xres/2,gl.yres/2);
+		   //checkCountdown();
 		   break;
 	case XK_space:
 		   Bullet *b;
@@ -2252,6 +2267,35 @@ void render(Game *game)
 	drawFrameRate();
 	//printf("Left Char 1: %d\n", leftFaceChar1);
 	//	printf("Left Char 2: %d\n", leftFaceChar2);
+	
+	
+	clock_gettime(CLOCK_REALTIME, &timers.countdown_current);
+	int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
+	if (timediff < 1) {
+	    if (three) {
+		//play_three();
+		three = false;
+	    }
+	    countdown3(800,600);
+	    //return false;
+	}
+	if (timediff < 2 && timediff >= 1) {
+	    if (two) {
+		//play_two();
+		two = false;
+	    }
+	    countdown2(800,600);
+	    //return false;
+	}
+	if (timediff < 3 && timediff >= 2) {
+	    if (one) {
+		//play_one();
+		one = false;
+	    }
+	    countdown1(800,600);
+	    //return true;
+	}
+	//return true;
     }
 }
 
@@ -2525,6 +2569,68 @@ void sCharPose(int cx, int cy, int h, int w, GLuint texture, int ix, int iy)
     glEnd();
     glPopMatrix();
 } 
+
+void startCountdown()
+{
+    clock_gettime(CLOCK_REALTIME, &timers.countdown_start);
+    one = true;
+    two = true;
+    three = true;
+}
+
+bool checkCountdown() 
+{    
+    clock_gettime(CLOCK_REALTIME, &timers.countdown_current);
+    int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
+    if (timediff < 1) {
+	if (three) {
+	    //play_three();
+	    three = false;
+	}
+	countdown3(800,600);
+	return false;
+    }
+    if (timediff < 2 && timediff >= 1) {
+	if (two) {
+	    //play_two();
+	    two = false;
+	}
+	countdown2(800,600);
+	return false;
+    }
+    if (timediff < 3 && timediff >= 2) {
+	if (one) {
+	    //play_one();
+	    one = false;
+	}
+	countdown1(800,600);
+	return true;
+    }
+    return true;
+}
+
+void countdown3(int xres, int yres)
+{
+    Rect r;
+    unsigned int c = 0x002d88d8;
+    r.bot = gl.yres - 40;
+    r.left = (50);
+    r.center = 0;
+    ggprint16(&r, 32, c, "Frame Rate : %f", fps);
+    
+    printf("im here\n");
+    rWithAlpha(70, 40, xres, yres, gl.threeTexture);	
+}	
+
+void countdown2(int xres, int yres)
+{
+    rWithAlpha(70, 40, xres, yres, gl.twoTexture);	
+}	
+
+void countdown1(int xres, int yres)
+{
+    rWithAlpha(70, 40, xres, yres, gl.oneTexture);	
+}	
 
 void renderFrame(int h, int w, int trans_x, int trans_y, GLuint texture) 
 {
