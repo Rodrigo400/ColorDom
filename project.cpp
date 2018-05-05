@@ -273,6 +273,7 @@ void drawFrameRate();
 void drawStartMenu();
 void drawControlsMenu();
 void drawCharSelectMenu();
+void drawCredits();
 // ==============================================
 Bullet::Bullet()
 {
@@ -1377,6 +1378,12 @@ void check_keys(XEvent *e)
 		       game.state = STATE_CHARSELECT;
 		       gameFrame = 30;
 		   }
+		   if (game.state == STATE_CONTROLS) {
+		       game.state = STATE_STARTMENU;
+		   }
+		   if (game.state == STATE_CREDITS) {
+		       game.state = STATE_STARTMENU;
+		   }
 		   break;
 	case XK_m:
 		   //pleasePlay();
@@ -2098,6 +2105,9 @@ void render(Game *game)
 
     if (game->state == STATE_CONTROLS)
 	drawControlsMenu();
+    
+    if (game->state == STATE_CREDITS)
+	drawCredits();
 
     if (game->state == STATE_GAMEPLAY)
     {
@@ -2296,8 +2306,138 @@ void drawControlsMenu()
     float w, h;
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Top Square
+    w = 450;
+    h = 100;
+    glPushMatrix();
+    glColor3f(0.7,0.0,0.0);
+    glTranslatef(gl.xres/2, gl.yres*3/4, 0);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    //glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glVertex2i(-w,-h);
+    glVertex2i(-w,h);
+    glVertex2i(w,h);
+    glVertex2i(w,-h);
+    glEnd();
+    glPopMatrix();
+	
+    // Left Square
+    w = 230;
+    h = 170;
+    glPushMatrix();
+    glColor3f(0.0,0.7,0.0);
+    glTranslatef(gl.xres/4+100, gl.yres/3+30, 0);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    //glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glVertex2i(-w,-h);
+    glVertex2i(-w,h);
+    glVertex2i(w,h);
+    glVertex2i(w,-h);
+    glEnd();
+    glPopMatrix();
+    
+    // Right Square
+    w = 230;
+    h = 170;
+    glPushMatrix();
+    glColor3f(0.0,0.0,0.7);
+    glTranslatef(gl.xres*3/4-100, gl.yres/3+30, 0);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    //glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glVertex2i(-w,-h);
+    glVertex2i(-w,h);
+    glVertex2i(w,h);
+    glVertex2i(w,-h);
+    glEnd();
+    glPopMatrix();
+
+    //===================================
+    // Objective instructions
+    Rect r;
+    unsigned int c = 0xFFFFFFFF;
+    r.bot = gl.yres - 125;
+    r.left = gl.xres/2-50;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Objective:");
+    
+    r.bot = gl.yres - 165;
+    r.left = gl.xres/3-28;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Touching a tile will change its color to the player's color.");
+    
+    r.bot = gl.yres - 205;
+    r.left = gl.xres/3-130;
+    r.center = 0;
+    ggprint16(&r, 32, c, "The color of a tile can be changed by another player after being painted a color.");
+    
+    r.bot = gl.yres - 245;
+    r.left = gl.xres/3-118;
+    r.center = 0;
+    ggprint16(&r, 32, c, "The player with the most tiles that are their color by the end of the time wins.");
+    //===================================
+    
+    //===================================
+    // Player one control instructions
+    r.bot = gl.yres - 350;
+    r.left = gl.xres*2/8;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Player One Controls");
+    
+    r.bot = gl.yres - 410;
+    r.left = gl.xres*2/8;
+    r.center = 0;
+    ggprint16(&r, 32, c, "W - Jump");
+    
+    r.bot = gl.yres - 460;
+    r.left = gl.xres*2/8;
+    r.center = 0;
+    ggprint16(&r, 32, c, "A - Move Left");
+    
+    r.bot = gl.yres - 510;
+    r.left = gl.xres*2/8;
+    r.center = 0;
+    ggprint16(&r, 32, c, "D - Move Right");
+    //===================================
+    
+    //===================================
+    // Player two control instructions
+    r.bot = gl.yres - 350;
+    r.left = gl.xres*5/8-50;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Player Two Controls");
+    
+    r.bot = gl.yres - 410;
+    r.left = gl.xres*5/8-50;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Up Arrow Key - Jump");
+    
+    r.bot = gl.yres - 460;
+    r.left = gl.xres*5/8-50;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Left Arrow Key - Move Left");
+    
+    r.bot = gl.yres - 510;
+    r.left = gl.xres*5/8-50;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Right Arrow Key - Move Right");
+    //===================================
 }
-  
+ 
+void drawCredits()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    Rect r;
+    unsigned int c = 0xFFFFFFFF;
+    r.bot = gl.yres/2;
+    r.left = gl.xres/2-50;
+    r.center = 0;
+    ggprint16(&r, 10, c, "Rodrigo made it");
+}
+
 void drawCharSelectMenu()
 {
     int w, h;
