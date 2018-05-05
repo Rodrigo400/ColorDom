@@ -207,10 +207,13 @@ bool pointFlag = 0;
 bool one = true;
 bool two = true;
 bool three = true;
+bool go = true;
 float finalJumpCy;
 float jumpStartCy;
 int boxIndex;
-int gameFrame = 30;
+//int gameFrame = 30;
+int gameFrame = 5;
+int timeoutFrame = 0;
 int gameDelay = 1;
 int totalCubes;
 
@@ -259,8 +262,10 @@ void removePoint(Character*, Character*, Shape*);
 void countdown3(int, int);
 void countdown2(int, int);
 void countdown1(int, int);
+void countdowngo(int, int);
 void startCountdown();
 bool checkCountdown();
+void resetEverything();
 //void playerCollision(Character*);
 
 // UI FUNCTIONS
@@ -282,6 +287,7 @@ void drawStartMenu();
 void drawControlsMenu();
 void drawCharSelectMenu();
 void drawCredits();
+void drawWinner();
 // ==============================================
 Bullet::Bullet()
 {
@@ -333,7 +339,7 @@ int main(int argc, char *argv[])
     char1 = &game.player[0];
     char2 = &game.player[1];
     char1->cx = 210;
-    char2->cx = 920;
+    char2->cx = 1080;
     char1->cy = gl.yres/2 + 15;
     char2->cy = gl.yres/2 + 15;
 
@@ -494,7 +500,7 @@ int main(int argc, char *argv[])
 	    check_mouse(&e);
 	    check_keys(&e);
 	}
-	if (gameFrame > 0) 
+	if (gameFrame > 0 && !go) 
 	    physics(&game);
 	render(&game);
 	glXSwapBuffers(dpy, win);
@@ -743,6 +749,7 @@ void init_opengl(void)
     system("convert ./images/charselectbg.png ./images/charselectbg.ppm");
     system("convert ./images/ingamebg.png ./images/ingamebg.ppm");
     system("convert ./images/menubg.png ./images/menubg.ppm");
+    system("convert ./images/winner.png ./images/winner.ppm");
     //==============================================
 
     //==============================================
@@ -782,6 +789,7 @@ void init_opengl(void)
     gl.charselectbgImage = ppm6GetImage("./images/charselectbg.ppm");	
     gl.ingamebgImage = ppm6GetImage("./images/ingamebg.ppm");	
     gl.menubgImage = ppm6GetImage("./images/menubg.ppm");	
+    gl.winnerImage = ppm6GetImage("./images/winner.ppm");	
     //==============================================
 
     //==============================================
@@ -822,6 +830,7 @@ void init_opengl(void)
     glGenTextures(1, &gl.charselectbgTexture);	
     glGenTextures(1, &gl.ingamebgTexture);	
     glGenTextures(1, &gl.menubgTexture);	
+    glGenTextures(1, &gl.winnerTexture);	
     //==============================================
 
     //==============================================
@@ -1285,6 +1294,20 @@ void init_opengl(void)
     free(ingamebgData);
     unlink("./images/ingamebg.ppm"); 
     //==============================================
+    
+    //==============================================
+    // Winner
+    w = gl.winnerImage->width;
+    h = gl.winnerImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.winnerTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *winnerData = buildAlphaData(gl.winnerImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, winnerData);
+    free(winnerData);
+    unlink("./images/winner.ppm"); 
+    //==============================================
 }
 
 void check_mouse(XEvent *e)
@@ -1384,7 +1407,11 @@ void check_keys(XEvent *e)
 	case XK_Tab:
 		   if (game.state == STATE_GAMEPLAY) {
 		       game.state = STATE_CHARSELECT;
-		       gameFrame = 30;
+		       gameFrame = 5;			// reset Time when backing out
+		       timeoutFrame = timeoutFrame;
+		   }
+		   if (game.state == STATE_CHARSELECT) {
+		       game.state = STATE_STARTMENU;
 		   }
 		   if (game.state == STATE_CONTROLS) {
 		       game.state = STATE_STARTMENU;
@@ -1392,9 +1419,6 @@ void check_keys(XEvent *e)
 		   if (game.state == STATE_CREDITS) {
 		       game.state = STATE_STARTMENU;
 		   }
-		   break;
-	case XK_m:
-		   //pleasePlay();
 		   break;
 	case XK_Return:
 		   // START BUTTON
@@ -1407,14 +1431,14 @@ void check_keys(XEvent *e)
 		   // CONTROLS BUTTON
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 1) { 
 		       game.state = STATE_CONTROLS;
-		       gl.cursorLocation = 0;
+		       gl.cursorLocation = 1;
 		       playSelect();
 		       break;
 		   }
 		   // CREDITS BUTTON
 		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 2) { 
 		       game.state = STATE_CREDITS;
-		       gl.cursorLocation = 0;
+		       gl.cursorLocation = 2;
 		       playSelect();
 		       break;
 		   }
@@ -1433,11 +1457,6 @@ void check_keys(XEvent *e)
 		       game.state = STATE_GAMEPLAY;
 		       break;
 		   }
-		   break;
-	case XK_i:
-		   rWithAlpha(70, 40, gl.xres, gl.yres, gl.threeTexture);	
-		   countdown3(gl.xres/2,gl.yres/2);
-		   //checkCountdown();
 		   break;
 	case XK_space:
 		   Bullet *b;
@@ -1548,11 +1567,6 @@ void physics(Game *game)
 
 	//char1->colorID = 1;		// YELLOW
 	//char2->colorID = 2;         // BLUE
-
-	// this is good
-	//char1->cy += 0.2*gravity;
-	//char2->cy += 0.2*gravity;
-
 
 	if (char1->inAirBool) {
 	    //char1->vel.y = 0.2*gravity;
@@ -2023,6 +2037,25 @@ void shootBullet()
     gl.nbullets++;
 }
 
+void resetEverything()
+{
+    timeoutFrame = 0;
+    gameFrame = 5;
+    gl.cursorLocation = 0;
+    initializeFlag = 1;
+    one = true;
+    two = true;
+    three = true;
+    go = true;
+    
+    char1->cx = 210;
+    char2->cx = 1080;
+    char1->cy = gl.yres/2 + 15;
+    char2->cy = gl.yres/2 + 15;
+    char1->points = 0;
+    char2->points = 0;
+}
+
 void countdown() 
 {
     Rect r;
@@ -2030,18 +2063,37 @@ void countdown()
     r.bot = gl.yres - 60;
     r.left = (gl.xres/2-10);
     r.center = 0;
-    //if (gl.state == STATE_GAMEPLAY) {
     timers.recordTime(&timers.timeCurrent);
     double timeSpan = timers.timeDiff(&timers.gameTime, &timers.timeCurrent);
-    if (timeSpan > gameDelay && gameFrame > 0) {
+    if (timeSpan > gameDelay && gameFrame > 0 && !go) {
 	//advance
 	--gameFrame;
 	timers.recordTime(&timers.gameTime);
     }
     if (gameFrame == 0)
     {
-	//++gl.minutes;
-	gameFrame = 0;
+	timers.recordTime(&timers.timeCurrent);
+	double timeSpan = timers.timeDiff(&timers.timeOut, &timers.timeCurrent);
+	if (timeSpan > gameDelay) {
+	    ++timeoutFrame;
+	    timers.recordTime(&timers.timeOut);
+	}
+	if (timeoutFrame <= 3) {
+	// DRUM ROLL MUSIC HERE	
+		
+	}
+	if (timeoutFrame > 3 && timeoutFrame <= 10) {
+		// APPLAUSE MUSIC HERE	
+	    drawWinner();
+	}
+
+	if (timeoutFrame > 8) { 
+	    game.state = STATE_STARTMENU;
+	    // Reset Everything
+	    resetEverything();
+	}
+
+	//gameFrame = 0;
 	printf("GAME OVER\n");
 	if (char1->points > char2->points)
 	    printf("Player 1 WINS\n");
@@ -2050,7 +2102,6 @@ void countdown()
 	else 
 	    printf("TIE\n");
     }
-    //}
     ggprint16(&r, 32, c, "%02i", gameFrame);
 }	
 
@@ -2268,7 +2319,8 @@ void render(Game *game)
 	//printf("Left Char 1: %d\n", leftFaceChar1);
 	//	printf("Left Char 2: %d\n", leftFaceChar2);
 	
-	
+	//====================================
+	// COUNTDOWN BEFORE GAME	
 	clock_gettime(CLOCK_REALTIME, &timers.countdown_current);
 	int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
 	if (timediff < 1) {
@@ -2276,26 +2328,30 @@ void render(Game *game)
 		//play_three();
 		three = false;
 	    }
-	    countdown3(800,600);
-	    //return false;
+	    countdown3(gl.xres/2,gl.yres/2);
 	}
 	if (timediff < 2 && timediff >= 1) {
 	    if (two) {
 		//play_two();
 		two = false;
 	    }
-	    countdown2(800,600);
-	    //return false;
+	    countdown2(gl.xres/2,gl.yres/2);
 	}
 	if (timediff < 3 && timediff >= 2) {
 	    if (one) {
 		//play_one();
 		one = false;
 	    }
-	    countdown1(800,600);
-	    //return true;
+	    countdown1(gl.xres/2,gl.yres/2);
 	}
-	//return true;
+	if (timediff < 4 && timediff >= 3) {
+	    if (go) {
+		//play_one();
+		go = false;
+	    }
+	    countdowngo(gl.xres/2,gl.yres/2);
+	}
+	//====================================
     }
 }
 
@@ -2482,6 +2538,119 @@ void drawCredits()
     ggprint16(&r, 10, c, "Rodrigo made it");
 }
 
+void drawWinner() 
+{
+    Rect r; 
+    float h = gl.yres;
+    float w = gl.xres;
+    glPushMatrix();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.08,0.08,0.08,0.9);
+    glTranslated(gl.xres/2, gl.yres/2, 0);
+    glBegin(GL_QUADS);
+    glVertex2i(-w, -h);
+    glVertex2i(-w,  h);
+    glVertex2i(w,   h);
+    glVertex2i(w,  -h);
+    glEnd();
+    glDisable(GL_BLEND);
+    glPopMatrix();
+   
+    // WINNER TOP 
+    rWithAlpha(60, 325, gl.xres/2, 580, gl.winnerTexture);	
+    
+    // draw Left Bar
+    Shape s;
+    Shape leftBar[100];
+    for (int i = 0; i < char1->points; i++) {
+	leftBar[i].width = 100;
+	leftBar[i].height = 5;
+	leftBar[i].center.x = gl.xres/3;
+	leftBar[i].center.y = 65 + (i*9);
+	leftBar[i].center.z = 0;
+	s = leftBar[i];
+	glPushMatrix();
+	if (char1->colorID == 1) {			// YELLOW
+	    glColor3ub(255,255,0);
+	} 
+	if (char1->colorID == 2) {			// BLUE
+	    glColor3ub(69,255,255);
+	}
+	if (char1->colorID == 3) {
+	    glColor3ub(155,238,46);			// GREEN
+	}
+	if (char1->colorID == 4) {	    
+	    glColor3ub(216,12,225);			// PURPLE
+	}
+	glTranslatef(s.center.x, s.center.y, s.center.z);
+	float w = s.width;
+	float h = s.height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i(w, h);
+	glVertex2i(w, -h);
+	glEnd();
+	glPopMatrix();
+    
+    }	
+    // draw Right Bar
+    Shape rightBar[100];
+    for (int i = 0; i < char2->points; i++) {
+	rightBar[i].width = 100;
+	rightBar[i].height = 5;
+	rightBar[i].center.x = gl.xres*2/3;
+	rightBar[i].center.y = 65 + (i*9);
+	rightBar[i].center.z = 0;
+	s = rightBar[i];
+	glPushMatrix();
+	if (char2->colorID == 1) {			// YELLOW
+	    glColor3ub(255,255,0);
+	} 
+	if (char2->colorID == 2) {			// BLUE
+	    glColor3ub(69,255,255);
+	}
+	if (char2->colorID == 3) {
+	    glColor3ub(155,238,46);			// GREEN
+	}
+	if (char2->colorID == 4) {	    
+	    glColor3ub(216,12,225);			// PURPLE
+	}
+	glTranslatef(s.center.x, s.center.y, s.center.z);
+	float w = s.width;
+	float h = s.height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w, -h);
+	glVertex2i(-w, h);
+	glVertex2i(w, h);
+	glVertex2i(w, -h);
+	glEnd();
+	glPopMatrix();
+	
+    }	
+
+    // draw player1 at top of bar
+    sCharPose(gl.xres/3, leftBar[char1->points-1].center.y+100, 75, 75, gl.tempTexture, gl.yellowcharFrame%2, 1);
+    // draw player2 at top of bar
+    sCharPose(gl.xres*2/3, rightBar[char2->points-1].center.y+100, 75, 75, gl.tempTexture2, gl.yellowcharFrame%2, 1);
+
+
+    //unsigned int c = 0xFFFFFFFF;
+    unsigned int c = 0x00000000;
+    // draw player1 text
+    r.bot = leftBar[char1->points/2 - 1].center.y;
+    r.left = gl.xres/3;
+    r.center = 1; 
+    ggprint16(&r, 50, c, "%d", char1->points);
+
+    // draw player1 text
+    r.bot = rightBar[char2->points/2 - 1].center.y;
+    r.left = gl.xres*2/3;
+    r.center = 1; 
+    ggprint16(&r, 50, c, "%d", char2->points);
+}
+
 void drawCharSelectMenu()
 {
     int w, h;
@@ -2611,25 +2780,22 @@ bool checkCountdown()
 
 void countdown3(int xres, int yres)
 {
-    Rect r;
-    unsigned int c = 0x002d88d8;
-    r.bot = gl.yres - 40;
-    r.left = (50);
-    r.center = 0;
-    ggprint16(&r, 32, c, "Frame Rate : %f", fps);
-    
-    printf("im here\n");
-    rWithAlpha(70, 40, xres, yres, gl.threeTexture);	
+    rWithAlpha(100, 60, xres, yres, gl.threeTexture);	
 }	
 
 void countdown2(int xres, int yres)
 {
-    rWithAlpha(70, 40, xres, yres, gl.twoTexture);	
+    rWithAlpha(100, 60, xres, yres, gl.twoTexture);	
 }	
 
 void countdown1(int xres, int yres)
 {
-    rWithAlpha(70, 40, xres, yres, gl.oneTexture);	
+    rWithAlpha(100, 60, xres, yres, gl.oneTexture);	
+}	
+
+void countdowngo(int xres, int yres)
+{
+    rWithAlpha(100, 140, xres, yres, gl.goTexture);	
 }	
 
 void renderFrame(int h, int w, int trans_x, int trans_y, GLuint texture) 
@@ -2726,9 +2892,9 @@ void drawPlayerOne(GLuint tempTexture)
     // Player 1 Draw
     glTranslated(char1->cx, char1->cy,0);
     if (gl.keys[XK_a])
-		glRotatef(9.0f, 0.0, 0.0, 1.0);
+		glRotatef(8.0f, 0.0, 0.0, 1.0);
     if (gl.keys[XK_d])
-		glRotatef(-9.0f, 0.0, 0.0, 1.0);
+		glRotatef(-8.0f, 0.0, 0.0, 1.0);
     glBegin(GL_QUADS);
     if (gl.keys[XK_d] || !char1->facingLeft)
     {
@@ -2782,9 +2948,9 @@ void drawPlayerTwo(GLuint tempTexture2)
     int size = 45;
     glTranslated(char2->cx, char2->cy,0);
     if (gl.keys[XK_Left])
-		glRotatef(9.0f, 0.0, 0.0, 1.0);
+		glRotatef(8.0f, 0.0, 0.0, 1.0);
     if (gl.keys[XK_Right])
-		glRotatef(-9.0f, 0.0, 0.0, 1.0);
+		glRotatef(-8.0f, 0.0, 0.0, 1.0);
 
     glBegin(GL_QUADS);
     if (gl.keys[XK_Right] || !char2->facingLeft)

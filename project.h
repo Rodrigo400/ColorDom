@@ -30,11 +30,10 @@ extern class Timers
     public:
         double physicsRate;
         double oobillion;
-        struct timespec timeStart, timeEnd, timeCurrent;
+        struct timespec timeStart, timeEnd, timeCurrent, timeOut;
         struct timespec yellowcharTime, bluecharTime, greencharTime, purplecharTime;
         struct timespec turt1Time, turt2Time, blueportalTime, orangeportalTime;
         struct timespec gameTime;
-        struct timespec timeOut;
         struct timespec countdown_start, countdown_current;
         Timers()
         {
@@ -170,6 +169,7 @@ extern class Global {
 	Ppmimage *twoImage;
 	Ppmimage *charselectbgImage;
 	Ppmimage *ingamebgImage;
+	Ppmimage *winnerImage;
 
 
         GLuint mchar1Texture;
@@ -209,6 +209,7 @@ extern class Global {
 	GLuint tempTexture2;
 	GLuint tempProfileTexture;
 	GLuint tempProfileTexture2;
+	GLuint winnerTexture;
 
 
         Vec box[50];
@@ -275,6 +276,7 @@ extern class Global {
 	    twoImage = NULL;
 	    charselectbgImage = NULL;
 	    ingamebgImage = NULL;
+	    winnerImage = NULL;
 
             //
             delay = 0.06;
