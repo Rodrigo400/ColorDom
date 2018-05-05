@@ -43,10 +43,26 @@ class Sound {
         ALuint alBufferTitle;
         ALuint alBufferScroll;
         ALuint alBufferSelect;
+        ALuint alBufferApplause;
+        ALuint alBufferGame;
+        ALuint alBufferThree;
+        ALuint alBufferTwo;
+        ALuint alBufferOne;
+        ALuint alBufferGo;
+        ALuint alBufferDrums;
+        ALuint alBufferBell;
 
         ALuint alSourceTitle;
         ALuint alSourceScroll;
         ALuint alSourceSelect;
+        ALuint alSourceApplause;
+        ALuint alSourceGame;
+	ALuint alSourceThree;
+	ALuint alSourceTwo;
+	ALuint alSourceOne;
+	ALuint alSourceGo;
+	ALuint alSourceDrums;
+	ALuint alSourceBell;
 };
 
 
@@ -76,16 +92,7 @@ void playMusicTitle()
 {
     Sound s;
 
-    /*s.alBuffer = alutCreateBufferFromFile("./GameMusic.wav");
-
-    alGenSources(1, &s.alSource);
-    alSourcei(s.alSource, AL_BUFFER, s.alBuffer);
-
-    alSourcef(s.alSource, AL_GAIN, 1.0f);
-    alSourcef(s.alSource, AL_PITCH, 1.0f);
-    alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
-*/
-    s.alBufferTitle = alutCreateBufferFromFile("./sound/GameMusic.wav");
+    s.alBufferTitle = alutCreateBufferFromFile("./sound/TitleMusic.wav");
 
     alGenSources(1, &s.alSourceTitle);
     alSourcei(s.alSourceTitle, AL_BUFFER, s.alBufferTitle);
@@ -97,18 +104,25 @@ void playMusicTitle()
     alSourcePlay(s.alSourceTitle);
 }
 
-void playScroll() 
+void playMusicGame() 
 {
     Sound s;
 
-    s.alBufferScroll = alutCreateBufferFromFile("./GameMusic.wav");
+    s.alBufferGame = alutCreateBufferFromFile("./sound/GameMusic.wav");
 
-    alGenSources(1, &s.alSourceScroll);
-    alSourcei(s.alSourceScroll, AL_BUFFER, s.alBufferScroll);
+    alGenSources(1, &s.alSourceGame);
+    alSourcei(s.alSourceGame, AL_BUFFER, s.alBufferGame);
 
-    alSourcef(s.alSourceScroll, AL_GAIN, 1.0f);
-    alSourcef(s.alSourceScroll, AL_PITCH, 1.0f);
-    alSourcei(s.alSourceScroll, AL_LOOPING, AL_FALSE);
+    alSourcef(s.alSourceGame, AL_GAIN, 0.35f);
+    alSourcef(s.alSourceGame, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceGame, AL_LOOPING, AL_TRUE);
+    
+    alSourcePlay(s.alSourceGame);
+}
+
+void playScroll() 
+{
+    Sound s;
 
     s.alBufferScroll = alutCreateBufferFromFile("./sound/scrollSound.wav");
 
@@ -138,16 +152,142 @@ void playSelect()
     alSourcePlay(s.alSourceSelect);
 }
 
+void playApplause() 
+{
+    Sound s;
+
+    s.alBufferApplause = alutCreateBufferFromFile("./sound/applauseSound.wav");
+
+    alGenSources(1, &s.alSourceApplause);
+    alSourcei(s.alSourceApplause, AL_BUFFER, s.alBufferApplause);
+
+    alSourcef(s.alSourceApplause, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceApplause, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceApplause, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceApplause);
+}
+
+void playThree() 
+{
+    Sound s;
+
+    s.alBufferThree = alutCreateBufferFromFile("./sound/three.wav");
+
+    alGenSources(1, &s.alSourceThree);
+    alSourcei(s.alSourceThree, AL_BUFFER, s.alBufferThree);
+
+    alSourcef(s.alSourceThree, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceThree, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceThree, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceThree);
+}
+
+void playTwo() 
+{
+    Sound s;
+
+    s.alBufferTwo = alutCreateBufferFromFile("./sound/two.wav");
+
+    alGenSources(1, &s.alSourceTwo);
+    alSourcei(s.alSourceTwo, AL_BUFFER, s.alBufferTwo);
+
+    alSourcef(s.alSourceTwo, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceTwo, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceTwo, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceTwo);
+}
+
+void playOne() 
+{
+    Sound s;
+
+    s.alBufferOne = alutCreateBufferFromFile("./sound/one.wav");
+
+    alGenSources(1, &s.alSourceOne);
+    alSourcei(s.alSourceOne, AL_BUFFER, s.alBufferOne);
+
+    alSourcef(s.alSourceOne, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceOne, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceOne, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceOne);
+}
+
+void playGo() 
+{
+    Sound s;
+
+    s.alBufferGo = alutCreateBufferFromFile("./sound/go.wav");
+
+    alGenSources(1, &s.alSourceGo);
+    alSourcei(s.alSourceGo, AL_BUFFER, s.alBufferGo);
+
+    alSourcef(s.alSourceGo, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceGo, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceGo, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceGo);
+}
+
+void playDrums() 
+{
+    Sound s;
+
+    s.alBufferDrums = alutCreateBufferFromFile("./sound/drum.wav");
+
+    alGenSources(1, &s.alSourceDrums);
+    alSourcei(s.alSourceDrums, AL_BUFFER, s.alBufferDrums);
+
+    alSourcef(s.alSourceDrums, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceDrums, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceDrums, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceDrums);
+}
+
+void playBell() 
+{
+    Sound s;
+
+    s.alBufferBell = alutCreateBufferFromFile("./sound/bell.wav");
+
+    alGenSources(1, &s.alSourceBell);
+    alSourcei(s.alSourceBell, AL_BUFFER, s.alBufferBell);
+
+    alSourcef(s.alSourceBell, AL_GAIN, 1.0f);
+    alSourcef(s.alSourceBell, AL_PITCH, 1.0f);
+    alSourcei(s.alSourceBell, AL_LOOPING, AL_FALSE);
+    
+    alSourcePlay(s.alSourceBell);
+}
+
 void finish_sound() 
 {
     Sound s;
     alDeleteSources(1, &s.alSourceTitle);
     alDeleteSources(1, &s.alSourceScroll);
     alDeleteSources(1, &s.alSourceSelect);
+    alDeleteSources(1, &s.alSourceApplause);
+    alDeleteSources(1, &s.alSourceGame);
+    alDeleteSources(1, &s.alSourceThree);
+    alDeleteSources(1, &s.alSourceTwo);
+    alDeleteSources(1, &s.alSourceOne);
+    alDeleteSources(1, &s.alSourceGo);
+    alDeleteSources(1, &s.alSourceDrums);
 
     alDeleteBuffers(1, &s.alBufferTitle);
     alDeleteBuffers(1, &s.alBufferScroll);
     alDeleteBuffers(1, &s.alBufferSelect);
+    alDeleteBuffers(1, &s.alBufferApplause);
+    alDeleteBuffers(1, &s.alBufferGame);
+    alDeleteBuffers(1, &s.alBufferThree);
+    alDeleteBuffers(1, &s.alBufferTwo);
+    alDeleteBuffers(1, &s.alBufferOne);
+    alDeleteBuffers(1, &s.alBufferGo);
+    alDeleteBuffers(1, &s.alBufferDrums);
 
     ALCcontext *Context = alcGetCurrentContext();
     ALCdevice *Device = alcGetContextsDevice(Context);
@@ -208,14 +348,19 @@ bool one = true;
 bool two = true;
 bool three = true;
 bool go = true;
+bool musicGameFlag = 0;
+bool musicTitleFlag = 1;
 float finalJumpCy;
 float jumpStartCy;
 int boxIndex;
-//int gameFrame = 30;
-int gameFrame = 5;
+int gameFrame = 30;
+//int gameFrame = 5;
 int timeoutFrame = 0;
 int gameDelay = 1;
 int totalCubes;
+int bellFlag = 1;
+int appFlag = 1;	
+int drumsFlag = 1;	
 
 int xres3, xres4;
 unsigned char *screendata = NULL;
@@ -487,9 +632,8 @@ int main(int argc, char *argv[])
     //===================================
     // MUSIC HERE
     //===================================
-    //pleasePlay();
     initialize_sound();
-    playMusicTitle();
+    playMusicGame();
     //===================================
 
     while (!gl.done) {
@@ -500,8 +644,20 @@ int main(int argc, char *argv[])
 	    check_mouse(&e);
 	    check_keys(&e);
 	}
+	//printf("Title flag: %d\n", musicTitleFlag);
+	//printf("Game flag: %d\n", musicGameFlag);
 	if (gameFrame > 0 && !go) 
 	    physics(&game);
+
+	/*if (musicTitleFlag && !musicGameFlag) {
+	    playMusicTitle();
+	    musicTitleFlag = 0;
+	}
+	if (musicGameFlag && !musicTitleFlag) {
+	    playMusicGame();
+	    musicGameFlag = 0;
+	}*/
+
 	render(&game);
 	glXSwapBuffers(dpy, win);
 	showFrameRate();
@@ -750,6 +906,7 @@ void init_opengl(void)
     system("convert ./images/ingamebg.png ./images/ingamebg.ppm");
     system("convert ./images/menubg.png ./images/menubg.ppm");
     system("convert ./images/winner.png ./images/winner.ppm");
+    system("convert ./images/Tie.png ./images/tie.ppm");
     //==============================================
 
     //==============================================
@@ -790,6 +947,7 @@ void init_opengl(void)
     gl.ingamebgImage = ppm6GetImage("./images/ingamebg.ppm");	
     gl.menubgImage = ppm6GetImage("./images/menubg.ppm");	
     gl.winnerImage = ppm6GetImage("./images/winner.ppm");	
+    gl.tieImage = ppm6GetImage("./images/tie.ppm");	
     //==============================================
 
     //==============================================
@@ -831,6 +989,7 @@ void init_opengl(void)
     glGenTextures(1, &gl.ingamebgTexture);	
     glGenTextures(1, &gl.menubgTexture);	
     glGenTextures(1, &gl.winnerTexture);	
+    glGenTextures(1, &gl.tieTexture);	
     //==============================================
 
     //==============================================
@@ -1308,6 +1467,20 @@ void init_opengl(void)
     free(winnerData);
     unlink("./images/winner.ppm"); 
     //==============================================
+    
+    //==============================================
+    // Tie
+    w = gl.tieImage->width;
+    h = gl.tieImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.tieTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *tieData = buildAlphaData(gl.tieImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, tieData);
+    free(tieData);
+    unlink("./images/tie.ppm"); 
+    //==============================================
 }
 
 void check_mouse(XEvent *e)
@@ -1409,6 +1582,7 @@ void check_keys(XEvent *e)
 		       game.state = STATE_CHARSELECT;
 		       gameFrame = 5;			// reset Time when backing out
 		       timeoutFrame = timeoutFrame;
+		       resetEverything();
 		   }
 		   if (game.state == STATE_CHARSELECT) {
 		       game.state = STATE_STARTMENU;
@@ -1419,6 +1593,10 @@ void check_keys(XEvent *e)
 		   if (game.state == STATE_CREDITS) {
 		       game.state = STATE_STARTMENU;
 		   }
+		   break;
+	case XK_i:
+		   //playDrums();
+		   //playApplause();
 		   break;
 	case XK_Return:
 		   // START BUTTON
@@ -1515,6 +1693,7 @@ void check_keys(XEvent *e)
 		   break;
 	case XK_w:
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation > 1 ) {
 			   gl.cursorLocation -= 2;
 		       }
@@ -1522,6 +1701,7 @@ void check_keys(XEvent *e)
 		   break;
 	case XK_s:
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation < 2) {
 			   gl.cursorLocation += 2;
 		       }
@@ -1529,6 +1709,7 @@ void check_keys(XEvent *e)
 		   break;
 	case XK_d:
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation != 3) {
 			   gl.cursorLocation += 1;
 		       }
@@ -1536,6 +1717,7 @@ void check_keys(XEvent *e)
 		   break;
 	case XK_a:
 		   if (game.state == STATE_CHARSELECT) {
+		       playScroll();
 		       if (gl.cursorLocation != 0) {
 			   gl.cursorLocation -= 1;
 		       }
@@ -2072,18 +2254,32 @@ void countdown()
     }
     if (gameFrame == 0)
     {
+	if (timeoutFrame < 2) {
+	    if (bellFlag) {
+		playBell();
+		bellFlag = 0;
+	    }
+	}
+
 	timers.recordTime(&timers.timeCurrent);
 	double timeSpan = timers.timeDiff(&timers.timeOut, &timers.timeCurrent);
 	if (timeSpan > gameDelay) {
 	    ++timeoutFrame;
 	    timers.recordTime(&timers.timeOut);
 	}
-	if (timeoutFrame <= 3) {
-	// DRUM ROLL MUSIC HERE	
-		
+	if (timeoutFrame >= 2 && timeoutFrame < 4) {
+	    // DRUM ROLL MUSIC HERE	
+	    if (drumsFlag) {
+		playDrums();
+		drumsFlag = 0;
+	    }
 	}
-	if (timeoutFrame > 3 && timeoutFrame <= 10) {
-		// APPLAUSE MUSIC HERE	
+	if (timeoutFrame > 4 && timeoutFrame <= 8) {
+	    // APPLAUSE MUSIC HERE
+	    if (appFlag) {
+	    	playApplause();
+		appFlag = 0;
+	    }
 	    drawWinner();
 	}
 
@@ -2094,13 +2290,13 @@ void countdown()
 	}
 
 	//gameFrame = 0;
-	printf("GAME OVER\n");
+	/*printf("GAME OVER\n");
 	if (char1->points > char2->points)
 	    printf("Player 1 WINS\n");
 	else if (char2->points > char1->points)
 	    printf("Player 2 WINS\n");
 	else 
-	    printf("TIE\n");
+	    printf("TIE\n");*/
     }
     ggprint16(&r, 32, c, "%02i", gameFrame);
 }	
@@ -2166,7 +2362,7 @@ void render(Game *game)
     if (game->state == STATE_STARTMENU)
 	drawStartMenu();
 
-    if (game->state == STATE_CHARSELECT)
+    if (game->state == STATE_CHARSELECT) 
 	drawCharSelectMenu();
 
     if (game->state == STATE_CONTROLS)
@@ -2303,7 +2499,7 @@ void render(Game *game)
 	countdown();
 
 	// Heart
-	if (gl.heartFlag)
+	if (gl.heartFlag || gameFrame == 0)
 	    rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.heartaddTexture);	
 	else
 	    rWithAlpha(30, 30, gl.xres/2, gl.yres/2+100, gl.heartaddTexture);	
@@ -2325,28 +2521,28 @@ void render(Game *game)
 	int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
 	if (timediff < 1) {
 	    if (three) {
-		//play_three();
+		playThree();
 		three = false;
 	    }
 	    countdown3(gl.xres/2,gl.yres/2);
 	}
 	if (timediff < 2 && timediff >= 1) {
 	    if (two) {
-		//play_two();
+		playTwo();
 		two = false;
 	    }
 	    countdown2(gl.xres/2,gl.yres/2);
 	}
 	if (timediff < 3 && timediff >= 2) {
 	    if (one) {
-		//play_one();
+		playOne();
 		one = false;
 	    }
 	    countdown1(gl.xres/2,gl.yres/2);
 	}
 	if (timediff < 4 && timediff >= 3) {
 	    if (go) {
-		//play_one();
+		playGo();
 		go = false;
 	    }
 	    countdowngo(gl.xres/2,gl.yres/2);
@@ -2366,7 +2562,7 @@ void drawStartMenu()
     // background of start menu
     rWithoutAlpha(gl.menubgTexture, gl.xres, gl.yres);
 
-    printf("Cursor value: %d\n", gl.cursorLocation); 
+    //printf("Cursor value: %d\n", gl.cursorLocation); 
     // draw splatter left
     rWithAlpha(60, 60, gl.xres/4 + 40, 400-(gl.cursorLocation*100), gl.splattergreenTexture);	
     // draw splatter right
@@ -2558,7 +2754,10 @@ void drawWinner()
     glPopMatrix();
    
     // WINNER TOP 
-    rWithAlpha(60, 325, gl.xres/2, 580, gl.winnerTexture);	
+    if (char1->points == char2->points)
+	rWithAlpha(60, 150, gl.xres/2, 580, gl.tieTexture);	
+    else
+	rWithAlpha(60, 325, gl.xres/2, 580, gl.winnerTexture);	
     
     // draw Left Bar
     Shape s;
@@ -2656,7 +2855,7 @@ void drawCharSelectMenu()
     int w, h;
     w = 150; 
     h = 150; 
-    printf("Cursor value2: %d\n", gl.cursorLocation2); 
+    //printf("Cursor value2: %d\n", gl.cursorLocation2); 
 
     // draw char select background
     rWithoutAlpha(gl.charselectbgTexture, gl.xres, gl.yres);
@@ -2753,7 +2952,7 @@ bool checkCountdown()
     int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
     if (timediff < 1) {
 	if (three) {
-	    //play_three();
+	    playThree();
 	    three = false;
 	}
 	countdown3(800,600);
@@ -2761,7 +2960,7 @@ bool checkCountdown()
     }
     if (timediff < 2 && timediff >= 1) {
 	if (two) {
-	    //play_two();
+	    playTwo();
 	    two = false;
 	}
 	countdown2(800,600);
@@ -2769,11 +2968,18 @@ bool checkCountdown()
     }
     if (timediff < 3 && timediff >= 2) {
 	if (one) {
-	    //play_one();
+	    playOne();
 	    one = false;
 	}
 	countdown1(800,600);
 	return true;
+    }
+    if (timediff < 4 && timediff >= 3) {
+	if (go) {
+	    playGo();
+	    go = false;
+	}
+	countdowngo(gl.xres/2,gl.yres/2);
     }
     return true;
 }

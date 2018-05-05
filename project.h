@@ -170,6 +170,7 @@ extern class Global {
 	Ppmimage *charselectbgImage;
 	Ppmimage *ingamebgImage;
 	Ppmimage *winnerImage;
+	Ppmimage *tieImage;
 
 
         GLuint mchar1Texture;
@@ -210,6 +211,7 @@ extern class Global {
 	GLuint tempProfileTexture;
 	GLuint tempProfileTexture2;
 	GLuint winnerTexture;
+	GLuint tieTexture;
 
 
         Vec box[50];
