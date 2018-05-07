@@ -394,7 +394,6 @@ void rWithAlpha(int, int, int, int, GLuint);
 void renderFrame(int, int, int, int, GLuint);
 void sCharPose(int, int, int, int, GLuint, int, int);
 void physicsPortal();
-void bulletPhysics();
 void heartCollision(Character *);
 // ==============================================
 // Functions
@@ -433,28 +432,8 @@ void drawControlsMenu();
 void drawCharSelectMenu();
 void drawCredits();
 void drawWinner();
+void drawBullet(Character *, GLuint);
 // ==============================================
-Bullet::Bullet()
-{
-    velValue = 10;
-    pos[0] = char1->cx;
-    pos[1] = char1->cy;
-    vel[0] = 0;
-    vel[1] = 0;
-    w = 5;
-    h = 5;
-}
-
-void Bullet::draw()
-{
-    glColor3f(1.0,1.0,1.0);
-    glBegin(GL_QUADS);
-    glVertex2i(pos[0] - (w/2), pos[1] + (h/2));
-    glVertex2i(pos[0] + (w/2), pos[1] + (h/2));
-    glVertex2i(pos[0] + (w/2), pos[1] - (h/2));
-    glVertex2i(pos[0] - (w/2), pos[1] - (h/2));
-    glEnd();
-}
 
 
 // ==============================================
@@ -1705,11 +1684,6 @@ void check_keys(XEvent *e)
 		   }
 		   break;
 	case XK_space:
-		   Bullet *b;
-		   for (int i = 0; i < gl.nbullets; i++) {
-		       b = &gl.bullets[i];
-		       b->draw();
-		   }
 		   break;
 	case XK_equal:
 		   gl.delay -= 0.005;
@@ -2152,11 +2126,30 @@ void physics(Game *game)
 
 	physicsPortal();
 
+	//==============================================
+	// bullet physics
+	//==============================================
+	/*if (gl.keys[XK_space] && game.state == STATE_GAMEPLAY) {
+	    struct timespec bt;
+	    clock_gettime(CLOCK_REALTIME, &bt);
+	    double ts = timeDiff(&g.bulletTimer, &bt);
+	    if (ts > 0.5) {
+		memcpy(&g.barr[i], &g.barr[g.bullets-1], sizeof(Bullet));
+		g.nbullets--;
+		continue;
+	    }
+	    b->pos[0] += 5;
+	    b->pos[1] += 0;
+	    i++;
+	}*/
+
+	//==============================================
+	// bullet done
+	//==============================================
 
 	// Jump Update
 	heartCollision(char1);
 	heartCollision(char2);
-	bulletPhysics();	
 	char1->cy += char1->vel.y;
 	char2->cy += char2->vel.y;
     }
@@ -2262,31 +2255,6 @@ void heartCollision(Character *player)
 	    }
 	}       
     }
-}
-
-void bulletPhysics()
-{
-    int i = 0;
-    while (i < gl.nbullets) {
-	Bullet *b = &gl.bullets[i];
-	b->pos[0] += b->vel[0];
-	b->pos[1] += b->vel[1];
-
-	i++;
-    }
-
-    //if (gl.keys[XK_space]) {
-    //    gl.nbullets++;
-    //}
-}
-
-void shootBullet() 
-{
-    Bullet *b = &gl.bullets[gl.nbullets];
-    b->color[0] = 1.0f;
-    b->color[1] = 1.0f;
-    b->color[2] = 1.0f;
-    gl.nbullets++;
 }
 
 void resetEverything()
@@ -2574,12 +2542,6 @@ void render(Game *game)
 	else
 	    rWithAlpha(30, 30, gl.xres/2, gl.yres/2+100, gl.heartaddTexture);	
 
-	Bullet *b;
-	for (int i = 0; i < gl.nbullets; i++) {
-	    b = &gl.bullets[i];
-	    b->draw();
-	}
-
 	//
 	drawFrameRate();
 	//printf("Left Char 1: %d\n", leftFaceChar1);
@@ -2618,7 +2580,34 @@ void render(Game *game)
 	    countdowngo(gl.xres/2,gl.yres/2);
 	}
 	//====================================
+	//Bullet *b = &g.barr[0];
+	//for (int i = 0; i < g.nbullets; i++) {
+	//    drawBullet(char1, gl.forkTexture);
+	//    ++b;
+	//}
+	if (gl.keys[XK_space])
+	    drawBullet(char1, gl.forkTexture);
     }
+}
+
+void drawBullet(Character *player, GLuint forkTexture) 
+{
+    glPushMatrix();
+    glColor3f(1.0,1.0,1.0);
+    glTranslatef(player->cx, player->cy, 0);
+    glBindTexture(GL_TEXTURE_2D, forkTexture);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+    int w = 30.0f;
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 1.0); glVertex2i(-w,-w);
+    glTexCoord2f(0.0, 0.0); glVertex2i(-w,w);
+    glTexCoord2f(1.0, 0.0); glVertex2i(w,w);
+    glTexCoord2f(1.0, 1.0); glVertex2i(w,-w);
+    glEnd();
+    glPopMatrix();
+    glDisable(GL_ALPHA_TEST);	
 }
 
 void drawStartMenu()

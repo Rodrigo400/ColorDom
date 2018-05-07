@@ -10,7 +10,7 @@ typedef double Flt;
 #define rnd() (((double)rand())/(double)RAND_MAX)
 
 // Constants
-const int MAX_PARTICLES = 10000;
+const int MAX_BULLETS = 30;
 
 enum State {
     STATE_NONE,
@@ -74,16 +74,12 @@ struct Shape {
 
 extern class Bullet {
     public:
-	float pos[2];
-	float vel[2];
+	Vec pos;
+	Vec vel;
 	float color[3];
-	float w;
-	float h;
-	float velValue;
+	struct timespec time;
 
-	void draw();
-	Bullet();
-
+	Bullet() { }
 }b;
 
 /*extern class Weapon {
@@ -134,7 +130,6 @@ extern class Global {
 	int pushingRight;
 	int pushingLeft;
 	int heartFlag;
-	Bullet *bullets;
 
         Ppmimage *mainchar1Image;
         Ppmimage *yellowcharImage;
@@ -343,11 +338,20 @@ class Game {
         Shape backgroundBlock[10];
         Character player[2];
         //Particle particle[MAX_PARTICLES];
+	Bullet *barr;
+	int nbullets;
+	struct timespec bulletTimer;
         int n;
         Game()
         {
+	    barr = new Bullet[MAX_BULLETS];
+	    nbullets = 0;
             n = 0;
 	    state = STATE_STARTMENU;
+	    clock_gettime(CLOCK_REALTIME, &bulletTimer);
         }
+	~Game() {
+	    delete [] barr;
+	}
 };
 #endif
