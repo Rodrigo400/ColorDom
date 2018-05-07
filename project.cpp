@@ -907,6 +907,10 @@ void init_opengl(void)
     system("convert ./images/menubg.png ./images/menubg.ppm");
     system("convert ./images/winner.png ./images/winner.ppm");
     system("convert ./images/Tie.png ./images/tie.ppm");
+    system("convert ./images/Bomb.png ./images/bomb.ppm");
+    system("convert ./images/Fork.png ./images/fork.ppm");
+    system("convert ./images/Freeze.png ./images/freeze.ppm");
+    system("convert ./images/explosion.png ./images/explosion.ppm");
     //==============================================
 
     //==============================================
@@ -948,6 +952,10 @@ void init_opengl(void)
     gl.menubgImage = ppm6GetImage("./images/menubg.ppm");	
     gl.winnerImage = ppm6GetImage("./images/winner.ppm");	
     gl.tieImage = ppm6GetImage("./images/tie.ppm");	
+    gl.bombImage = ppm6GetImage("./images/bomb.ppm");	
+    gl.forkImage = ppm6GetImage("./images/fork.ppm");	
+    gl.freezeImage = ppm6GetImage("./images/freeze.ppm");	
+    gl.explosionImage = ppm6GetImage("./images/explosion.ppm");	
     //==============================================
 
     //==============================================
@@ -990,6 +998,10 @@ void init_opengl(void)
     glGenTextures(1, &gl.menubgTexture);	
     glGenTextures(1, &gl.winnerTexture);	
     glGenTextures(1, &gl.tieTexture);	
+    glGenTextures(1, &gl.bombTexture);	
+    glGenTextures(1, &gl.forkTexture);	
+    glGenTextures(1, &gl.freezeTexture);	
+    glGenTextures(1, &gl.explosionTexture);	
     //==============================================
 
     //==============================================
@@ -1480,6 +1492,62 @@ void init_opengl(void)
 	    GL_RGBA, GL_UNSIGNED_BYTE, tieData);
     free(tieData);
     unlink("./images/tie.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Bomb
+    w = gl.bombImage->width;
+    h = gl.bombImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.bombTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *bombData = buildAlphaData(gl.bombImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, bombData);
+    free(bombData);
+    unlink("./images/bomb.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Fork
+    w = gl.forkImage->width;
+    h = gl.forkImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.forkTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *forkData = buildAlphaData(gl.forkImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, forkData);
+    free(forkData);
+    unlink("./images/fork.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Freeze
+    w = gl.freezeImage->width;
+    h = gl.freezeImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.freezeTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *freezeData = buildAlphaData(gl.freezeImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, freezeData);
+    free(freezeData);
+    unlink("./images/freeze.ppm"); 
+    //==============================================
+    
+    //==============================================
+    // Explosion
+    w = gl.explosionImage->width;
+    h = gl.explosionImage->height;
+    glBindTexture(GL_TEXTURE_2D, gl.explosionTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *explosionData = buildAlphaData(gl.explosionImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, explosionData);
+    free(explosionData);
+    unlink("./images/explosion.ppm"); 
     //==============================================
 }
 
@@ -2139,8 +2207,9 @@ void drawCircle(float radius)
     for (int i = 0; i < 360; i++) {
 	float degInRad = i*DEG2RAD;
 	if (char1->points > char2->points) { 
+	    glColor3ub(160,160,160);
 	    //glColor3ub(255,255,0);
-	    if (char1->colorID == 1) {			// YELLOW
+	    /*if (char1->colorID == 1) {			// YELLOW
 		glColor3ub(255,255,0);
 	    } 
 	    if (char1->colorID == 2) {			// BLUE
@@ -2151,10 +2220,11 @@ void drawCircle(float radius)
 	    }
 	    if (char1->colorID == 4) {	    
 		glColor3ub(216,12,225);			// PURPLE
-	    }
+	    }*/
 	} else if (char1->points < char2->points) {
+	    glColor3ub(160,160,160);
 	    //glColor3ub(19,13,255);
-	    if (char2->colorID == 1) {			// YELLOW
+	    /*if (char2->colorID == 1) {			// YELLOW
 		glColor3ub(255,255,0);
 	    } 
 	    if (char2->colorID == 2) {			// BLUE
@@ -2165,7 +2235,7 @@ void drawCircle(float radius)
 	    }
 	    if (char2->colorID == 4) {	    
 		glColor3ub(216,12,225);			// PURPLE
-	    }
+	    }*/
 	}
 	else
 	    glColor3ub(100,100,100);

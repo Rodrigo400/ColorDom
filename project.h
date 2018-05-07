@@ -171,6 +171,10 @@ extern class Global {
 	Ppmimage *ingamebgImage;
 	Ppmimage *winnerImage;
 	Ppmimage *tieImage;
+	Ppmimage *bombImage;
+	Ppmimage *forkImage;
+	Ppmimage *freezeImage;
+	Ppmimage *explosionImage;
 
 
         GLuint mchar1Texture;
@@ -212,6 +216,10 @@ extern class Global {
 	GLuint tempProfileTexture2;
 	GLuint winnerTexture;
 	GLuint tieTexture;
+	GLuint bombTexture;
+	GLuint forkTexture;
+	GLuint freezeTexture;
+	GLuint explosionTexture;
 
 
         Vec box[50];
@@ -279,6 +287,11 @@ extern class Global {
 	    charselectbgImage = NULL;
 	    ingamebgImage = NULL;
 	    winnerImage = NULL;
+	    tieImage = NULL;
+	    bombImage = NULL;
+	    forkImage = NULL;
+	    freezeImage = NULL;
+	    explosionImage = NULL;
 
             //
             delay = 0.06;
