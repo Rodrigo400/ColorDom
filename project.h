@@ -79,9 +79,10 @@ extern class Bullet {
 	int velValue;
 	float color[3];
 	struct timespec time;
+	struct timespec time2;
 
 	Bullet() { 
-	    velValue = 10;
+	    velValue = 11;
 	}
 }b;
 
@@ -342,16 +343,22 @@ class Game {
         Character player[2];
         //Particle particle[MAX_PARTICLES];
 	Bullet *barr;
+	Bullet *barr2;
 	int nbullets;
+	int nbullets2;
 	struct timespec bulletTimer;
+	struct timespec bulletTimer2;
         int n;
         Game()
         {
 	    barr = new Bullet[MAX_BULLETS];
+	    barr2 = new Bullet[MAX_BULLETS];
 	    nbullets = 0;
+	    nbullets2 = 0;
             n = 0;
 	    state = STATE_STARTMENU;
 	    clock_gettime(CLOCK_REALTIME, &bulletTimer);
+	    clock_gettime(CLOCK_REALTIME, &bulletTimer2);
         }
 	~Game() {
 	    delete [] barr;

@@ -361,6 +361,8 @@ int totalCubes;
 int bellFlag = 1;
 int appFlag = 1;	
 int drumsFlag = 1;	
+int deadFlag1 = 0;
+int deadFlag2 = 0;
 
 int xres3, xres4;
 unsigned char *screendata = NULL;
@@ -1683,27 +1685,6 @@ void check_keys(XEvent *e)
 		       break;
 		   }
 		   break;
-	case XK_space: {
-			   struct timespec bt;
-			   clock_gettime(CLOCK_REALTIME, &bt);
-			   double ts = timers.timeDiff(&game.bulletTimer, &bt);
-			   if (ts > 0.8) {
-			       timers.timeCopy(&game.bulletTimer, &bt);
-			       if (game.nbullets < MAX_BULLETS) {
-				   Bullet *b = &game.barr[game.nbullets];
-				   timers.timeCopy(&b->time, &bt);
-				   b->pos.x = char1->cx;
-				   b->pos.y = char1->cy;
-				   //b->vel.x = 2;
-				   //b->vel.y = 0;
-				   b->pos.x += b->velValue;
-				   b->pos.y += 0;
-				   ++game.nbullets;
-			       }
-			   }
-			   printf("NBullets: %d\n", game.nbullets);
-		       }
-		   break;
 	case XK_equal:
 		   gl.delay -= 0.005;
 		   if (gl.delay < 0.005)
@@ -2049,36 +2030,41 @@ void physics(Game *game)
 	//printf("Char 1 facing: %d\n", char1->facingLeft);
 	//printf("Char 2 facing: %d\n", char2->facingLeft);
 	// Player 1 Movement Keys
-	if (gl.keys[XK_d]) {
-	    //leftFaceChar1 = 0;
-	    char1->facingLeft = 0;
-	    char1->cx += 8;
+	if (!deadFlag1) {
+	    if (gl.keys[XK_d]) {
+		//leftFaceChar1 = 0;
+		char1->facingLeft = 0;
+		char1->cx += 7;
+	    }
+
+	    if (gl.keys[XK_a]) {
+		//leftFaceChar1 = 1;
+		char1->facingLeft = 1;
+		char1->cx += -7;
+	    }
+
+	    if (gl.keys[XK_w] && char1->jumpCount == 1) {
+		jump(char1);
+	    }
 	}
 
-	if (gl.keys[XK_a]) {
-	    //leftFaceChar1 = 1;
-	    char1->facingLeft = 1;
-	    char1->cx += -8;
-	}
-
-	if (gl.keys[XK_w] && char1->jumpCount == 1) {
-	    jump(char1);
-	}
 	// Player 2 Movement Keys
-	if (gl.keys[XK_Right]) {
-	    //leftFaceChar2 = 0;
-	    char2->facingLeft = 0;
-	    char2->cx += 8;
-	}
+	if (!deadFlag2) {
+	    if (gl.keys[XK_Right]) {
+		//leftFaceChar2 = 0;
+		char2->facingLeft = 0;
+		char2->cx += 7;
+	    }
 
-	if (gl.keys[XK_Left]) {
-	    //leftFaceChar2 = 1;
-	    char2->facingLeft = 1;
-	    char2->cx += -8;
-	}
+	    if (gl.keys[XK_Left]) {
+		//leftFaceChar2 = 1;
+		char2->facingLeft = 1;
+		char2->cx += -7;
+	    }
 
-	if (gl.keys[XK_Up] && char2->jumpCount == 1 ) {
-	    jump(char2);
+	    if (gl.keys[XK_Up] && char2->jumpCount == 1 ) {
+		jump(char2);
+	    }
 	}
 	//
 
@@ -2147,7 +2133,7 @@ void physics(Game *game)
 	physicsPortal();
 
 	//==============================================
-	// bullet physics
+	// bullet physics Player 1
 	//==============================================
 	struct timespec bt;
 	clock_gettime(CLOCK_REALTIME, &bt);
@@ -2155,13 +2141,13 @@ void physics(Game *game)
 	while (i < game->nbullets) {
 	    Bullet *b = &game->barr[i];
 	    double ts = timers.timeDiff(&b->time, &bt);
-	    if (ts > 8.5) {
+	    if (ts > 2.0) {
 		memcpy(&game->barr[i], &game->barr[game->nbullets-1], sizeof(Bullet));
 		game->nbullets--;
 		continue;
 	    }
-	    b->pos.x += b->velValue;
-	    b->pos.y += 0;
+	    b->pos.x += b->vel.x;
+	    b->pos.y += b->vel.y;
 	    i++;
 	}
 
@@ -2169,15 +2155,55 @@ void physics(Game *game)
 	    struct timespec bt;
 	    clock_gettime(CLOCK_REALTIME, &bt);
 	    double ts = timers.timeDiff(&game->bulletTimer, &bt);
-	    if (ts > 2.5) {
+	    if (ts > 1.0) {
 		timers.timeCopy(&game->bulletTimer, &bt);
 		if (game->nbullets < MAX_BULLETS) {
 		    Bullet *b = &game->barr[game->nbullets];
 		    timers.timeCopy(&b->time, &bt);
 		    b->pos.x = char1->cx;
 		    b->pos.y = char1->cy;
-		    b->vel.x += b->velValue;
-		    b->vel.y += 0;
+		    b->vel.x = 0;
+		    b->vel.y = 0;
+		    // Up Shoot
+		    if (gl.keys[XK_w]) {
+			b->vel.x += 0;
+			b->vel.y += b->velValue;
+		    }
+		    // Right Shoot
+		    else if (gl.keys[XK_d]) {
+			b->vel.x += b->velValue;
+			b->vel.y += 0;
+		    }
+		    // Left Shoot
+		    else if (gl.keys[XK_a]) {
+			b->vel.x += -b->velValue;
+			b->vel.y += 0;
+		    }
+		    // Down Shoot
+		    else if (gl.keys[XK_s]) {
+			b->vel.x += 0;
+			b->vel.y += -b->velValue;
+		    }
+		    // UP/RIGHT Shoot
+		    else if (gl.keys[XK_w] && gl.keys[XK_d]) {
+			b->vel.x += b->velValue*.5;
+			b->vel.y += b->velValue*.5;
+		    }
+		    // UP/LEFT Shoot
+		    else if (gl.keys[XK_w] && gl.keys[XK_a]) {
+			b->vel.x += -b->velValue*.5;
+			b->vel.y += b->velValue*.5;
+		    }
+		    else if (char1->facingLeft) {
+			b->vel.x += -b->velValue;
+			b->vel.y += 0;
+		    }
+		    else if (!char1->facingLeft) {
+			b->vel.x += b->velValue;
+			b->vel.y += 0;
+		    }
+		    //b->vel.x += b->velValue;
+		    //b->vel.y += 0;
 		    game->nbullets++;
 		}
 	    }
@@ -2185,7 +2211,124 @@ void physics(Game *game)
 	//==============================================
 	// bullet done
 	//==============================================
+	// Player 1 Bullet Collision to Player 2
+	i = 0;
+	while (i < game->nbullets) {
+	    Bullet *b = &game->barr[i];
+	    if (b->pos.x < char2->cx+25 && b->pos.x > char2->cx-25) {
+		if (b->pos.y < char2->cy+25 && b->pos.y > char2->cy-45) {
+		    char2->health -= 20;
+		    printf("Char 2 health: %d\n", char2->health);
+		    memcpy(&game->barr[i], &game->barr[game->nbullets-1], sizeof(Bullet));
+		    game->nbullets--;
+		}
+		if (char2->health <= 0) {
+			deadFlag2 = 1;
+		}
+	    }
+	    i++;
+	}
+	//==============================================
 
+	//==============================================
+	// bullet physics Player 2
+	//==============================================
+	struct timespec bt2;
+	clock_gettime(CLOCK_REALTIME, &bt2);
+	int j = 0;
+	while (j < game->nbullets2) {
+	    Bullet *b2 = &game->barr2[j];
+	    double ts2 = timers.timeDiff(&b2->time2, &bt2);
+	    if (ts2 > 2.0) {
+		memcpy(&game->barr2[j], &game->barr2[game->nbullets2-1], sizeof(Bullet));
+		game->nbullets2--;
+		continue;
+	    }
+	    b2->pos.x += b2->vel.x;
+	    b2->pos.y += b2->vel.y;
+	    j++;
+	}
+
+	if (gl.keys[XK_Return]) {
+	    struct timespec bt2;
+	    clock_gettime(CLOCK_REALTIME, &bt2);
+	    double ts2 = timers.timeDiff(&game->bulletTimer2, &bt2);
+	    if (ts2 > 1.0) {
+		timers.timeCopy(&game->bulletTimer2, &bt2);
+		if (game->nbullets2 < MAX_BULLETS) {
+		    Bullet *b2 = &game->barr2[game->nbullets2];
+		    timers.timeCopy(&b2->time2, &bt2);
+		    b2->pos.x = char2->cx;
+		    b2->pos.y = char2->cy;
+		    b2->vel.x = 0;
+		    b2->vel.y = 0;
+		    // Up Shoot
+		    if (gl.keys[XK_Up]) {
+			b2->vel.x += 0;
+			b2->vel.y += b2->velValue;
+		    }
+		    // Right Shoot
+		    else if (gl.keys[XK_Right]) {
+			b2->vel.x += b2->velValue;
+			b2->vel.y += 0;
+		    }
+		    // Left Shoot
+		    else if (gl.keys[XK_Left]) {
+			b2->vel.x += -b2->velValue;
+			b2->vel.y += 0;
+		    }
+		    // Down Shoot
+		    else if (gl.keys[XK_Down]) {
+			b2->vel.x += 0;
+			b2->vel.y += -b2->velValue;
+		    }
+		    // UP/RIGHT Shoot
+		    else if (gl.keys[XK_Up] && gl.keys[XK_Right]) {
+			b2->vel.x += b2->velValue*.85;
+			b2->vel.y += b2->velValue*.85;
+		    }
+		    // UP/Left Shoot
+		    else if (gl.keys[XK_Up] && gl.keys[XK_Right]) {
+			b2->vel.x += -b2->velValue*.85;
+			b2->vel.y += b2->velValue*.85;
+		    }
+		    else if (char2->facingLeft) {
+			b2->vel.x += -b2->velValue;
+			b2->vel.y += 0;
+		    }
+		    else if (!char2->facingLeft) {
+			b2->vel.x += b2->velValue;
+			b2->vel.y += 0;
+		    }
+
+		    //b->vel.x += b->velValue;
+		    //b->vel.y += 0;
+		    game->nbullets2++;
+		}
+	    }
+	}
+	//==============================================
+	// bullet done
+	//==============================================
+	// Player 2 Bullet Collision to Player 1
+	j = 0;
+	while (j < game->nbullets2) {
+	    Bullet *b2 = &game->barr2[j];
+	    if (b2->pos.x < char1->cx+25 && b2->pos.x > char1->cx-25) {
+		if (b2->pos.y < char1->cy+25 && b2->pos.y > char1->cy-45) {
+		    char1->health -= 20;
+		    printf("Char 1 health: %d\n", char1->health);
+		    memcpy(&game->barr2[i], &game->barr2[game->nbullets2-1], sizeof(Bullet));
+		    game->nbullets2--;
+		}
+		if (char1->health <= 0) {
+			deadFlag1 = 1;
+		}
+	    }
+	    j++;
+	}
+	
+	//==============================================
 	// Jump Update
 	heartCollision(char1);
 	heartCollision(char2);
@@ -2619,13 +2762,18 @@ void render(Game *game)
 	    countdowngo(gl.xres/2,gl.yres/2);
 	}
 	//====================================
+	// Draw Bullets
+	//====================================
 	Bullet *b = &game->barr[0];	
 	for (int i = 0; i < game->nbullets; i++) {
 	    drawBullet(b, gl.forkTexture);
 	    ++b;
 	}
-	//if (gl.keys[XK_space])
-	    //drawBullet(char1, gl.forkTexture);
+	Bullet *b2 = &game->barr2[0];	
+	for (int i = 0; i < game->nbullets2; i++) {
+	    drawBullet(b2, gl.forkTexture);
+	    ++b2;
+	}
     }
 }
 
