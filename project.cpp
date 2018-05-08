@@ -57,12 +57,12 @@ class Sound {
         ALuint alSourceSelect;
         ALuint alSourceApplause;
         ALuint alSourceGame;
-	ALuint alSourceThree;
-	ALuint alSourceTwo;
-	ALuint alSourceOne;
-	ALuint alSourceGo;
-	ALuint alSourceDrums;
-	ALuint alSourceBell;
+        ALuint alSourceThree;
+        ALuint alSourceTwo;
+        ALuint alSourceOne;
+        ALuint alSourceGo;
+        ALuint alSourceDrums;
+        ALuint alSourceBell;
 };
 
 
@@ -80,12 +80,12 @@ void initialize_sound()
 
     /*s.alBufferTitle = alutCreateBufferFromFile("./sound/GameMusic.wav");
 
-    alGenSources(1, &s.alSourceTitle);
-    alSourcei(s.alSource, AL_BUFFER, s.alBufferTitle);
+      alGenSources(1, &s.alSourceTitle);
+      alSourcei(s.alSource, AL_BUFFER, s.alBufferTitle);
 
-    alSourcef(s.alSourceTitle, AL_GAIN, 1.0f);
-    alSourcef(s.alSourceTitle, AL_PITCH, 1.0f);
-    alSourcei(s.alSourceTitle, AL_LOOPING, AL_TRUE);*/
+      alSourcef(s.alSourceTitle, AL_GAIN, 1.0f);
+      alSourcef(s.alSourceTitle, AL_PITCH, 1.0f);
+      alSourcei(s.alSourceTitle, AL_LOOPING, AL_TRUE);*/
 }
 
 void playMusicTitle() 
@@ -100,7 +100,7 @@ void playMusicTitle()
     alSourcef(s.alSourceTitle, AL_GAIN, 1.0f);
     alSourcef(s.alSourceTitle, AL_PITCH, 1.0f);
     alSourcei(s.alSourceTitle, AL_LOOPING, AL_TRUE);
-    
+
     alSourcePlay(s.alSourceTitle);
 }
 
@@ -116,7 +116,7 @@ void playMusicGame()
     alSourcef(s.alSourceGame, AL_GAIN, 0.35f);
     alSourcef(s.alSourceGame, AL_PITCH, 1.0f);
     alSourcei(s.alSourceGame, AL_LOOPING, AL_TRUE);
-    
+
     alSourcePlay(s.alSourceGame);
 }
 
@@ -148,7 +148,7 @@ void playSelect()
     alSourcef(s.alSourceSelect, AL_GAIN, 1.0f);
     alSourcef(s.alSourceSelect, AL_PITCH, 1.0f);
     alSourcei(s.alSourceSelect, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceSelect);
 }
 
@@ -164,7 +164,7 @@ void playApplause()
     alSourcef(s.alSourceApplause, AL_GAIN, 1.0f);
     alSourcef(s.alSourceApplause, AL_PITCH, 1.0f);
     alSourcei(s.alSourceApplause, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceApplause);
 }
 
@@ -180,7 +180,7 @@ void playThree()
     alSourcef(s.alSourceThree, AL_GAIN, 1.0f);
     alSourcef(s.alSourceThree, AL_PITCH, 1.0f);
     alSourcei(s.alSourceThree, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceThree);
 }
 
@@ -196,7 +196,7 @@ void playTwo()
     alSourcef(s.alSourceTwo, AL_GAIN, 1.0f);
     alSourcef(s.alSourceTwo, AL_PITCH, 1.0f);
     alSourcei(s.alSourceTwo, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceTwo);
 }
 
@@ -212,7 +212,7 @@ void playOne()
     alSourcef(s.alSourceOne, AL_GAIN, 1.0f);
     alSourcef(s.alSourceOne, AL_PITCH, 1.0f);
     alSourcei(s.alSourceOne, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceOne);
 }
 
@@ -228,7 +228,7 @@ void playGo()
     alSourcef(s.alSourceGo, AL_GAIN, 1.0f);
     alSourcef(s.alSourceGo, AL_PITCH, 1.0f);
     alSourcei(s.alSourceGo, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceGo);
 }
 
@@ -244,7 +244,7 @@ void playDrums()
     alSourcef(s.alSourceDrums, AL_GAIN, 1.0f);
     alSourcef(s.alSourceDrums, AL_PITCH, 1.0f);
     alSourcei(s.alSourceDrums, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceDrums);
 }
 
@@ -260,7 +260,7 @@ void playBell()
     alSourcef(s.alSourceBell, AL_GAIN, 1.0f);
     alSourcef(s.alSourceBell, AL_PITCH, 1.0f);
     alSourcei(s.alSourceBell, AL_LOOPING, AL_FALSE);
-    
+
     alSourcePlay(s.alSourceBell);
 }
 
@@ -314,7 +314,7 @@ typedef Flt Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b) ((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-			     (c)[1]=(a)[1]-(b)[1]; \
+                             (c)[1]=(a)[1]-(b)[1]; \
 (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
@@ -363,6 +363,9 @@ int appFlag = 1;
 int drumsFlag = 1;	
 int deadFlag1 = 0;
 int deadFlag2 = 0;
+int freezeFlag1 = 0;
+int freezeFlag2 = 0;
+int freezeOn = 1;
 
 int xres3, xres4;
 unsigned char *screendata = NULL;
@@ -397,6 +400,8 @@ void renderFrame(int, int, int, int, GLuint);
 void sCharPose(int, int, int, int, GLuint, int, int);
 void physicsPortal();
 void heartCollision(Character *);
+void freezeCollision1(Character *);
+void freezeCollision2(Character *);
 // ==============================================
 // Functions
 // ==============================================
@@ -450,7 +455,7 @@ int xxGetTicks() {
     //return (int)mtime;
     //code above compressed...
     return (int)((end.tv_sec - gamestarttv.tv_sec) * 1000 +
-	    (end.tv_usec - gamestarttv.tv_usec) * oothousand) + 0.5;
+            (end.tv_usec - gamestarttv.tv_usec) * oothousand) + 0.5;
 }
 
 int main(int argc, char *argv[])
@@ -477,49 +482,49 @@ int main(int argc, char *argv[])
 
     // bottom boxes row
     for (int i = 1; i < 22; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	game.box[i].center.x = 55*i + 35;
-	game.box[i].center.y = 155;
-	if (i == 11) {
-	    game.box[i].center.x = 55*i + 35;
-	    game.box[i].center.y = 155+60;
-	}
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        game.box[i].center.x = 55*i + 35;
+        game.box[i].center.y = 155;
+        if (i == 11) {
+            game.box[i].center.x = 55*i + 35;
+            game.box[i].center.y = 155+60;
+        }
     }
     int total = 1;
     // top row
     for (int i = 22; i < 43; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	game.box[i].center.x = 55*total + 35;
-	game.box[i].center.y = gl.yres-65;
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        game.box[i].center.x = 55*total + 35;
+        game.box[i].center.y = gl.yres-65;
+        total++;
     }
     total = 1;
     // left side
     for (int i = 43; i < 51; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	game.box[i].center.x = 37;
-	game.box[i].center.y = 55*total+155;
-	if (i == 46 || i == 47) {
-	    game.box[i].center.x = -3700;
-	    game.box[i].center.y = 55*total+155;
-	}
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        game.box[i].center.x = 37;
+        game.box[i].center.y = 55*total+155;
+        if (i == 46 || i == 47) {
+            game.box[i].center.x = -3700;
+            game.box[i].center.y = 55*total+155;
+        }
+        total++;
     }
     total = 1;
     // right side
     for (int i = 51; i < 59; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	game.box[i].center.x = gl.xres-37;
-	game.box[i].center.y = 55*total+155;
-	if (i == 54 || i == 55) {
-	    game.box[i].center.x = -3700;
-	    game.box[i].center.y = 55*total+155;
-	}
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        game.box[i].center.x = gl.xres-37;
+        game.box[i].center.y = 55*total+155;
+        if (i == 54 || i == 55) {
+            game.box[i].center.x = -3700;
+            game.box[i].center.y = 55*total+155;
+        }
+        total++;
     }
     //
     // Bottom half
@@ -527,34 +532,34 @@ int main(int argc, char *argv[])
     // left platform
     total = 1;
     for (int i = 59; i < 63; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	game.box[i].center.x = 55*total + 150;
-	game.box[i].center.y = 300;
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        game.box[i].center.x = 55*total + 150;
+        game.box[i].center.y = 300;
+        total++;
     }
     // right platform
     total = 1;
     for (int i = 63; i < 67; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	game.box[i].center.x = 55*total + 860;
-	game.box[i].center.y = 300;
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        game.box[i].center.x = 55*total + 860;
+        game.box[i].center.y = 300;
+        total++;
     }
     // middle pyramid
     total = 1;
     for (int i = 67; i < 70; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	if (i == 68) {
-	    game.box[i].center.x = 55*total + 530;
-	    game.box[i].center.y = 355;
-	} else {
-	    game.box[i].center.x = 55*total + 530;
-	    game.box[i].center.y = 300;
-	}
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        if (i == 68) {
+            game.box[i].center.x = 55*total + 530;
+            game.box[i].center.y = 355;
+        } else {
+            game.box[i].center.x = 55*total + 530;
+            game.box[i].center.y = 300;
+        }
+        total++;
     }
     //
     // Top Half
@@ -562,44 +567,44 @@ int main(int argc, char *argv[])
     // left side
     total = 1;
     for (int i = 70; i < 75; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	if (i == 74) {
-	    game.box[i].center.x = 55*total + 205;
-	    game.box[i].center.y = 435;
-	} else if (i == 70) {
-	    game.box[i].center.x = 55*total + 205;
-	    game.box[i].center.y = 435;
-	} else {
-	    game.box[i].center.x = 55*total + 205;
-	    game.box[i].center.y = 486;
-	}
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        if (i == 74) {
+            game.box[i].center.x = 55*total + 205;
+            game.box[i].center.y = 435;
+        } else if (i == 70) {
+            game.box[i].center.x = 55*total + 205;
+            game.box[i].center.y = 435;
+        } else {
+            game.box[i].center.x = 55*total + 205;
+            game.box[i].center.y = 486;
+        }
+        total++;
     }
     // right side
     total = 1;
     for (int i = 75; i < 80; i++) {
-	game.box[i].width = 25;
-	game.box[i].height = 25;
-	if (i == 75) {
-	    game.box[i].center.x = 55*total + 750;
-	    game.box[i].center.y = 435;
-	} else if (i == 79) {
-	    game.box[i].center.x = 55*total + 750;
-	    game.box[i].center.y = 435;
-	} else {
-	    game.box[i].center.x = 55*total + 750;
-	    game.box[i].center.y = 486;
-	}
-	total++;
+        game.box[i].width = 25;
+        game.box[i].height = 25;
+        if (i == 75) {
+            game.box[i].center.x = 55*total + 750;
+            game.box[i].center.y = 435;
+        } else if (i == 79) {
+            game.box[i].center.x = 55*total + 750;
+            game.box[i].center.y = 435;
+        } else {
+            game.box[i].center.x = 55*total + 750;
+            game.box[i].center.y = 486;
+        }
+        total++;
     }
     totalCubes = 80;
 
 
     int x=0, y=0; 
     if (argc > 2) {
-	x = atoi(argv[1]);
-	y = atoi(argv[2]);
+        x = atoi(argv[1]);
+        y = atoi(argv[2]);
     }
     //if (argc > 3)
     //showOpengl = 1;
@@ -618,30 +623,30 @@ int main(int argc, char *argv[])
     //===================================
 
     while (!gl.done) {
-	while (XPending(dpy)) {
-	    XEvent e;
-	    XNextEvent(dpy, &e);
-	    check_resize(&e);
-	    check_mouse(&e);
-	    check_keys(&e);
-	}
-	//printf("Title flag: %d\n", musicTitleFlag);
-	//printf("Game flag: %d\n", musicGameFlag);
-	if (gameFrame > 0 && !go) 
-	    physics(&game);
+        while (XPending(dpy)) {
+            XEvent e;
+            XNextEvent(dpy, &e);
+            check_resize(&e);
+            check_mouse(&e);
+            check_keys(&e);
+        }
+        //printf("Title flag: %d\n", musicTitleFlag);
+        //printf("Game flag: %d\n", musicGameFlag);
+        if (gameFrame > 0 && !go) 
+            physics(&game);
 
-	/*if (musicTitleFlag && !musicGameFlag) {
-	    playMusicTitle();
-	    musicTitleFlag = 0;
-	}
-	if (musicGameFlag && !musicTitleFlag) {
-	    playMusicGame();
-	    musicGameFlag = 0;
-	}*/
+        /*if (musicTitleFlag && !musicGameFlag) {
+          playMusicTitle();
+          musicTitleFlag = 0;
+          }
+          if (musicGameFlag && !musicTitleFlag) {
+          playMusicGame();
+          musicGameFlag = 0;
+          }*/
 
-	render(&game);
-	glXSwapBuffers(dpy, win);
-	showFrameRate();
+        render(&game);
+        glXSwapBuffers(dpy, win);
+        showFrameRate();
     }
     cleanupXWindows();
     finish_sound();
@@ -669,15 +674,15 @@ void showFrameRate()
     static int count=0;
     static int lastt = xxGetTicks();
     if (++count >= 32) {
-	int diff = xxGetTicks() - lastt;
-	//32 frames took diff 1/1000 seconds.
-	//how much did 1 frame take?
-	float secs = (float)diff / 1000.0;
-	//frames per second...
-	fps = (float)count / secs;
-	//printf("frame rate: %f\n", fps);
-	count = 0;
-	lastt = xxGetTicks();
+        int diff = xxGetTicks() - lastt;
+        //32 frames took diff 1/1000 seconds.
+        //how much did 1 frame take?
+        float secs = (float)diff / 1000.0;
+        //frames per second...
+        fps = (float)count / secs;
+        //printf("frame rate: %f\n", fps);
+        count = 0;
+        lastt = xxGetTicks();
     }
 }
 
@@ -689,14 +694,14 @@ void setup_screen_res(const int w, const int h)
     xres3 = gl.xres * 3;
     xres4 = gl.xres * 4;
     if (screendata)
-	delete [] screendata;
+        delete [] screendata;
     screendata = new unsigned char[gl.yres * xres4];
 
 
     if (gl.xres != 1280 || gl.yres != 720) 
-	printf("Unit test failed. Not 1280x720\n");
+        printf("Unit test failed. Not 1280x720\n");
     else 
-	printf("Unit test passed.\n");
+        printf("Unit test passed.\n");
 }
 #endif //UNIT_TEST
 
@@ -707,8 +712,8 @@ void initXWindows(int w, int h)
     //int w=WINDOW_WIDTH, h=WINDOW_HEIGHT;
     dpy = XOpenDisplay(NULL);
     if (dpy == NULL) {
-	std::cout << "\n\tcannot connect to X server\n" << std::endl;
-	exit(EXIT_FAILURE);
+        std::cout << "\n\tcannot connect to X server\n" << std::endl;
+        exit(EXIT_FAILURE);
     }
     Window root = DefaultRootWindow(dpy);
     // for fullscreen
@@ -718,40 +723,40 @@ void initXWindows(int w, int h)
     gl.xres = w;
     gl.yres = h;
     if (!w && !h) {
-	//Go to fullscreen.
-	gl.xres = getWinAttr.width;
-	gl.yres = getWinAttr.height;
-	printf("getWinAttr: %i %i\n", w, h); fflush(stdout);
-	//When window is fullscreen, there is no client window
-	//so keystrokes are linked to the root window.
-	XGrabKeyboard(dpy, root, False,
-		GrabModeAsync, GrabModeAsync, CurrentTime);
-	fullscreen = 1;
+        //Go to fullscreen.
+        gl.xres = getWinAttr.width;
+        gl.yres = getWinAttr.height;
+        printf("getWinAttr: %i %i\n", w, h); fflush(stdout);
+        //When window is fullscreen, there is no client window
+        //so keystrokes are linked to the root window.
+        XGrabKeyboard(dpy, root, False,
+                GrabModeAsync, GrabModeAsync, CurrentTime);
+        fullscreen = 1;
     }
 
     XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
     if (vi == NULL) {
-	std::cout << "\n\tno appropriate visual found\n" << std::endl;
-	exit(EXIT_FAILURE);
+        std::cout << "\n\tno appropriate visual found\n" << std::endl;
+        exit(EXIT_FAILURE);
     } 
     Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
     XSetWindowAttributes swa;
     swa.colormap = cmap;
     swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
-	ButtonPress | ButtonReleaseMask | PointerMotionMask |
-	StructureNotifyMask | SubstructureNotifyMask;
+        ButtonPress | ButtonReleaseMask | PointerMotionMask |
+        StructureNotifyMask | SubstructureNotifyMask;
 
     unsigned int winops = CWBorderPixel|CWColormap|CWEventMask;
     if (fullscreen) {
-	winops |= CWOverrideRedirect;
-	swa.override_redirect = True;
+        winops |= CWOverrideRedirect;
+        swa.override_redirect = True;
     }
     printf("2 getWinAttr: %i %i\n", w, h); fflush(stdout);
 
     //win = XCreateWindow(dpy, root, 0, 0, gl.xres, gl.yres, 0, vi->depth,
     //    InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
     win = XCreateWindow(dpy, root, 0, 0, gl.xres, gl.yres, 0,
-	    vi->depth, InputOutput, vi->visual, winops, &swa);
+            vi->depth, InputOutput, vi->visual, winops, &swa);
 
 
     glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
@@ -798,18 +803,18 @@ unsigned char *buildAlphaData(Ppmimage *img)
     unsigned char t1 = *(data+1);
     unsigned char t2 = *(data+2);
     for (i=0; i<img->width * img->height * 3; i+=3) {
-	a = *(data+0);
-	b = *(data+1);
-	c = *(data+2);
-	*(ptr+0) = a;
-	*(ptr+1) = b;
-	*(ptr+2) = c;
-	*(ptr+3) = 1;
-	if (a==t0 && b==t1 && c==t2)
-	    *(ptr+3) = 0;
-	//-----------------------------------------------
-	ptr += 4;
-	data += 3;
+        a = *(data+0);
+        b = *(data+1);
+        c = *(data+2);
+        *(ptr+0) = a;
+        *(ptr+1) = b;
+        *(ptr+2) = c;
+        *(ptr+3) = 1;
+        if (a==t0 && b==t1 && c==t2)
+            *(ptr+3) = 0;
+        //-----------------------------------------------
+        ptr += 4;
+        data += 3;
     }
     return newdata;
 }
@@ -819,11 +824,11 @@ void check_resize(XEvent *e)
     //The ConfigureNotify is sent by the
     //server if the window is resized.
     if (e->type != ConfigureNotify)
-	return;
+        return;
     XConfigureEvent xce = e->xconfigure;
     if (xce.width != gl.xres || xce.height != gl.yres) {
-	//Window size did change.
-	reshape_window(xce.width, xce.height);
+        //Window size did change.
+        reshape_window(xce.width, xce.height);
     }
 }
 
@@ -994,7 +999,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *maincharacter1Data = buildAlphaData(gl.mainchar1Image);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, maincharacter1Data);
+            GL_RGBA, GL_UNSIGNED_BYTE, maincharacter1Data);
     free(maincharacter1Data);
     unlink("./images/mainChar1.ppm"); 
     //==============================================
@@ -1008,7 +1013,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *yellowcharData = buildAlphaData(gl.yellowcharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, yellowcharData);
+            GL_RGBA, GL_UNSIGNED_BYTE, yellowcharData);
     free(yellowcharData);
     unlink("./images/yellowchar.ppm"); 
     //==============================================
@@ -1022,7 +1027,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *bluecharData = buildAlphaData(gl.bluecharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, bluecharData);
+            GL_RGBA, GL_UNSIGNED_BYTE, bluecharData);
     free(bluecharData);
     unlink("./images/bluechar.ppm"); 
     //==============================================
@@ -1036,7 +1041,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *greencharData = buildAlphaData(gl.greencharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, greencharData);
+            GL_RGBA, GL_UNSIGNED_BYTE, greencharData);
     free(greencharData);
     unlink("./images/greenchar.ppm"); 
     //==============================================
@@ -1050,7 +1055,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *purplecharData = buildAlphaData(gl.purplecharImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, purplecharData);
+            GL_RGBA, GL_UNSIGNED_BYTE, purplecharData);
     free(purplecharData);
     unlink("./images/purplechar.ppm"); 
     //==============================================
@@ -1064,7 +1069,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *blueportalData = buildAlphaData(gl.blueportalImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, blueportalData);
+            GL_RGBA, GL_UNSIGNED_BYTE, blueportalData);
     free(blueportalData);
     unlink("./images/blueportal.ppm"); 
     //==============================================
@@ -1078,7 +1083,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *orangeportalData = buildAlphaData(gl.orangeportalImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, orangeportalData);
+            GL_RGBA, GL_UNSIGNED_BYTE, orangeportalData);
     free(orangeportalData);
     unlink("./images/orangeportal.ppm"); 
     //==============================================
@@ -1092,7 +1097,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *timerData = buildAlphaData(gl.timerImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, timerData);
+            GL_RGBA, GL_UNSIGNED_BYTE, timerData);
     free(timerData);
     unlink("./images/timer.ppm"); 
     //==============================================
@@ -1106,7 +1111,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *healthbarData = buildAlphaData(gl.healthbarImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, healthbarData);
+            GL_RGBA, GL_UNSIGNED_BYTE, healthbarData);
     free(healthbarData);
     unlink("./images/healthbar.ppm"); 
     //==============================================
@@ -1120,7 +1125,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *yellowprofileData = buildAlphaData(gl.yellowprofileImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, yellowprofileData);
+            GL_RGBA, GL_UNSIGNED_BYTE, yellowprofileData);
     free(yellowprofileData);
     unlink("./images/yellowprofile.ppm"); 
     //==============================================
@@ -1134,7 +1139,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *blueprofileData = buildAlphaData(gl.blueprofileImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, blueprofileData);
+            GL_RGBA, GL_UNSIGNED_BYTE, blueprofileData);
     free(blueprofileData);
     unlink("./images/blueprofile.ppm"); 
     //==============================================
@@ -1148,7 +1153,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *greenprofileData = buildAlphaData(gl.greenprofileImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, greenprofileData);
+            GL_RGBA, GL_UNSIGNED_BYTE, greenprofileData);
     free(greenprofileData);
     unlink("./images/greenprofile.ppm"); 
     //==============================================
@@ -1162,7 +1167,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *purpleprofileData = buildAlphaData(gl.purpleprofileImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, purpleprofileData);
+            GL_RGBA, GL_UNSIGNED_BYTE, purpleprofileData);
     free(purpleprofileData);
     unlink("./images/purpleprofile.ppm"); 
     //==============================================
@@ -1176,7 +1181,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *charselectionData = buildAlphaData(gl.charselectionImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, charselectionData);
+            GL_RGBA, GL_UNSIGNED_BYTE, charselectionData);
     free(charselectionData);
     unlink("./images/charselection.ppm"); 
     //==============================================
@@ -1190,7 +1195,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *colordominationData = buildAlphaData(gl.colordominationImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, colordominationData);
+            GL_RGBA, GL_UNSIGNED_BYTE, colordominationData);
     free(colordominationData);
     unlink("./images/colordomination.ppm"); 
     //==============================================
@@ -1204,7 +1209,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *controlsData = buildAlphaData(gl.controlsImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, controlsData);
+            GL_RGBA, GL_UNSIGNED_BYTE, controlsData);
     free(controlsData);
     unlink("./images/controls.ppm"); 
     //==============================================
@@ -1218,7 +1223,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *creditsData = buildAlphaData(gl.creditsImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, creditsData);
+            GL_RGBA, GL_UNSIGNED_BYTE, creditsData);
     free(creditsData);
     unlink("./images/credits.ppm"); 
     //==============================================
@@ -1232,7 +1237,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *goData = buildAlphaData(gl.goImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, goData);
+            GL_RGBA, GL_UNSIGNED_BYTE, goData);
     free(goData);
     unlink("./images/go.ppm"); 
     //==============================================
@@ -1246,7 +1251,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *heartaddData = buildAlphaData(gl.heartaddImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, heartaddData);
+            GL_RGBA, GL_UNSIGNED_BYTE, heartaddData);
     free(heartaddData);
     unlink("./images/heartadd.ppm"); 
     //==============================================
@@ -1260,7 +1265,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *levelselectData = buildAlphaData(gl.levelselectImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, levelselectData);
+            GL_RGBA, GL_UNSIGNED_BYTE, levelselectData);
     free(levelselectData);
     unlink("./images/levelselect.ppm"); 
     //==============================================
@@ -1274,7 +1279,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *mechabgData = buildAlphaData(gl.mechabgImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, mechabgData);
+            GL_RGBA, GL_UNSIGNED_BYTE, mechabgData);
     free(mechabgData);
     unlink("./images/mechabg.ppm"); 
     //==============================================
@@ -1288,7 +1293,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *menubgData = buildAlphaData(gl.menubgImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, menubgData);
+            GL_RGBA, GL_UNSIGNED_BYTE, menubgData);
     free(menubgData);
     unlink("./images/menubg.ppm"); 
     //==============================================
@@ -1302,7 +1307,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *oneData = buildAlphaData(gl.oneImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, oneData);
+            GL_RGBA, GL_UNSIGNED_BYTE, oneData);
     free(oneData);
     unlink("./images/one.ppm"); 
     //==============================================
@@ -1316,7 +1321,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *playData = buildAlphaData(gl.playImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, playData);
+            GL_RGBA, GL_UNSIGNED_BYTE, playData);
     free(playData);
     unlink("./images/play.ppm"); 
     //==============================================
@@ -1330,7 +1335,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *quitData = buildAlphaData(gl.quitImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, quitData);
+            GL_RGBA, GL_UNSIGNED_BYTE, quitData);
     free(quitData);
     unlink("./images/quit.ppm"); 
     //==============================================
@@ -1344,7 +1349,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *splatteryellowData = buildAlphaData(gl.splatteryellowImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, splatteryellowData);
+            GL_RGBA, GL_UNSIGNED_BYTE, splatteryellowData);
     free(splatteryellowData);
     unlink("./images/splatteryellow.ppm"); 
     //==============================================
@@ -1358,7 +1363,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *splatterblueData = buildAlphaData(gl.splatterblueImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, splatterblueData);
+            GL_RGBA, GL_UNSIGNED_BYTE, splatterblueData);
     free(splatterblueData);
     unlink("./images/splatterblue.ppm"); 
     //==============================================
@@ -1372,7 +1377,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *splattergreenData = buildAlphaData(gl.splattergreenImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, splattergreenData);
+            GL_RGBA, GL_UNSIGNED_BYTE, splattergreenData);
     free(splattergreenData);
     unlink("./images/splattergreen.ppm"); 
     //==============================================
@@ -1386,7 +1391,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *splatterpurpleData = buildAlphaData(gl.splatterpurpleImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, splatterpurpleData);
+            GL_RGBA, GL_UNSIGNED_BYTE, splatterpurpleData);
     free(splatterpurpleData);
     unlink("./images/splatterpurple.ppm"); 
     //==============================================
@@ -1400,7 +1405,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *threeData = buildAlphaData(gl.threeImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, threeData);
+            GL_RGBA, GL_UNSIGNED_BYTE, threeData);
     free(threeData);
     unlink("./images/three.ppm"); 
     //==============================================
@@ -1414,7 +1419,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *twoData = buildAlphaData(gl.twoImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, twoData);
+            GL_RGBA, GL_UNSIGNED_BYTE, twoData);
     free(twoData);
     unlink("./images/two.ppm"); 
     //==============================================
@@ -1428,7 +1433,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *charselectbgData = buildAlphaData(gl.charselectbgImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, charselectbgData);
+            GL_RGBA, GL_UNSIGNED_BYTE, charselectbgData);
     free(charselectbgData);
     unlink("./images/charselectbg.ppm"); 
     //==============================================
@@ -1442,11 +1447,11 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *ingamebgData = buildAlphaData(gl.ingamebgImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, ingamebgData);
+            GL_RGBA, GL_UNSIGNED_BYTE, ingamebgData);
     free(ingamebgData);
     unlink("./images/ingamebg.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Winner
     w = gl.winnerImage->width;
@@ -1456,11 +1461,11 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *winnerData = buildAlphaData(gl.winnerImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, winnerData);
+            GL_RGBA, GL_UNSIGNED_BYTE, winnerData);
     free(winnerData);
     unlink("./images/winner.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Tie
     w = gl.tieImage->width;
@@ -1470,11 +1475,11 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *tieData = buildAlphaData(gl.tieImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, tieData);
+            GL_RGBA, GL_UNSIGNED_BYTE, tieData);
     free(tieData);
     unlink("./images/tie.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Bomb
     w = gl.bombImage->width;
@@ -1484,11 +1489,11 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *bombData = buildAlphaData(gl.bombImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, bombData);
+            GL_RGBA, GL_UNSIGNED_BYTE, bombData);
     free(bombData);
     unlink("./images/bomb.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Fork
     w = gl.forkImage->width;
@@ -1498,11 +1503,11 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *forkData = buildAlphaData(gl.forkImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, forkData);
+            GL_RGBA, GL_UNSIGNED_BYTE, forkData);
     free(forkData);
     unlink("./images/fork.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Freeze
     w = gl.freezeImage->width;
@@ -1512,11 +1517,11 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *freezeData = buildAlphaData(gl.freezeImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, freezeData);
+            GL_RGBA, GL_UNSIGNED_BYTE, freezeData);
     free(freezeData);
     unlink("./images/freeze.ppm"); 
     //==============================================
-    
+
     //==============================================
     // Explosion
     w = gl.explosionImage->width;
@@ -1526,7 +1531,7 @@ void init_opengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     unsigned char *explosionData = buildAlphaData(gl.explosionImage);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, explosionData);
+            GL_RGBA, GL_UNSIGNED_BYTE, explosionData);
     free(explosionData);
     unlink("./images/explosion.ppm"); 
     //==============================================
@@ -1539,30 +1544,30 @@ void check_mouse(XEvent *e)
     static int n = 0;
 
     if (e->type == ButtonRelease) {
-	return;
+        return;
     }
     if (e->type == ButtonPress) {
-	if (e->xbutton.button==1) {
-	    //Left button was pressed
-	    //int y = WINDOW_HEIGHT - e->xbutton.y;	
-	    return;
-	}
-	if (e->xbutton.button==3) {
-	    //Right button was pressed
-	    return;
-	}
+        if (e->xbutton.button==1) {
+            //Left button was pressed
+            //int y = WINDOW_HEIGHT - e->xbutton.y;	
+            return;
+        }
+        if (e->xbutton.button==3) {
+            //Right button was pressed
+            return;
+        }
     }
     //Did the mouse move?
     if (savex != e->xbutton.x || savey != e->xbutton.y) {
-	savex = e->xbutton.x;
-	savey = e->xbutton.y;
-	if (++n < 10)
-	    return;
-	//int y = WINDOW_HEIGHT - e->xbutton.y;
-	for (int i = 0; i < 10; i++)
-	{
-	    //makeParticle(game, e->xbutton.x, y);
-	}
+        savex = e->xbutton.x;
+        savey = e->xbutton.y;
+        if (++n < 10)
+            return;
+        //int y = WINDOW_HEIGHT - e->xbutton.y;
+        for (int i = 0; i < 10; i++)
+        {
+            //makeParticle(game, e->xbutton.x, y);
+        }
     }
 }
 
@@ -1578,798 +1583,832 @@ void check_keys(XEvent *e)
     */
     int key = XLookupKeysym(&e->xkey, 0);
     if (e->type == KeyRelease) {
-	gl.keys[key] = 0;
-	if (key == XK_Shift_L || key == XK_Shift_R)
-	    return;
+        gl.keys[key] = 0;
+        if (key == XK_Shift_L || key == XK_Shift_R)
+            return;
     }
     if (e->type == KeyPress) {
-	gl.keys[key] = 1;
-	if (key == XK_Shift_L || key == XK_Shift_R)
-	    return;
+        gl.keys[key] = 1;
+        if (key == XK_Shift_L || key == XK_Shift_R)
+            return;
     } else { 
-	return;
+        return;
     }
 
     switch(key)
     {
-	case XK_Escape:
-	    gl.done = 1;
-	    break;
+        case XK_Escape:
+            gl.done = 1;
+            break;
 #ifdef UNIT_TEST
-	case XK_b:
-	    setup_screen_res(gl.xres, gl.yres);
-	    break;
+        case XK_b:
+            setup_screen_res(gl.xres, gl.yres);
+            break;
 #endif
-	case XK_q:
-	    colorChangeFlag = 0;
-	    break;
-	case XK_v: { 
-		       gl.vsync ^= 1;
-		       //https://github.com/godotengine/godot/blob/master/platform/x11/context_gl_x11.cpp
-		       static PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT = NULL; 
-		       glXSwapIntervalEXT =
-			   (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB(
-				   (const GLubyte *)"glXSwapIntervalEXT");
-		       GLXDrawable drawable = glXGetCurrentDrawable();
-		       if (gl.vsync) {
-			   glXSwapIntervalEXT(dpy, drawable, 1);
-		       } else {
-			   glXSwapIntervalEXT(dpy, drawable, 0);
-		       }
-		       break;
-		   }
-	case XK_f:
-		   gl.frameRateOn ^= 1;
-		   break;
-	case XK_minus:
-			//playTitleMusic();
-			//titleMusic();
-		   char1->health -= 5;
-		   break;
-	case XK_Tab:
-		   if (game.state == STATE_GAMEPLAY) {
-		       game.state = STATE_CHARSELECT;
-		       gameFrame = 5;			// reset Time when backing out
-		       timeoutFrame = timeoutFrame;
-		       resetEverything();
-		   }
-		   if (game.state == STATE_CHARSELECT) {
-		       game.state = STATE_STARTMENU;
-		   }
-		   if (game.state == STATE_CONTROLS) {
-		       game.state = STATE_STARTMENU;
-		   }
-		   if (game.state == STATE_CREDITS) {
-		       game.state = STATE_STARTMENU;
-		   }
-		   break;
-	case XK_i:
-		   //playDrums();
-		   //playApplause();
-		   break;
-	case XK_Return:
-		   // START BUTTON
-		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
-		       game.state = STATE_CHARSELECT;
-		       gl.cursorLocation = 0;
-		       playSelect();
-		       break;
-		   }
-		   // CONTROLS BUTTON
-		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 1) { 
-		       game.state = STATE_CONTROLS;
-		       gl.cursorLocation = 1;
-		       playSelect();
-		       break;
-		   }
-		   // CREDITS BUTTON
-		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 2) { 
-		       game.state = STATE_CREDITS;
-		       gl.cursorLocation = 2;
-		       playSelect();
-		       break;
-		   }
-		   // EXIT BUTTON
-		   if (game.state == STATE_STARTMENU && gl.cursorLocation == 3) { 
-		       game.state = STATE_GAMEOVER;
-		       gl.done = 1;
-		       playSelect();
-		       break;
-		   }
-		   // Approve Char select
-		   if (game.state == STATE_CHARSELECT &&
-			   gl.cursorLocation != gl.cursorLocation2) {
-		       startCountdown();
-		       checkCountdown();
-		       game.state = STATE_GAMEPLAY;
-		       break;
-		   }
-		   break;
-	case XK_equal:
-		   gl.delay -= 0.005;
-		   if (gl.delay < 0.005)
-		       gl.delay = 0.005;
-		   break;
-	case XK_Up:
-		   if (game.state == STATE_STARTMENU) {
-		       playScroll();
-		       if (gl.cursorLocation != 0) {
-			   gl.cursorLocation -= 1;
-		       }
-		   }
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation2 > 1) {
-			   gl.cursorLocation2 -= 2;
-		       }
-		   }
-		   break;
-	case XK_Down:
-		   if (game.state == STATE_STARTMENU) {
-		       playScroll();
-		       if (gl.cursorLocation != 3) {
-			   gl.cursorLocation += 1;
-		       }
-		   }
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation2 < 2) {
-			   gl.cursorLocation2 += 2;
-		       }
-		   }
-		   break;
-	case XK_Left: 
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation2 != 0) {
-			   gl.cursorLocation2 -= 1;
-		       }
-		   }
-		   break;
-	case XK_Right: 
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation2 != 3) {
-			   gl.cursorLocation2 += 1;
-		       }
-		   }
-		   break;
-	case XK_w:
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation > 1 ) {
-			   gl.cursorLocation -= 2;
-		       }
-		   }
-		   break;
-	case XK_s:
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation < 2) {
-			   gl.cursorLocation += 2;
-		       }
-		   }
-		   break;
-	case XK_d:
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation != 3) {
-			   gl.cursorLocation += 1;
-		       }
-		   }
-		   break;
-	case XK_a:
-		   if (game.state == STATE_CHARSELECT) {
-		       playScroll();
-		       if (gl.cursorLocation != 0) {
-			   gl.cursorLocation -= 1;
-		       }
-		   }
-		   break;
+        case XK_q:
+            colorChangeFlag = 0;
+            break;
+        case XK_v: { 
+                       gl.vsync ^= 1;
+                       //https://github.com/godotengine/godot/blob/master/platform/x11/context_gl_x11.cpp
+                       static PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT = NULL; 
+                       glXSwapIntervalEXT =
+                           (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddressARB(
+                                   (const GLubyte *)"glXSwapIntervalEXT");
+                       GLXDrawable drawable = glXGetCurrentDrawable();
+                       if (gl.vsync) {
+                           glXSwapIntervalEXT(dpy, drawable, 1);
+                       } else {
+                           glXSwapIntervalEXT(dpy, drawable, 0);
+                       }
+                       break;
+                   }
+        case XK_f:
+                   gl.frameRateOn ^= 1;
+                   break;
+        case XK_minus:
+                   //playTitleMusic();
+                   //titleMusic();
+                   break;
+        case XK_Tab:
+                   if (game.state == STATE_GAMEPLAY) {
+                       game.state = STATE_CHARSELECT;
+                       gameFrame = 5;			// reset Time when backing out
+                       timeoutFrame = timeoutFrame;
+                       resetEverything();
+                   }
+                   if (game.state == STATE_CHARSELECT) {
+                       game.state = STATE_STARTMENU;
+                   }
+                   if (game.state == STATE_CONTROLS) {
+                       game.state = STATE_STARTMENU;
+                   }
+                   if (game.state == STATE_CREDITS) {
+                       game.state = STATE_STARTMENU;
+                   }
+                   break;
+        case XK_i:
+                   //playDrums();
+                   //playApplause();
+                   break;
+        case XK_Return:
+                   // START BUTTON
+                   if (game.state == STATE_STARTMENU && gl.cursorLocation == 0) { 
+                       game.state = STATE_CHARSELECT;
+                       gl.cursorLocation = 0;
+                       playSelect();
+                       break;
+                   }
+                   // CONTROLS BUTTON
+                   if (game.state == STATE_STARTMENU && gl.cursorLocation == 1) { 
+                       game.state = STATE_CONTROLS;
+                       gl.cursorLocation = 1;
+                       playSelect();
+                       break;
+                   }
+                   // CREDITS BUTTON
+                   if (game.state == STATE_STARTMENU && gl.cursorLocation == 2) { 
+                       game.state = STATE_CREDITS;
+                       gl.cursorLocation = 2;
+                       playSelect();
+                       break;
+                   }
+                   // EXIT BUTTON
+                   if (game.state == STATE_STARTMENU && gl.cursorLocation == 3) { 
+                       game.state = STATE_GAMEOVER;
+                       gl.done = 1;
+                       playSelect();
+                       break;
+                   }
+                   // Approve Char select
+                   if (game.state == STATE_CHARSELECT &&
+                           gl.cursorLocation != gl.cursorLocation2) {
+                       playSelect();
+                       startCountdown();
+                       checkCountdown();
+                       game.state = STATE_GAMEPLAY;
+                       break;
+                   }
+                   break;
+        case XK_equal:
+                   gl.delay -= 0.005;
+                   if (gl.delay < 0.005)
+                       gl.delay = 0.005;
+                   break;
+        case XK_Up:
+                   if (game.state == STATE_STARTMENU) {
+                       playScroll();
+                       if (gl.cursorLocation != 0) {
+                           gl.cursorLocation -= 1;
+                       }
+                   }
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation2 > 1) {
+                           gl.cursorLocation2 -= 2;
+                       }
+                   }
+                   break;
+        case XK_Down:
+                   if (game.state == STATE_STARTMENU) {
+                       playScroll();
+                       if (gl.cursorLocation != 3) {
+                           gl.cursorLocation += 1;
+                       }
+                   }
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation2 < 2) {
+                           gl.cursorLocation2 += 2;
+                       }
+                   }
+                   break;
+        case XK_Left: 
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation2 != 0) {
+                           gl.cursorLocation2 -= 1;
+                       }
+                   }
+                   break;
+        case XK_Right: 
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation2 != 3) {
+                           gl.cursorLocation2 += 1;
+                       }
+                   }
+                   break;
+        case XK_w:
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation > 1 ) {
+                           gl.cursorLocation -= 2;
+                       }
+                   }
+                   break;
+        case XK_s:
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation < 2) {
+                           gl.cursorLocation += 2;
+                       }
+                   }
+                   break;
+        case XK_d:
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation != 3) {
+                           gl.cursorLocation += 1;
+                       }
+                   }
+                   break;
+        case XK_a:
+                   if (game.state == STATE_CHARSELECT) {
+                       playScroll();
+                       if (gl.cursorLocation != 0) {
+                           gl.cursorLocation -= 1;
+                       }
+                   }
+                   break;
     }		
 }
 
 void physics(Game *game)
 {
     if (game->state == STATE_GAMEPLAY) {
-	if (gl.cursorLocation == 0)
-	    char1->colorID = 1;		// YELLOW
-	if (gl.cursorLocation == 1)
-	    char1->colorID = 2;	
-	if (gl.cursorLocation == 2)
-	    char1->colorID = 3;	
-	if (gl.cursorLocation == 3)
-	    char1->colorID = 4;	
+        if (gl.cursorLocation == 0)
+            char1->colorID = 1;		// YELLOW
+        if (gl.cursorLocation == 1)
+            char1->colorID = 2;	
+        if (gl.cursorLocation == 2)
+            char1->colorID = 3;	
+        if (gl.cursorLocation == 3)
+            char1->colorID = 4;	
 
-	if (gl.cursorLocation2 == 0)
-	    char2->colorID = 1;		// YELLOW
-	if (gl.cursorLocation2 == 1)
-	    char2->colorID = 2;	
-	if (gl.cursorLocation2 == 2)
-	    char2->colorID = 3;	
-	if (gl.cursorLocation2 == 3)
-	    char2->colorID = 4;	
+        if (gl.cursorLocation2 == 0)
+            char2->colorID = 1;		// YELLOW
+        if (gl.cursorLocation2 == 1)
+            char2->colorID = 2;	
+        if (gl.cursorLocation2 == 2)
+            char2->colorID = 3;	
+        if (gl.cursorLocation2 == 3)
+            char2->colorID = 4;	
 
-	//char1->colorID = 1;		// YELLOW
-	//char2->colorID = 2;         // BLUE
+        //char1->colorID = 1;		// YELLOW
+        //char2->colorID = 2;         // BLUE
 
-	if (char1->inAirBool) {
-	    //char1->vel.y = 0.2*gravity;
-	    if (char1->vel.y > -9)
-		char1->vel.y += gravity/16;
-	}
+        if (char1->inAirBool) {
+            //char1->vel.y = 0.2*gravity;
+            if (char1->vel.y > -9)
+                char1->vel.y += gravity/16;
+        }
 
-	if (char2->inAirBool) {
-	    //char1->vel.y = 0.2*gravity;
-	    if (char2->vel.y > -9)
-		char2->vel.y += gravity/16;
-	}
+        if (char2->inAirBool) {
+            //char1->vel.y = 0.2*gravity;
+            if (char2->vel.y > -9)
+                char2->vel.y += gravity/16;
+        }
 
-	// COLLISION
-	int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
+        // COLLISION
+        int boxTop[90], boxBot[90], boxLeft[90], boxRight[90];
 
-	for (int i = 0; i < totalCubes; i++) {
-	    Shape *s = &game->box[i];
-	    boxTop[i] = s->center.y + s->height + (char1->height-5);
-	    boxBot[i] = s->center.y - s->height - (char1->height-10);
-	    boxLeft[i] = s->center.x - s->width - (char1->width-10);
-	    boxRight[i] = s->center.x + s->width + (char1->width-10);
-	}
+        for (int i = 0; i < totalCubes; i++) {
+            Shape *s = &game->box[i];
+            boxTop[i] = s->center.y + s->height + (char1->height-5);
+            boxBot[i] = s->center.y - s->height - (char1->height-10);
+            boxLeft[i] = s->center.x - s->width - (char1->width-10);
+            boxRight[i] = s->center.x + s->width + (char1->width-10);
+        }
 
-	for (int i = 0; i < totalCubes; i++) {
-	    Shape *s = &game->box[i];
-	    if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
-		if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
-		    // Top Collision
-		    if (char1->cy < boxTop[i] &&
-			    char1->cy > boxTop[i] - 10 &&
-			    char1->cx < boxRight[i] - 10 &&
-			    char1->cx > boxLeft[i] + 10) {
-			char1->cy = boxTop[i];
-			char1->inAirBool = false;
-			char1->jumpCount = 1;
-			char1->vel.y = -1;	
-			colorChangeFlag = 1;
+        for (int i = 0; i < totalCubes; i++) {
+            Shape *s = &game->box[i];
+            if (char1->cy < boxTop[i] && char1->cy > boxBot[i]) {
+                if (char1->cx > boxLeft[i] && char1->cx < boxRight[i]) {
+                    // Top Collision
+                    if (char1->cy < boxTop[i] &&
+                            char1->cy > boxTop[i] - 10 &&
+                            char1->cx < boxRight[i] - 10 &&
+                            char1->cx > boxLeft[i] + 10) {
+                        char1->cy = boxTop[i];
+                        char1->inAirBool = false;
+                        char1->jumpCount = 1;
+                        char1->vel.y = -1;	
+                        colorChangeFlag = 1;
 
-			// Point System 
-			awardPoint(char1, s);    
-			removePoint(char2, char2, s);    
+                        // Point System 
+                        awardPoint(char1, s);    
+                        removePoint(char2, char2, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char1->colorID;
-		    } else {
-			char1->inAirBool = true;
-		    }
-		    // Bot Collision
-		    if (char1->cy > boxBot[i] &&
-			    char1->cy < boxBot[i] + 10 &&
-			    char1->cx < boxRight[i] - 10 &&
-			    char1->cx > boxLeft[i] + 10) {
-			char1->cy = boxBot[i];
-			char1->vel.y = -3;
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char1->colorID;
+                    } else {
+                        char1->inAirBool = true;
+                    }
+                    // Bot Collision
+                    if (char1->cy > boxBot[i] &&
+                            char1->cy < boxBot[i] + 10 &&
+                            char1->cx < boxRight[i] - 10 &&
+                            char1->cx > boxLeft[i] + 10) {
+                        char1->cy = boxBot[i];
+                        char1->vel.y = -3;
 
-			colorChangeFlag = 1;
+                        colorChangeFlag = 1;
 
-			// Point System 
-			awardPoint(char1, s);    
-			removePoint(char2, char2, s);    
+                        // Point System 
+                        awardPoint(char1, s);    
+                        removePoint(char2, char2, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char1->colorID;
-		    }
-		    // Right Collision
-		    if (char1->cx < boxRight[i] && 
-			    char1->cx > s->center.x &&
-			    char1->cy < boxTop[i] - 10 &&
-			    char1->cy > boxBot[i] + 10) {
-			char1->cx = boxRight[i];
-			//colorChangeFlag = 1;
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char1->colorID;
+                    }
+                    // Right Collision
+                    if (char1->cx < boxRight[i] && 
+                            char1->cx > s->center.x &&
+                            char1->cy < boxTop[i] - 10 &&
+                            char1->cy > boxBot[i] + 10) {
+                        char1->cx = boxRight[i];
+                        //colorChangeFlag = 1;
 
-			colorChangeFlag = 1;
+                        colorChangeFlag = 1;
 
-			// Point System 
-			awardPoint(char1, s);    
-			removePoint(char2, char2, s);    
+                        // Point System 
+                        awardPoint(char1, s);    
+                        removePoint(char2, char2, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char1->colorID;
-		    }
-		    // Left Collision
-		    if (char1->cx > boxLeft[i] &&
-			    char1->cx < s->center.x &&
-			    char1->cy < boxTop[i] - 10 &&
-			    char1->cy > boxBot[i] + 10) {
-			char1->cx = boxLeft[i];
-			//colorChangeFlag = 1;
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char1->colorID;
+                    }
+                    // Left Collision
+                    if (char1->cx > boxLeft[i] &&
+                            char1->cx < s->center.x &&
+                            char1->cy < boxTop[i] - 10 &&
+                            char1->cy > boxBot[i] + 10) {
+                        char1->cx = boxLeft[i];
+                        //colorChangeFlag = 1;
 
-			colorChangeFlag = 1;
+                        colorChangeFlag = 1;
 
-			// Point System 
-			awardPoint(char1, s);    
-			removePoint(char2, char2, s);    
+                        // Point System 
+                        awardPoint(char1, s);    
+                        removePoint(char2, char2, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char1->colorID;
-		    }
-		}
-	    }
-	}
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char1->colorID;
+                    }
+                }
+            }
+        }
 
-	// Player Collision char2
-	for (int i = 0; i < totalCubes; i++) {
-	    Shape *s = &game->box[i];
-	    if (char2->cy < boxTop[i] && char2->cy > boxBot[i]) {
-		if (char2->cx > boxLeft[i] && char2->cx < boxRight[i]) {
-		    // Top Collision
-		    if (char2->cy < boxTop[i] &&
-			    char2->cy > boxTop[i] - 10 &&
-			    char2->cx < boxRight[i] - 10 &&
-			    char2->cx > boxLeft[i] + 10) {
-			char2->cy = boxTop[i];
-			char2->inAirBool = false;
-			char2->jumpCount = 1;
-			char2->vel.y = -1;	
-			colorChangeFlag = 2;
+        // Player Collision char2
+        for (int i = 0; i < totalCubes; i++) {
+            Shape *s = &game->box[i];
+            if (char2->cy < boxTop[i] && char2->cy > boxBot[i]) {
+                if (char2->cx > boxLeft[i] && char2->cx < boxRight[i]) {
+                    // Top Collision
+                    if (char2->cy < boxTop[i] &&
+                            char2->cy > boxTop[i] - 10 &&
+                            char2->cx < boxRight[i] - 10 &&
+                            char2->cx > boxLeft[i] + 10) {
+                        char2->cy = boxTop[i];
+                        char2->inAirBool = false;
+                        char2->jumpCount = 1;
+                        char2->vel.y = -1;	
+                        colorChangeFlag = 2;
 
-			// Point System 
-			awardPoint(char2, s);    
-			removePoint(char1, char1, s);    
+                        // Point System 
+                        awardPoint(char2, s);    
+                        removePoint(char1, char1, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char2->colorID;
-		    } else {
-			char2->inAirBool = true;
-		    }
-		    // Bot Collision
-		    if (char2->cy > boxBot[i] &&
-			    char2->cy < boxBot[i] + 10 &&
-			    char2->cx < boxRight[i] - 10 &&
-			    char2->cx > boxLeft[i] + 10) {
-			char2->cy = boxBot[i];
-			char2->vel.y = -3;
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char2->colorID;
+                    } else {
+                        char2->inAirBool = true;
+                    }
+                    // Bot Collision
+                    if (char2->cy > boxBot[i] &&
+                            char2->cy < boxBot[i] + 10 &&
+                            char2->cx < boxRight[i] - 10 &&
+                            char2->cx > boxLeft[i] + 10) {
+                        char2->cy = boxBot[i];
+                        char2->vel.y = -3;
 
-			colorChangeFlag = 2;
+                        colorChangeFlag = 2;
 
-			// Point System 
-			awardPoint(char2, s);    
-			removePoint(char1, char1, s);    
+                        // Point System 
+                        awardPoint(char2, s);    
+                        removePoint(char1, char1, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char2->colorID;
-		    }
-		    // Right Collision
-		    if (char2->cx < boxRight[i] && 
-			    char2->cx > s->center.x &&
-			    char2->cy < boxTop[i] - 10 &&
-			    char2->cy > boxBot[i] + 10) {
-			char2->cx = boxRight[i];
-			//colorChangeFlag = 1;
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char2->colorID;
+                    }
+                    // Right Collision
+                    if (char2->cx < boxRight[i] && 
+                            char2->cx > s->center.x &&
+                            char2->cy < boxTop[i] - 10 &&
+                            char2->cy > boxBot[i] + 10) {
+                        char2->cx = boxRight[i];
+                        //colorChangeFlag = 1;
 
-			colorChangeFlag = 2;
+                        colorChangeFlag = 2;
 
-			// Point System 
-			awardPoint(char2, s);    
-			removePoint(char1, char1, s);    
+                        // Point System 
+                        awardPoint(char2, s);    
+                        removePoint(char1, char1, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char2->colorID;
-		    }
-		    // Left Collision
-		    if (char2->cx > boxLeft[i] &&
-			    char2->cx < s->center.x &&
-			    char2->cy < boxTop[i] - 10 &&
-			    char2->cy > boxBot[i] + 10) {
-			char2->cx = boxLeft[i];
-			//colorChangeFlag = 1;
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char2->colorID;
+                    }
+                    // Left Collision
+                    if (char2->cx > boxLeft[i] &&
+                            char2->cx < s->center.x &&
+                            char2->cy < boxTop[i] - 10 &&
+                            char2->cy > boxBot[i] + 10) {
+                        char2->cx = boxLeft[i];
+                        //colorChangeFlag = 1;
 
-			colorChangeFlag = 2;
+                        colorChangeFlag = 2;
 
-			// Point System 
-			awardPoint(char2, s);    
-			removePoint(char1, char1, s);    
+                        // Point System 
+                        awardPoint(char2, s);    
+                        removePoint(char1, char1, s);    
 
-			// Save box index # and location
-			boxIndex = i;
-			globalSaveBox = s;
-			s->boxColorID = char2->colorID;
-		    }
-		}
-	    } 
-	}
+                        // Save box index # and location
+                        boxIndex = i;
+                        globalSaveBox = s;
+                        s->boxColorID = char2->colorID;
+                    }
+                }
+            } 
+        }
 
 
-	// Blue Portal Collision
-	if (char1->cy < 425 && char1->cy > 380) {
-	    if (char1->cx > 20 && char1->cx < 45) {
-		// translate location
-		char1->cx = 1190;
-		char1->cy = 400;
-	    }
-	}
-	// char 2
-	if (char2->cy < 425 && char2->cy > 380) {
-	    if (char2->cx > 20 && char2->cx < 45) {
-		// translate location
-		char2->cx = 1190;
-		char2->cy = 400;
-	    }
-	}
-	//
-	// Orange Portal Collision
-	if (char1->cy < 425 && char1->cy > 380) {
-	    if (char1->cx > 1220 && char1->cx < 1250) {
-		// translate location
-		char1->cx = 55;
-		char1->cy = 400;
-	    }
-	}
-	// char 2
-	if (char2->cy < 425 && char2->cy > 380) {
-	    if (char2->cx > 1220 && char2->cx < 1250) {
-		// translate location
-		char2->cx = 55;
-		char2->cy = 400;
-	    }
-	}
-	//	
+        // Blue Portal Collision
+        if (char1->cy < 425 && char1->cy > 380) {
+            if (char1->cx > 20 && char1->cx < 45) {
+                // translate location
+                char1->cx = 1190;
+                char1->cy = 400;
+            }
+        }
+        // char 2
+        if (char2->cy < 425 && char2->cy > 380) {
+            if (char2->cx > 20 && char2->cx < 45) {
+                // translate location
+                char2->cx = 1190;
+                char2->cy = 400;
+            }
+        }
+        //
+        // Orange Portal Collision
+        if (char1->cy < 425 && char1->cy > 380) {
+            if (char1->cx > 1220 && char1->cx < 1250) {
+                // translate location
+                char1->cx = 55;
+                char1->cy = 400;
+            }
+        }
+        // char 2
+        if (char2->cy < 425 && char2->cy > 380) {
+            if (char2->cx > 1220 && char2->cx < 1250) {
+                // translate location
+                char2->cx = 55;
+                char2->cy = 400;
+            }
+        }
+        //	
 
-	//printf("Char 1 facing: %d\n", char1->facingLeft);
-	//printf("Char 2 facing: %d\n", char2->facingLeft);
-	// Player 1 Movement Keys
-	if (!deadFlag1) {
-	    if (gl.keys[XK_d]) {
-		//leftFaceChar1 = 0;
-		char1->facingLeft = 0;
-		char1->cx += 7;
-	    }
+        //printf("Char 1 facing: %d\n", char1->facingLeft);
+        //printf("Char 2 facing: %d\n", char2->facingLeft);
+        // Player 1 Movement Keys
+        if (!deadFlag1 && !freezeFlag1) {
+            if (gl.keys[XK_d]) {
+                //leftFaceChar1 = 0;
+                char1->facingLeft = 0;
+                char1->cx += 7;
+            }
 
-	    if (gl.keys[XK_a]) {
-		//leftFaceChar1 = 1;
-		char1->facingLeft = 1;
-		char1->cx += -7;
-	    }
+            if (gl.keys[XK_a]) {
+                //leftFaceChar1 = 1;
+                char1->facingLeft = 1;
+                char1->cx += -7;
+            }
 
-	    if (gl.keys[XK_w] && char1->jumpCount == 1) {
-		jump(char1);
-	    }
-	}
+            if (gl.keys[XK_w] && char1->jumpCount == 1) {
+                jump(char1);
+            }
+        }
 
-	// Player 2 Movement Keys
-	if (!deadFlag2) {
-	    if (gl.keys[XK_Right]) {
-		//leftFaceChar2 = 0;
-		char2->facingLeft = 0;
-		char2->cx += 7;
-	    }
+        // Player 2 Movement Keys
+        if (!deadFlag2 && !freezeFlag2) {
+            if (gl.keys[XK_Right]) {
+                //leftFaceChar2 = 0;
+                char2->facingLeft = 0;
+                char2->cx += 7;
+            }
 
-	    if (gl.keys[XK_Left]) {
-		//leftFaceChar2 = 1;
-		char2->facingLeft = 1;
-		char2->cx += -7;
-	    }
+            if (gl.keys[XK_Left]) {
+                //leftFaceChar2 = 1;
+                char2->facingLeft = 1;
+                char2->cx += -7;
+            }
 
-	    if (gl.keys[XK_Up] && char2->jumpCount == 1 ) {
-		jump(char2);
-	    }
-	}
-	//
+            if (gl.keys[XK_Up] && char2->jumpCount == 1 ) {
+                jump(char2);
+            }
+        }
+        //
 
-	// Player 1 Animation
-	if (gl.keys[XK_d]) {
-	    //leftFaceChar1 = 0;
-	    //man is walking...
-	    //when time is up, advance the frame.
-	    timers.recordTime(&timers.timeCurrent);
-	    double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
-	    if (timeSpan > gl.delay) {
-		//advance
-		++gl.yellowcharFrame;
-		if (gl.yellowcharFrame >= 2)
-		    gl.yellowcharFrame -= 2;
-		timers.recordTime(&timers.yellowcharTime);
-	    }
-	}
+        // Player 1 Animation
+        if (gl.keys[XK_d]) {
+            //leftFaceChar1 = 0;
+            //man is walking...
+            //when time is up, advance the frame.
+            timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
+            if (timeSpan > gl.delay) {
+                //advance
+                ++gl.yellowcharFrame;
+                if (gl.yellowcharFrame >= 2)
+                    gl.yellowcharFrame -= 2;
+                timers.recordTime(&timers.yellowcharTime);
+            }
+        }
 
-	if (gl.keys[XK_a]) {
-	    //leftFaceChar1 = 1;
-	    //man is walking...
-	    //when time is up, advance the frame.
-	    timers.recordTime(&timers.timeCurrent);
-	    double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
-	    if (timeSpan > gl.delay) {
-		//advance
-		++gl.yellowcharFrame;
-		if (gl.yellowcharFrame >= 2)
-		    gl.yellowcharFrame -= 2;
-		timers.recordTime(&timers.yellowcharTime);
-	    }
-	}
+        if (gl.keys[XK_a]) {
+            //leftFaceChar1 = 1;
+            //man is walking...
+            //when time is up, advance the frame.
+            timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.yellowcharTime, &timers.timeCurrent);
+            if (timeSpan > gl.delay) {
+                //advance
+                ++gl.yellowcharFrame;
+                if (gl.yellowcharFrame >= 2)
+                    gl.yellowcharFrame -= 2;
+                timers.recordTime(&timers.yellowcharTime);
+            }
+        }
 
-	// Player 2 Animation 
-	if (gl.keys[XK_Right]) {
-	    //leftFaceChar2 = 0;
-	    //man is waling...
-	    //when time is up, advance the frame.
-	    timers.recordTime(&timers.timeCurrent);
-	    double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
-	    if (timeSpan > gl.delay) {
-		//advance
-		++gl.bluecharFrame;
-		if (gl.bluecharFrame >= 2)
-		    gl.bluecharFrame -= 2;
-		timers.recordTime(&timers.bluecharTime);
-	    }
-	}
+        // Player 2 Animation 
+        if (gl.keys[XK_Right]) {
+            //leftFaceChar2 = 0;
+            //man is waling...
+            //when time is up, advance the frame.
+            timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
+            if (timeSpan > gl.delay) {
+                //advance
+                ++gl.bluecharFrame;
+                if (gl.bluecharFrame >= 2)
+                    gl.bluecharFrame -= 2;
+                timers.recordTime(&timers.bluecharTime);
+            }
+        }
 
-	if (gl.keys[XK_Left]) {
-	    //leftFaceChar2 = 1;
-	    //man is walking...
-	    //when time is up, advance the frame.
-	    timers.recordTime(&timers.timeCurrent);
-	    double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
-	    if (timeSpan > gl.delay) {
-		//advance
-		++gl.bluecharFrame;
-		if (gl.bluecharFrame >= 2)
-		    gl.bluecharFrame -= 2;
-		timers.recordTime(&timers.bluecharTime);
-	    }
-	}
+        if (gl.keys[XK_Left]) {
+            //leftFaceChar2 = 1;
+            //man is walking...
+            //when time is up, advance the frame.
+            timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.bluecharTime, &timers.timeCurrent);
+            if (timeSpan > gl.delay) {
+                //advance
+                ++gl.bluecharFrame;
+                if (gl.bluecharFrame >= 2)
+                    gl.bluecharFrame -= 2;
+                timers.recordTime(&timers.bluecharTime);
+            }
+        }
 
-	physicsPortal();
+        physicsPortal();
 
-	//==============================================
-	// bullet physics Player 1
-	//==============================================
-	struct timespec bt;
-	clock_gettime(CLOCK_REALTIME, &bt);
-	int i = 0;
-	while (i < game->nbullets) {
-	    Bullet *b = &game->barr[i];
-	    double ts = timers.timeDiff(&b->time, &bt);
-	    if (ts > 2.0) {
-		memcpy(&game->barr[i], &game->barr[game->nbullets-1], sizeof(Bullet));
-		game->nbullets--;
-		continue;
-	    }
-	    b->pos.x += b->vel.x;
-	    b->pos.y += b->vel.y;
-	    i++;
-	}
+        //==============================================
+        // bullet physics Player 1
+        //==============================================
+        struct timespec bt;
+        clock_gettime(CLOCK_REALTIME, &bt);
+        int i = 0;
+        while (i < game->nbullets) {
+            Bullet *b = &game->barr[i];
+            double ts = timers.timeDiff(&b->time, &bt);
+            if (ts > 2.0) {
+                memcpy(&game->barr[i], &game->barr[game->nbullets-1], sizeof(Bullet));
+                game->nbullets--;
+                continue;
+            }
+            b->pos.x += b->vel.x;
+            b->pos.y += b->vel.y;
+            i++;
+        }
 
-	if (gl.keys[XK_space]) {
-	    struct timespec bt;
-	    clock_gettime(CLOCK_REALTIME, &bt);
-	    double ts = timers.timeDiff(&game->bulletTimer, &bt);
-	    if (ts > 1.0) {
-		timers.timeCopy(&game->bulletTimer, &bt);
-		if (game->nbullets < MAX_BULLETS) {
-		    Bullet *b = &game->barr[game->nbullets];
-		    timers.timeCopy(&b->time, &bt);
-		    b->pos.x = char1->cx;
-		    b->pos.y = char1->cy;
-		    b->vel.x = 0;
-		    b->vel.y = 0;
-		    // Up Shoot
-		    if (gl.keys[XK_w]) {
-			b->vel.x += 0;
-			b->vel.y += b->velValue;
-		    }
-		    // Right Shoot
-		    else if (gl.keys[XK_d]) {
-			b->vel.x += b->velValue;
-			b->vel.y += 0;
-		    }
-		    // Left Shoot
-		    else if (gl.keys[XK_a]) {
-			b->vel.x += -b->velValue;
-			b->vel.y += 0;
-		    }
-		    // Down Shoot
-		    else if (gl.keys[XK_s]) {
-			b->vel.x += 0;
-			b->vel.y += -b->velValue;
-		    }
-		    // UP/RIGHT Shoot
-		    else if (gl.keys[XK_w] && gl.keys[XK_d]) {
-			b->vel.x += b->velValue*.5;
-			b->vel.y += b->velValue*.5;
-		    }
-		    // UP/LEFT Shoot
-		    else if (gl.keys[XK_w] && gl.keys[XK_a]) {
-			b->vel.x += -b->velValue*.5;
-			b->vel.y += b->velValue*.5;
-		    }
-		    else if (char1->facingLeft) {
-			b->vel.x += -b->velValue;
-			b->vel.y += 0;
-		    }
-		    else if (!char1->facingLeft) {
-			b->vel.x += b->velValue;
-			b->vel.y += 0;
-		    }
-		    //b->vel.x += b->velValue;
-		    //b->vel.y += 0;
-		    game->nbullets++;
-		}
-	    }
-	}
-	//==============================================
-	// bullet done
-	//==============================================
-	// Player 1 Bullet Collision to Player 2
-	i = 0;
-	while (i < game->nbullets) {
-	    Bullet *b = &game->barr[i];
-	    if (b->pos.x < char2->cx+25 && b->pos.x > char2->cx-25) {
-		if (b->pos.y < char2->cy+25 && b->pos.y > char2->cy-45) {
-		    char2->health -= 20;
-		    printf("Char 2 health: %d\n", char2->health);
-		    memcpy(&game->barr[i], &game->barr[game->nbullets-1], sizeof(Bullet));
-		    game->nbullets--;
-		}
-		if (char2->health <= 0) {
-			deadFlag2 = 1;
-		}
-	    }
-	    i++;
-	}
-	//==============================================
+        if (!deadFlag1) {
+            if (gl.keys[XK_space]) {
+                struct timespec bt;
+                clock_gettime(CLOCK_REALTIME, &bt);
+                double ts = timers.timeDiff(&game->bulletTimer, &bt);
+                if (ts > 1.0) {
+                    timers.timeCopy(&game->bulletTimer, &bt);
+                    if (game->nbullets < MAX_BULLETS) {
+                        Bullet *b = &game->barr[game->nbullets];
+                        timers.timeCopy(&b->time, &bt);
+                        b->pos.x = char1->cx;
+                        b->pos.y = char1->cy;
+                        b->vel.x = 0;
+                        b->vel.y = 0;
+                        // Up Shoot
+                        if (gl.keys[XK_w]) {
+                            b->vel.x += 0;
+                            b->vel.y += b->velValue;
+                        }
+                        // Right Shoot
+                        else if (gl.keys[XK_d]) {
+                            b->vel.x += b->velValue;
+                            b->vel.y += 0;
+                        }
+                        // Left Shoot
+                        else if (gl.keys[XK_a]) {
+                            b->vel.x += -b->velValue;
+                            b->vel.y += 0;
+                        }
+                        // Down Shoot
+                        else if (gl.keys[XK_s]) {
+                            b->vel.x += 0;
+                            b->vel.y += -b->velValue;
+                        }
+                        // UP/RIGHT Shoot
+                        else if (gl.keys[XK_w] && gl.keys[XK_d]) {
+                            b->vel.x += b->velValue*.5;
+                            b->vel.y += b->velValue*.5;
+                        }
+                        // UP/LEFT Shoot
+                        else if (gl.keys[XK_w] && gl.keys[XK_a]) {
+                            b->vel.x += -b->velValue*.5;
+                            b->vel.y += b->velValue*.5;
+                        }
+                        else if (char1->facingLeft) {
+                            b->vel.x += -b->velValue;
+                            b->vel.y += 0;
+                        }
+                        else if (!char1->facingLeft) {
+                            b->vel.x += b->velValue;
+                            b->vel.y += 0;
+                        }
+                        //b->vel.x += b->velValue;
+                        //b->vel.y += 0;
+                        game->nbullets++;
+                    }
+                }
+            }
+        }
+        //==============================================
+        // bullet done
+        //==============================================
+        // Player 1 Bullet Collision to Player 2
+        i = 0;
+        while (i < game->nbullets) {
+            Bullet *b = &game->barr[i];
+            if (b->pos.x < char2->cx+25 && b->pos.x > char2->cx-25) {
+                if (b->pos.y < char2->cy+25 && b->pos.y > char2->cy-45) {
+                    char2->health -= 27;
+                    memcpy(&game->barr[i], &game->barr[game->nbullets-1], sizeof(Bullet));
+                    game->nbullets--;
+                }
+                if (char2->health <= 0) {
+                    deadFlag2 = 1;
+                    char2->health = 0;
+                }
+            }
+            i++;
+        }
+        //==============================================
 
-	//==============================================
-	// bullet physics Player 2
-	//==============================================
-	struct timespec bt2;
-	clock_gettime(CLOCK_REALTIME, &bt2);
-	int j = 0;
-	while (j < game->nbullets2) {
-	    Bullet *b2 = &game->barr2[j];
-	    double ts2 = timers.timeDiff(&b2->time2, &bt2);
-	    if (ts2 > 2.0) {
-		memcpy(&game->barr2[j], &game->barr2[game->nbullets2-1], sizeof(Bullet));
-		game->nbullets2--;
-		continue;
-	    }
-	    b2->pos.x += b2->vel.x;
-	    b2->pos.y += b2->vel.y;
-	    j++;
-	}
+        //==============================================
+        // bullet physics Player 2
+        //==============================================
+        struct timespec bt2;
+        clock_gettime(CLOCK_REALTIME, &bt2);
+        int j = 0;
+        while (j < game->nbullets2) {
+            Bullet *b2 = &game->barr2[j];
+            double ts2 = timers.timeDiff(&b2->time2, &bt2);
+            if (ts2 > 2.0) {
+                memcpy(&game->barr2[j], &game->barr2[game->nbullets2-1], sizeof(Bullet));
+                game->nbullets2--;
+                continue;
+            }
+            b2->pos.x += b2->vel.x;
+            b2->pos.y += b2->vel.y;
+            j++;
+        }
 
-	if (gl.keys[XK_Return]) {
-	    struct timespec bt2;
-	    clock_gettime(CLOCK_REALTIME, &bt2);
-	    double ts2 = timers.timeDiff(&game->bulletTimer2, &bt2);
-	    if (ts2 > 1.0) {
-		timers.timeCopy(&game->bulletTimer2, &bt2);
-		if (game->nbullets2 < MAX_BULLETS) {
-		    Bullet *b2 = &game->barr2[game->nbullets2];
-		    timers.timeCopy(&b2->time2, &bt2);
-		    b2->pos.x = char2->cx;
-		    b2->pos.y = char2->cy;
-		    b2->vel.x = 0;
-		    b2->vel.y = 0;
-		    // Up Shoot
-		    if (gl.keys[XK_Up]) {
-			b2->vel.x += 0;
-			b2->vel.y += b2->velValue;
-		    }
-		    // Right Shoot
-		    else if (gl.keys[XK_Right]) {
-			b2->vel.x += b2->velValue;
-			b2->vel.y += 0;
-		    }
-		    // Left Shoot
-		    else if (gl.keys[XK_Left]) {
-			b2->vel.x += -b2->velValue;
-			b2->vel.y += 0;
-		    }
-		    // Down Shoot
-		    else if (gl.keys[XK_Down]) {
-			b2->vel.x += 0;
-			b2->vel.y += -b2->velValue;
-		    }
-		    // UP/RIGHT Shoot
-		    else if (gl.keys[XK_Up] && gl.keys[XK_Right]) {
-			b2->vel.x += b2->velValue*.85;
-			b2->vel.y += b2->velValue*.85;
-		    }
-		    // UP/Left Shoot
-		    else if (gl.keys[XK_Up] && gl.keys[XK_Right]) {
-			b2->vel.x += -b2->velValue*.85;
-			b2->vel.y += b2->velValue*.85;
-		    }
-		    else if (char2->facingLeft) {
-			b2->vel.x += -b2->velValue;
-			b2->vel.y += 0;
-		    }
-		    else if (!char2->facingLeft) {
-			b2->vel.x += b2->velValue;
-			b2->vel.y += 0;
-		    }
+        if (!deadFlag2) {
+            if (gl.keys[XK_Return]) {
+                struct timespec bt2;
+                clock_gettime(CLOCK_REALTIME, &bt2);
+                double ts2 = timers.timeDiff(&game->bulletTimer2, &bt2);
+                if (ts2 > 1.0) {
+                    timers.timeCopy(&game->bulletTimer2, &bt2);
+                    if (game->nbullets2 < MAX_BULLETS) {
+                        Bullet *b2 = &game->barr2[game->nbullets2];
+                        timers.timeCopy(&b2->time2, &bt2);
+                        b2->pos.x = char2->cx;
+                        b2->pos.y = char2->cy;
+                        b2->vel.x = 0;
+                        b2->vel.y = 0;
+                        // Up Shoot
+                        if (gl.keys[XK_Up]) {
+                            b2->vel.x += 0;
+                            b2->vel.y += b2->velValue;
+                        }
+                        // Right Shoot
+                        else if (gl.keys[XK_Right]) {
+                            b2->vel.x += b2->velValue;
+                            b2->vel.y += 0;
+                        }
+                        // Left Shoot
+                        else if (gl.keys[XK_Left]) {
+                            b2->vel.x += -b2->velValue;
+                            b2->vel.y += 0;
+                        }
+                        // Down Shoot
+                        else if (gl.keys[XK_Down]) {
+                            b2->vel.x += 0;
+                            b2->vel.y += -b2->velValue;
+                        }
+                        // UP/RIGHT Shoot
+                        else if (gl.keys[XK_Up] && gl.keys[XK_Right]) {
+                            b2->vel.x += b2->velValue*.85;
+                            b2->vel.y += b2->velValue*.85;
+                        }
+                        // UP/Left Shoot
+                        else if (gl.keys[XK_Up] && gl.keys[XK_Right]) {
+                            b2->vel.x += -b2->velValue*.85;
+                            b2->vel.y += b2->velValue*.85;
+                        }
+                        else if (char2->facingLeft) {
+                            b2->vel.x += -b2->velValue;
+                            b2->vel.y += 0;
+                        }
+                        else if (!char2->facingLeft) {
+                            b2->vel.x += b2->velValue;
+                            b2->vel.y += 0;
+                        }
 
-		    //b->vel.x += b->velValue;
-		    //b->vel.y += 0;
-		    game->nbullets2++;
-		}
-	    }
-	}
-	//==============================================
-	// bullet done
-	//==============================================
-	// Player 2 Bullet Collision to Player 1
-	j = 0;
-	while (j < game->nbullets2) {
-	    Bullet *b2 = &game->barr2[j];
-	    if (b2->pos.x < char1->cx+25 && b2->pos.x > char1->cx-25) {
-		if (b2->pos.y < char1->cy+25 && b2->pos.y > char1->cy-45) {
-		    char1->health -= 20;
-		    printf("Char 1 health: %d\n", char1->health);
-		    memcpy(&game->barr2[i], &game->barr2[game->nbullets2-1], sizeof(Bullet));
-		    game->nbullets2--;
-		}
-		if (char1->health <= 0) {
-			deadFlag1 = 1;
-		}
-	    }
-	    j++;
-	}
-	
-	//==============================================
-	// Jump Update
-	heartCollision(char1);
-	heartCollision(char2);
-	char1->cy += char1->vel.y;
-	char2->cy += char2->vel.y;
+                        //b->vel.x += b->velValue;
+                        //b->vel.y += 0;
+                        game->nbullets2++;
+                    }
+                }
+            }
+        }
+        //==============================================
+        // bullet done
+        //==============================================
+        // Player 2 Bullet Collision to Player 1
+        j = 0;
+        while (j < game->nbullets2) {
+            Bullet *b2 = &game->barr2[j];
+            if (b2->pos.x < char1->cx+25 && b2->pos.x > char1->cx-25) {
+                if (b2->pos.y < char1->cy+25 && b2->pos.y > char1->cy-45) {
+                    char1->health -= 27;
+                    memcpy(&game->barr2[i], &game->barr2[game->nbullets2-1], sizeof(Bullet));
+                    game->nbullets2--;
+                }
+                if (char1->health <= 0) {
+                    deadFlag1 = 1;
+                    char1->health = 0;
+                }
+            }
+            j++;
+        }
+
+        //==============================================
+        // Jump Update
+        heartCollision(char1);
+        heartCollision(char2);
+
+        freezeCollision1(char1);
+        freezeCollision2(char2);
+
+        printf("Freeze Flag 1: %d\n", freezeFlag1);
+        printf("Freeze Flag 2: %d\n", freezeFlag2);
+
+        // Turn heart back on
+        if (gl.heartFlag) {
+            timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.timeHeart, &timers.timeCurrent);
+            if (timeSpan > 6) {
+                gl.heartFlag = 0;
+                timers.recordTime(&timers.timeHeart);
+            }
+        }
+        
+        if (freezeFlag1 || freezeFlag2) {
+            timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.timeFreeze, &timers.timeCurrent);
+            if (timeSpan > 3) {
+                freezeFlag1 = 0;
+                freezeFlag2 = 0;
+            }
+            if (timeSpan > 6) {
+                freezeOn = 1;
+                timers.recordTime(&timers.timeFreeze);
+            }
+        }
+       
+        char1->cy += char1->vel.y;
+        char2->cy += char2->vel.y;
     }
 }
 
 void physicsPortal() 
 {
     if (gameFrame > 0) {
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.blueportalTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay + 0.5) {
-	    //advance
-	    ++gl.blueportalFrame;
-	    if (gl.blueportalFrame >= 2)
-		gl.blueportalFrame -= 2;
-	    timers.recordTime(&timers.blueportalTime);
-	}
+        timers.recordTime(&timers.timeCurrent);
+        double timeSpan = timers.timeDiff(&timers.blueportalTime, &timers.timeCurrent);
+        if (timeSpan > gl.delay + 0.5) {
+            //advance
+            ++gl.blueportalFrame;
+            if (gl.blueportalFrame >= 2)
+                gl.blueportalFrame -= 2;
+            timers.recordTime(&timers.blueportalTime);
+        }
     }
 
     if (gameFrame > 0) {
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.orangeportalTime, &timers.timeCurrent);
-	if (timeSpan > gl.delay + 0.5) {
-	    //advance
-	    ++gl.orangeportalFrame;
-	    if (gl.orangeportalFrame >= 2)
-		gl.orangeportalFrame -= 2;
-	    timers.recordTime(&timers.orangeportalTime);
-	}
+        timers.recordTime(&timers.timeCurrent);
+        double timeSpan = timers.timeDiff(&timers.orangeportalTime, &timers.timeCurrent);
+        if (timeSpan > gl.delay + 0.5) {
+            //advance
+            ++gl.orangeportalFrame;
+            if (gl.orangeportalFrame >= 2)
+                gl.orangeportalFrame -= 2;
+            timers.recordTime(&timers.orangeportalTime);
+        }
     }
 
 }
 void jump(Character *player) 
 {
     if (!player->inAirBool || player->jumpCount == 1) {
-	player->vel.y = 14;
-	player->inAirBool = true;
-	player->jumpCount = 0;
+        player->vel.y = 14;
+        player->inAirBool = true;
+        player->jumpCount = 0;
     }
 }
 
@@ -2380,42 +2419,42 @@ void drawCircle(float radius)
     glBegin(GL_TRIANGLE_FAN);
 
     for (int i = 0; i < 360; i++) {
-	float degInRad = i*DEG2RAD;
-	if (char1->points > char2->points) { 
-	    glColor3ub(160,160,160);
-	    //glColor3ub(255,255,0);
-	    /*if (char1->colorID == 1) {			// YELLOW
-		glColor3ub(255,255,0);
-	    } 
-	    if (char1->colorID == 2) {			// BLUE
-		glColor3ub(69,255,255);
-	    }
-	    if (char1->colorID == 3) {
-		glColor3ub(155,238,46);			// GREEN
-	    }
-	    if (char1->colorID == 4) {	    
-		glColor3ub(216,12,225);			// PURPLE
-	    }*/
-	} else if (char1->points < char2->points) {
-	    glColor3ub(160,160,160);
-	    //glColor3ub(19,13,255);
-	    /*if (char2->colorID == 1) {			// YELLOW
-		glColor3ub(255,255,0);
-	    } 
-	    if (char2->colorID == 2) {			// BLUE
-		glColor3ub(69,255,255);
-	    }
-	    if (char2->colorID == 3) {
-		glColor3ub(155,238,46);			// GREEN
-	    }
-	    if (char2->colorID == 4) {	    
-		glColor3ub(216,12,225);			// PURPLE
-	    }*/
-	}
-	else
-	    glColor3ub(100,100,100);
+        float degInRad = i*DEG2RAD;
+        if (char1->points > char2->points) { 
+            glColor3ub(160,160,160);
+            //glColor3ub(255,255,0);
+            /*if (char1->colorID == 1) {			// YELLOW
+              glColor3ub(255,255,0);
+              } 
+              if (char1->colorID == 2) {			// BLUE
+              glColor3ub(69,255,255);
+              }
+              if (char1->colorID == 3) {
+              glColor3ub(155,238,46);			// GREEN
+              }
+              if (char1->colorID == 4) {	    
+              glColor3ub(216,12,225);			// PURPLE
+              }*/
+        } else if (char1->points < char2->points) {
+            glColor3ub(160,160,160);
+            //glColor3ub(19,13,255);
+            /*if (char2->colorID == 1) {			// YELLOW
+              glColor3ub(255,255,0);
+              } 
+              if (char2->colorID == 2) {			// BLUE
+              glColor3ub(69,255,255);
+              }
+              if (char2->colorID == 3) {
+              glColor3ub(155,238,46);			// GREEN
+              }
+              if (char2->colorID == 4) {	    
+              glColor3ub(216,12,225);			// PURPLE
+              }*/
+        }
+        else
+            glColor3ub(100,100,100);
 
-	glVertex2f(cos(degInRad)*radius + gl.xres/2, sin(degInRad)*radius + gl.yres-50);
+        glVertex2f(cos(degInRad)*radius + gl.xres/2, sin(degInRad)*radius + gl.yres-50);
     }
 
     glEnd();
@@ -2424,18 +2463,73 @@ void drawCircle(float radius)
 void heartCollision(Character *player)
 {
     if (!gl.heartFlag) {
-	float xleft = gl.xres/2-45;
-	float xright = gl.xres/2+45;
-	float ytop = gl.yres/2+110;
-	float ybot = gl.yres/2+90;
+        float xleft = gl.xres/2-45;
+        float xright = gl.xres/2+45;
+        float ytop = gl.yres/2+110;
+        float ybot = gl.yres/2+90;
 
-	if (player->cx > xleft && player->cx < xright &&
-		player->cy > ybot && player->cy < ytop) {
-	    if (player->health < 53) {
-		gl.heartFlag = 1;
-		player->health += 5; 
-	    }
-	}       
+        if (player->cx > xleft && player->cx < xright &&
+                player->cy > ybot && player->cy < ytop) {
+                gl.heartFlag = 1;
+            if (player->health < 53) {
+                //gl.heartFlag = 1;
+                player->health = 53; 
+            }
+        }       
+    }
+}
+
+void freezeCollision1(Character *player)
+{
+    if (!freezeFlag1) {
+        float xleft = gl.xres*3/4-60;
+        float xright = gl.xres*3/4-40;
+        float ytop = gl.yres/2+200+10;
+        float ybot = gl.yres/2+200-10;
+
+        if (player->cx > xleft && player->cx < xright &&
+                player->cy > ybot && player->cy < ytop) {
+            freezeFlag2 = 1;
+            freezeOn = 0;
+        }
+
+        xleft = gl.xres/4-60;
+        xright = gl.xres/4-40;
+        ytop = gl.yres/2+200+10;
+        ybot = gl.yres/2+200-10;
+
+        if (player->cx > xleft && player->cx < xright &&
+                player->cy > ybot && player->cy < ytop) {
+            freezeFlag2 = 1;
+            freezeOn = 0;
+        }
+    }
+}
+
+void freezeCollision2(Character *player)
+{
+    if (!freezeFlag2) {
+        float xleft = gl.xres*3/4-60;
+        float xright = gl.xres*3/4-40;
+        float ytop = gl.yres/2+200+10;
+        float ybot = gl.yres/2+200-10;
+
+        if (player->cx > xleft && player->cx < xright &&
+                player->cy > ybot && player->cy < ytop) {
+            freezeFlag1 = 1;
+            freezeOn = 0;
+        }
+
+        xleft = gl.xres/4-60;
+        xright = gl.xres/4-40;
+        ytop = gl.yres/2+200+10;
+        ybot = gl.yres/2+200-10;
+
+        if (player->cx > xleft && player->cx < xright &&
+                player->cy > ybot && player->cy < ytop) {
+            freezeFlag1 = 1;
+            freezeOn = 0;
+        }
     }
 }
 
@@ -2449,7 +2543,7 @@ void resetEverything()
     two = true;
     three = true;
     go = true;
-    
+
     char1->cx = 210;
     char2->cx = 1080;
     char1->cy = gl.yres/2 + 15;
@@ -2468,55 +2562,55 @@ void countdown()
     timers.recordTime(&timers.timeCurrent);
     double timeSpan = timers.timeDiff(&timers.gameTime, &timers.timeCurrent);
     if (timeSpan > gameDelay && gameFrame > 0 && !go) {
-	//advance
-	--gameFrame;
-	timers.recordTime(&timers.gameTime);
+        //advance
+        --gameFrame;
+        timers.recordTime(&timers.gameTime);
     }
     if (gameFrame == 0)
     {
-	if (timeoutFrame < 2) {
-	    if (bellFlag) {
-		playBell();
-		bellFlag = 0;
-	    }
-	}
+        if (timeoutFrame < 2) {
+            if (bellFlag) {
+                playBell();
+                bellFlag = 0;
+            }
+        }
 
-	timers.recordTime(&timers.timeCurrent);
-	double timeSpan = timers.timeDiff(&timers.timeOut, &timers.timeCurrent);
-	if (timeSpan > gameDelay) {
-	    ++timeoutFrame;
-	    timers.recordTime(&timers.timeOut);
-	}
-	if (timeoutFrame >= 2 && timeoutFrame < 4) {
-	    // DRUM ROLL MUSIC HERE	
-	    if (drumsFlag) {
-		playDrums();
-		drumsFlag = 0;
-	    }
-	}
-	if (timeoutFrame > 4 && timeoutFrame <= 8) {
-	    // APPLAUSE MUSIC HERE
-	    if (appFlag) {
-	    	playApplause();
-		appFlag = 0;
-	    }
-	    drawWinner();
-	}
+        timers.recordTime(&timers.timeCurrent);
+        double timeSpan = timers.timeDiff(&timers.timeOut, &timers.timeCurrent);
+        if (timeSpan > gameDelay) {
+            ++timeoutFrame;
+            timers.recordTime(&timers.timeOut);
+        }
+        if (timeoutFrame >= 2 && timeoutFrame < 4) {
+            // DRUM ROLL MUSIC HERE	
+            if (drumsFlag) {
+                playDrums();
+                drumsFlag = 0;
+            }
+        }
+        if (timeoutFrame > 4 && timeoutFrame <= 8) {
+            // APPLAUSE MUSIC HERE
+            if (appFlag) {
+                playApplause();
+                appFlag = 0;
+            }
+            drawWinner();
+        }
 
-	if (timeoutFrame > 8) { 
-	    game.state = STATE_STARTMENU;
-	    // Reset Everything
-	    resetEverything();
-	}
+        if (timeoutFrame > 8) { 
+            game.state = STATE_STARTMENU;
+            // Reset Everything
+            resetEverything();
+        }
 
-	//gameFrame = 0;
-	/*printf("GAME OVER\n");
-	if (char1->points > char2->points)
-	    printf("Player 1 WINS\n");
-	else if (char2->points > char1->points)
-	    printf("Player 2 WINS\n");
-	else 
-	    printf("TIE\n");*/
+        //gameFrame = 0;
+        /*printf("GAME OVER\n");
+          if (char1->points > char2->points)
+          printf("Player 1 WINS\n");
+          else if (char2->points > char1->points)
+          printf("Player 2 WINS\n");
+          else 
+          printf("TIE\n");*/
     }
     ggprint16(&r, 32, c, "%02i", gameFrame);
 }	
@@ -2524,16 +2618,16 @@ void countdown()
 void changeColor(Character *player, Shape *box)
 {
     if (player->colorID == 1) {			// YELLOW
-	glColor3ub(255,255,0);
+        glColor3ub(255,255,0);
     } 
     if (player->colorID == 2) {			// BLUE
-	glColor3ub(69,255,255);
+        glColor3ub(69,255,255);
     }
     if (player->colorID == 3) {
-	glColor3ub(155,238,46);			// GREEN
+        glColor3ub(155,238,46);			// GREEN
     }
     if (player->colorID == 4) {	    
-	glColor3ub(216,12,225);			// PURPLE
+        glColor3ub(216,12,225);			// PURPLE
     }
 
     Shape *s;
@@ -2558,222 +2652,224 @@ void changeColor(Character *player, Shape *box)
 void awardPoint(Character *player, Shape *s) 
 {
     if (player->colorID != s->boxColorID) {
-	player->points++;
-	if (player->health < 49)
-	    player->health += 5;	
-	printf("Player Health: %d\n", player->health);	
-	cout << "Player " << player->colorID << " Points: " << player->points << endl;
+        player->points++;
+        printf("Player Health: %d\n", player->health);	
+        cout << "Player " << player->colorID << " Points: " << player->points << endl;
     }
 }
 
 void removePoint(Character *player, Character *player2, Shape *s) 
 {
     if (player->colorID == s->boxColorID && s->boxColorID != 0) {
-	player->points--;
-	if (player2->health > 0)
-	    player2->health -= 5;
-	printf("Player 2 Health: %d\n", player2->health);	
-	cout << "Player " << player->colorID << " Points: " << player->points << endl;
+        player->points--;
+        printf("Player 2 Health: %d\n", player2->health);	
+        cout << "Player " << player->colorID << " Points: " << player->points << endl;
     }
 }
 
 void render(Game *game)
 {
     if (game->state == STATE_STARTMENU)
-	drawStartMenu();
+        drawStartMenu();
 
     if (game->state == STATE_CHARSELECT) 
-	drawCharSelectMenu();
+        drawCharSelectMenu();
 
     if (game->state == STATE_CONTROLS)
-	drawControlsMenu();
-    
+        drawControlsMenu();
+
     if (game->state == STATE_CREDITS)
-	drawCredits();
+        drawCredits();
 
     if (game->state == STATE_GAMEPLAY)
     {
-	float w, h;
-	glClear(GL_COLOR_BUFFER_BIT);
+        float w, h;
+        glClear(GL_COLOR_BUFFER_BIT);
 
-	//renderViewport(0, gl.xres, gl.yres);
+        //renderViewport(0, gl.xres, gl.yres);
 
-	//Draw shapes...
-	Shape *s;
+        //Draw shapes...
+        Shape *s;
 
-	//==============================================
-	// Draw Map
-	//
-	// draw ingame background
-	rWithoutAlpha(gl.mechabgTexture, gl.xres, gl.yres);
+        //==============================================
+        // Draw Map
+        //
+        // draw ingame background
+        rWithoutAlpha(gl.mechabgTexture, gl.xres, gl.yres);
 
-	// BOTTOM SCREEN
-	// Init map first
-	if (initializeFlag) { 
-	    for (int i = 1; i < totalCubes; i++) {
-		glColor3ub(100,100,100);
+        // BOTTOM SCREEN
+        // Init map first
+        if (initializeFlag) { 
+            for (int i = 1; i < totalCubes; i++) {
+                glColor3ub(100,100,100);
 
-		s = &game->box[i];
-		s->boxColorID = 0;
-		//cout << s->boxColorID << endl;
-		glPushMatrix();
-		glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
-		w = s->width;
-		h = s->height;
-		glBegin(GL_QUADS);
-		glVertex2i(-w, -h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w, -h);
-		glEnd();
-		glPopMatrix();
-	    }
-	}
-	initializeFlag = 0;
+                s = &game->box[i];
+                s->boxColorID = 0;
+                //cout << s->boxColorID << endl;
+                glPushMatrix();
+                glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+                w = s->width;
+                h = s->height;
+                glBegin(GL_QUADS);
+                glVertex2i(-w, -h);
+                glVertex2i(-w, h);
+                glVertex2i( w, h);
+                glVertex2i( w, -h);
+                glEnd();
+                glPopMatrix();
+            }
+        }
+        initializeFlag = 0;
 
-	// Changing Color
-	for (int i = 1; i < totalCubes; i++) {
-	    s = &game->box[i];
-	    if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
-		changeColor(char1, globalSaveBox);
-		//awardPoint(pointFlag);
-		//pointFlag = false;
-	    } else if (colorChangeFlag == 2 && boxIndex == i) {
-		changeColor(char2, globalSaveBox);
-	    } else if (s->boxColorID == 1) {
-		glColor3ub(255,255,0);
-	    } else if (s->boxColorID == 2) {
-		glColor3ub(69,255,255);
-	    } else if (s->boxColorID == 3) {
-		glColor3ub(155,238,46);
-	    } else if (s->boxColorID == 4) {
-		glColor3ub(216,12,225);
-	    } else {
-		glColor3ub(100,100,100);
-	    }
+        // Changing Color
+        for (int i = 1; i < totalCubes; i++) {
+            s = &game->box[i];
+            if (colorChangeFlag == 1 && boxIndex == i /*&& char1->colorID != s->boxColorID*/) {
+                changeColor(char1, globalSaveBox);
+                //awardPoint(pointFlag);
+                //pointFlag = false;
+            } else if (colorChangeFlag == 2 && boxIndex == i) {
+                changeColor(char2, globalSaveBox);
+            } else if (s->boxColorID == 1) {
+                glColor3ub(255,255,0);
+            } else if (s->boxColorID == 2) {
+                glColor3ub(69,255,255);
+            } else if (s->boxColorID == 3) {
+                glColor3ub(155,238,46);
+            } else if (s->boxColorID == 4) {
+                glColor3ub(216,12,225);
+            } else {
+                glColor3ub(100,100,100);
+            }
 
-	    glPushMatrix();
-	    glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
-	    w = s->width;
-	    h = s->height;
-	    glBegin(GL_QUADS);
-	    glVertex2i(-w, -h);
-	    glVertex2i(-w, h);
-	    glVertex2i( w, h);
-	    glVertex2i( w, -h);
-	    glEnd();
-	    glPopMatrix();
-	}
-
-
-	if (gl.cursorLocation == 0) { 
-	    gl.tempTexture = gl.yellowcharTexture;
-	    gl.tempProfileTexture = gl.yellowprofileTexture;
-	}
-	if (gl.cursorLocation == 1) {
-	    gl.tempTexture = gl.bluecharTexture;
-	    gl.tempProfileTexture = gl.blueprofileTexture;	
-	}
-	if (gl.cursorLocation == 2) {
-	    gl.tempTexture = gl.greencharTexture;
-	    gl.tempProfileTexture = gl.greenprofileTexture;
-	}
-	if (gl.cursorLocation == 3) {
-	    gl.tempTexture = gl.purplecharTexture;
-	    gl.tempProfileTexture = gl.purpleprofileTexture;
-	}
-
-	if (gl.cursorLocation2 == 0) {
-	    gl.tempTexture2 = gl.yellowcharTexture;
-	    gl.tempProfileTexture2 = gl.yellowprofileTexture;
-	}
-	if (gl.cursorLocation2 == 1) {
-	    gl.tempTexture2 = gl.bluecharTexture;
-	    gl.tempProfileTexture2 = gl.blueprofileTexture;
-	}
-	if (gl.cursorLocation2 == 2) {
-	    gl.tempTexture2 = gl.greencharTexture;
-	    gl.tempProfileTexture2 = gl.greenprofileTexture;
-	}
-	if (gl.cursorLocation2 == 3) {
-	    gl.tempTexture2 = gl.purplecharTexture;
-	    gl.tempProfileTexture2 = gl.purpleprofileTexture;
-	}
+            glPushMatrix();
+            glTranslatef(game->box[i].center.x, game->box[i].center.y, game->box[i].center.z);
+            w = s->width;
+            h = s->height;
+            glBegin(GL_QUADS);
+            glVertex2i(-w, -h);
+            glVertex2i(-w, h);
+            glVertex2i( w, h);
+            glVertex2i( w, -h);
+            glEnd();
+            glPopMatrix();
+        }
 
 
-	// UI DRAWING
-	drawPlayerOne(gl.tempTexture);
-	drawPlayerTwo(gl.tempTexture2);
-	drawBluePortal();
-	drawOrangePortal();
-	drawTimerBackground();
-	drawHealthBar1();
-	drawHealthBar2();
-	drawHealthVal1();
-	drawHealthVal2();
-	drawCircleUI1();
-	drawCircleUI2();
-	drawProfile1(gl.tempProfileTexture);
-	drawProfile2(gl.tempProfileTexture2);
-	drawCircle(30);
-	countdown();
+        if (gl.cursorLocation == 0) { 
+            gl.tempTexture = gl.yellowcharTexture;
+            gl.tempProfileTexture = gl.yellowprofileTexture;
+        }
+        if (gl.cursorLocation == 1) {
+            gl.tempTexture = gl.bluecharTexture;
+            gl.tempProfileTexture = gl.blueprofileTexture;	
+        }
+        if (gl.cursorLocation == 2) {
+            gl.tempTexture = gl.greencharTexture;
+            gl.tempProfileTexture = gl.greenprofileTexture;
+        }
+        if (gl.cursorLocation == 3) {
+            gl.tempTexture = gl.purplecharTexture;
+            gl.tempProfileTexture = gl.purpleprofileTexture;
+        }
 
-	// Heart
-	if (gl.heartFlag || gameFrame == 0)
-	    rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.heartaddTexture);	
-	else
-	    rWithAlpha(30, 30, gl.xres/2, gl.yres/2+100, gl.heartaddTexture);	
+        if (gl.cursorLocation2 == 0) {
+            gl.tempTexture2 = gl.yellowcharTexture;
+            gl.tempProfileTexture2 = gl.yellowprofileTexture;
+        }
+        if (gl.cursorLocation2 == 1) {
+            gl.tempTexture2 = gl.bluecharTexture;
+            gl.tempProfileTexture2 = gl.blueprofileTexture;
+        }
+        if (gl.cursorLocation2 == 2) {
+            gl.tempTexture2 = gl.greencharTexture;
+            gl.tempProfileTexture2 = gl.greenprofileTexture;
+        }
+        if (gl.cursorLocation2 == 3) {
+            gl.tempTexture2 = gl.purplecharTexture;
+            gl.tempProfileTexture2 = gl.purpleprofileTexture;
+        }
 
-	//
-	drawFrameRate();
-	//printf("Left Char 1: %d\n", leftFaceChar1);
-	//	printf("Left Char 2: %d\n", leftFaceChar2);
-	
-	//====================================
-	// COUNTDOWN BEFORE GAME	
-	clock_gettime(CLOCK_REALTIME, &timers.countdown_current);
-	int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
-	if (timediff < 1) {
-	    if (three) {
-		playThree();
-		three = false;
-	    }
-	    countdown3(gl.xres/2,gl.yres/2);
-	}
-	if (timediff < 2 && timediff >= 1) {
-	    if (two) {
-		playTwo();
-		two = false;
-	    }
-	    countdown2(gl.xres/2,gl.yres/2);
-	}
-	if (timediff < 3 && timediff >= 2) {
-	    if (one) {
-		playOne();
-		one = false;
-	    }
-	    countdown1(gl.xres/2,gl.yres/2);
-	}
-	if (timediff < 4 && timediff >= 3) {
-	    if (go) {
-		playGo();
-		go = false;
-	    }
-	    countdowngo(gl.xres/2,gl.yres/2);
-	}
-	//====================================
-	// Draw Bullets
-	//====================================
-	Bullet *b = &game->barr[0];	
-	for (int i = 0; i < game->nbullets; i++) {
-	    drawBullet(b, gl.forkTexture);
-	    ++b;
-	}
-	Bullet *b2 = &game->barr2[0];	
-	for (int i = 0; i < game->nbullets2; i++) {
-	    drawBullet(b2, gl.forkTexture);
-	    ++b2;
-	}
+
+        // UI DRAWING
+        drawPlayerOne(gl.tempTexture);
+        drawPlayerTwo(gl.tempTexture2);
+        drawBluePortal();
+        drawOrangePortal();
+        drawTimerBackground();
+        drawHealthBar1();
+        drawHealthBar2();
+        drawHealthVal1();
+        drawHealthVal2();
+        drawCircleUI1();
+        drawCircleUI2();
+        drawProfile1(gl.tempProfileTexture);
+        drawProfile2(gl.tempProfileTexture2);
+        drawCircle(30);
+        countdown();
+
+        // Heart
+        if (gl.heartFlag || gameFrame == 0)
+            rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.heartaddTexture);	
+        else
+            rWithAlpha(30, 30, gl.xres/2, gl.yres/2+100, gl.heartaddTexture);	
+        //
+        // Freeze
+        if (!freezeOn || gameFrame == 0) {
+            rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.freezeTexture);	
+            rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.freezeTexture);	
+        } else {
+            rWithAlpha(30, 30, gl.xres*3/4-50, gl.yres/2+200, gl.freezeTexture);	
+            rWithAlpha(30, 30, gl.xres/4+50, gl.yres/2+200, gl.freezeTexture);
+        }    
+        //Frame Rate
+        drawFrameRate();
+
+        //====================================
+        // COUNTDOWN BEFORE GAME	
+        clock_gettime(CLOCK_REALTIME, &timers.countdown_current);
+        int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
+        if (timediff < 1) {
+            if (three) {
+                playThree();
+                three = false;
+            }
+            countdown3(gl.xres/2,gl.yres/2);
+        }
+        if (timediff < 2 && timediff >= 1) {
+            if (two) {
+                playTwo();
+                two = false;
+            }
+            countdown2(gl.xres/2,gl.yres/2);
+        }
+        if (timediff < 3 && timediff >= 2) {
+            if (one) {
+                playOne();
+                one = false;
+            }
+            countdown1(gl.xres/2,gl.yres/2);
+        }
+        if (timediff < 4 && timediff >= 3) {
+            if (go) {
+                playGo();
+                go = false;
+            }
+            countdowngo(gl.xres/2,gl.yres/2);
+        }
+        //====================================
+        // Draw Bullets
+        //====================================
+        Bullet *b = &game->barr[0];	
+        for (int i = 0; i < game->nbullets; i++) {
+            drawBullet(b, gl.forkTexture);
+            ++b;
+        }
+        Bullet *b2 = &game->barr2[0];	
+        for (int i = 0; i < game->nbullets2; i++) {
+            drawBullet(b2, gl.forkTexture);
+            ++b2;
+        }
     }
 }
 
@@ -2819,27 +2915,27 @@ void drawStartMenu()
 
     // draw play text
     if (gl.cursorLocation == 0) {
-	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 400, gl.playTexture);
+        rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 400, gl.playTexture);
     } else {	
-	rWithAlpha(h, w, gl.xres/2, 400, gl.playTexture);
+        rWithAlpha(h, w, gl.xres/2, 400, gl.playTexture);
     }   
     // draw controls text
     if (gl.cursorLocation == 1) {
-	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 300, gl.controlsTexture);
+        rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 300, gl.controlsTexture);
     } else {	
-	rWithAlpha(h, w, gl.xres/2, 300, gl.controlsTexture);
+        rWithAlpha(h, w, gl.xres/2, 300, gl.controlsTexture);
     }    
     // draw credits text
     if (gl.cursorLocation == 2) {
-	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 200, gl.creditsTexture);
+        rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 200, gl.creditsTexture);
     } else {
-	rWithAlpha(h, w, gl.xres/2, 200, gl.creditsTexture);
+        rWithAlpha(h, w, gl.xres/2, 200, gl.creditsTexture);
     }
     // draw quit text
     if (gl.cursorLocation == 3) {
-	rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 100, gl.quitTexture);
+        rWithAlpha(h*multiplier, w*multiplier, gl.xres/2, 100, gl.quitTexture);
     } else {    
-	rWithAlpha(h, w, gl.xres/2, 100, gl.quitTexture);
+        rWithAlpha(h, w, gl.xres/2, 100, gl.quitTexture);
     }    
 }
 
@@ -2863,7 +2959,7 @@ void drawControlsMenu()
     glVertex2i(w,-h);
     glEnd();
     glPopMatrix();
-	
+
     // Left Square
     w = 230;
     h = 170;
@@ -2879,7 +2975,7 @@ void drawControlsMenu()
     glVertex2i(w,-h);
     glEnd();
     glPopMatrix();
-    
+
     // Right Square
     w = 230;
     h = 170;
@@ -2904,74 +3000,84 @@ void drawControlsMenu()
     r.left = gl.xres/2-50;
     r.center = 0;
     ggprint16(&r, 32, c, "Objective:");
-    
+
     r.bot = gl.yres - 165;
     r.left = gl.xres/3-28;
     r.center = 0;
     ggprint16(&r, 32, c, "Touching a tile will change its color to the player's color.");
-    
+
     r.bot = gl.yres - 205;
     r.left = gl.xres/3-130;
     r.center = 0;
     ggprint16(&r, 32, c, "The color of a tile can be changed by another player after being painted a color.");
-    
+
     r.bot = gl.yres - 245;
     r.left = gl.xres/3-118;
     r.center = 0;
     ggprint16(&r, 32, c, "The player with the most tiles that are their color by the end of the time wins.");
     //===================================
-    
+
     //===================================
     // Player one control instructions
     r.bot = gl.yres - 350;
     r.left = gl.xres*2/8;
     r.center = 0;
     ggprint16(&r, 32, c, "Player One Controls");
-    
-    r.bot = gl.yres - 410;
+
+    r.bot = gl.yres - 400;
     r.left = gl.xres*2/8;
     r.center = 0;
     ggprint16(&r, 32, c, "W - Jump");
-    
-    r.bot = gl.yres - 460;
+
+    r.bot = gl.yres - 440;
     r.left = gl.xres*2/8;
     r.center = 0;
     ggprint16(&r, 32, c, "A - Move Left");
-    
-    r.bot = gl.yres - 510;
+
+    r.bot = gl.yres - 480;
     r.left = gl.xres*2/8;
     r.center = 0;
     ggprint16(&r, 32, c, "D - Move Right");
-    //===================================
     
+    r.bot = gl.yres - 520;
+    r.left = gl.xres*2/8;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Spacebar - Shoot");
+    //===================================
+
     //===================================
     // Player two control instructions
     r.bot = gl.yres - 350;
     r.left = gl.xres*5/8-50;
     r.center = 0;
     ggprint16(&r, 32, c, "Player Two Controls");
-    
-    r.bot = gl.yres - 410;
+
+    r.bot = gl.yres - 400;
     r.left = gl.xres*5/8-50;
     r.center = 0;
     ggprint16(&r, 32, c, "Up Arrow Key - Jump");
-    
-    r.bot = gl.yres - 460;
+
+    r.bot = gl.yres - 440;
     r.left = gl.xres*5/8-50;
     r.center = 0;
     ggprint16(&r, 32, c, "Left Arrow Key - Move Left");
-    
-    r.bot = gl.yres - 510;
+
+    r.bot = gl.yres - 480;
     r.left = gl.xres*5/8-50;
     r.center = 0;
     ggprint16(&r, 32, c, "Right Arrow Key - Move Right");
+    
+    r.bot = gl.yres - 520;
+    r.left = gl.xres*5/8-50;
+    r.center = 0;
+    ggprint16(&r, 32, c, "Enter - Shoot");
     //===================================
 }
- 
+
 void drawCredits()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    
+
     Rect r;
     unsigned int c = 0xFFFFFFFF;
     r.bot = gl.yres/2;
@@ -2998,81 +3104,81 @@ void drawWinner()
     glEnd();
     glDisable(GL_BLEND);
     glPopMatrix();
-   
+
     // WINNER TOP 
     if (char1->points == char2->points)
-	rWithAlpha(60, 150, gl.xres/2, 580, gl.tieTexture);	
+        rWithAlpha(60, 150, gl.xres/2, 580, gl.tieTexture);	
     else
-	rWithAlpha(60, 325, gl.xres/2, 580, gl.winnerTexture);	
-    
+        rWithAlpha(60, 325, gl.xres/2, 580, gl.winnerTexture);	
+
     // draw Left Bar
     Shape s;
     Shape leftBar[100];
     for (int i = 0; i < char1->points; i++) {
-	leftBar[i].width = 100;
-	leftBar[i].height = 5;
-	leftBar[i].center.x = gl.xres/3;
-	leftBar[i].center.y = 65 + (i*9);
-	leftBar[i].center.z = 0;
-	s = leftBar[i];
-	glPushMatrix();
-	if (char1->colorID == 1) {			// YELLOW
-	    glColor3ub(255,255,0);
-	} 
-	if (char1->colorID == 2) {			// BLUE
-	    glColor3ub(69,255,255);
-	}
-	if (char1->colorID == 3) {
-	    glColor3ub(155,238,46);			// GREEN
-	}
-	if (char1->colorID == 4) {	    
-	    glColor3ub(216,12,225);			// PURPLE
-	}
-	glTranslatef(s.center.x, s.center.y, s.center.z);
-	float w = s.width;
-	float h = s.height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i(w, h);
-	glVertex2i(w, -h);
-	glEnd();
-	glPopMatrix();
-    
+        leftBar[i].width = 100;
+        leftBar[i].height = 5;
+        leftBar[i].center.x = gl.xres/3;
+        leftBar[i].center.y = 65 + (i*9);
+        leftBar[i].center.z = 0;
+        s = leftBar[i];
+        glPushMatrix();
+        if (char1->colorID == 1) {			// YELLOW
+            glColor3ub(255,255,0);
+        } 
+        if (char1->colorID == 2) {			// BLUE
+            glColor3ub(69,255,255);
+        }
+        if (char1->colorID == 3) {
+            glColor3ub(155,238,46);			// GREEN
+        }
+        if (char1->colorID == 4) {	    
+            glColor3ub(216,12,225);			// PURPLE
+        }
+        glTranslatef(s.center.x, s.center.y, s.center.z);
+        float w = s.width;
+        float h = s.height;
+        glBegin(GL_QUADS);
+        glVertex2i(-w, -h);
+        glVertex2i(-w, h);
+        glVertex2i(w, h);
+        glVertex2i(w, -h);
+        glEnd();
+        glPopMatrix();
+
     }	
     // draw Right Bar
     Shape rightBar[100];
     for (int i = 0; i < char2->points; i++) {
-	rightBar[i].width = 100;
-	rightBar[i].height = 5;
-	rightBar[i].center.x = gl.xres*2/3;
-	rightBar[i].center.y = 65 + (i*9);
-	rightBar[i].center.z = 0;
-	s = rightBar[i];
-	glPushMatrix();
-	if (char2->colorID == 1) {			// YELLOW
-	    glColor3ub(255,255,0);
-	} 
-	if (char2->colorID == 2) {			// BLUE
-	    glColor3ub(69,255,255);
-	}
-	if (char2->colorID == 3) {
-	    glColor3ub(155,238,46);			// GREEN
-	}
-	if (char2->colorID == 4) {	    
-	    glColor3ub(216,12,225);			// PURPLE
-	}
-	glTranslatef(s.center.x, s.center.y, s.center.z);
-	float w = s.width;
-	float h = s.height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i(w, h);
-	glVertex2i(w, -h);
-	glEnd();
-	glPopMatrix();
-	
+        rightBar[i].width = 100;
+        rightBar[i].height = 5;
+        rightBar[i].center.x = gl.xres*2/3;
+        rightBar[i].center.y = 65 + (i*9);
+        rightBar[i].center.z = 0;
+        s = rightBar[i];
+        glPushMatrix();
+        if (char2->colorID == 1) {			// YELLOW
+            glColor3ub(255,255,0);
+        } 
+        if (char2->colorID == 2) {			// BLUE
+            glColor3ub(69,255,255);
+        }
+        if (char2->colorID == 3) {
+            glColor3ub(155,238,46);			// GREEN
+        }
+        if (char2->colorID == 4) {	    
+            glColor3ub(216,12,225);			// PURPLE
+        }
+        glTranslatef(s.center.x, s.center.y, s.center.z);
+        float w = s.width;
+        float h = s.height;
+        glBegin(GL_QUADS);
+        glVertex2i(-w, -h);
+        glVertex2i(-w, h);
+        glVertex2i(w, h);
+        glVertex2i(w, -h);
+        glEnd();
+        glPopMatrix();
+
     }	
 
     // draw player1 at top of bar
@@ -3110,37 +3216,37 @@ void drawCharSelectMenu()
 
     // draw player one left splatter
     if (gl.cursorLocation == 0) {
-	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatteryellowTexture);	
-	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
+        rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatteryellowTexture);	
+        rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
     }
     if (gl.cursorLocation == 1) {
-	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterblueTexture);	
-	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
+        rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterblueTexture);	
+        rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
     }
     if (gl.cursorLocation == 2) {
-	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splattergreenTexture);	
-	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
+        rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splattergreenTexture);	
+        rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
     }
     if (gl.cursorLocation == 3) {
-	rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterpurpleTexture);	
-	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
+        rWithAlpha(w, h, gl.xres/6-40, gl.yres/2-100, gl.splatterpurpleTexture);	
+        rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
     }
     // draw player two right splatter
     if (gl.cursorLocation2 == 0) {
-	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatteryellowTexture);	
-	rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
+        rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatteryellowTexture);	
+        rWithAlpha(w-20, h-20, gl.xres/3+50, 375, gl.splatteryellowTexture);	
     }
     if (gl.cursorLocation2 == 1) {
-	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterblueTexture);	
-	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
+        rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterblueTexture);	
+        rWithAlpha(w-20, h-20, gl.xres*2/3-50, 375, gl.splatterblueTexture);	
     }
     if (gl.cursorLocation2 == 2) {
-	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splattergreenTexture);	
-	rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
+        rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splattergreenTexture);	
+        rWithAlpha(w-20, h-20, gl.xres/3+50, 150, gl.splattergreenTexture);	
     }
     if (gl.cursorLocation2 == 3) {
-	rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterpurpleTexture);	
-	rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
+        rWithAlpha(w, h, gl.xres*5/6+40, gl.yres/2-100, gl.splatterpurpleTexture);	
+        rWithAlpha(w-20, h-20, gl.xres*2/3-50, 150, gl.splatterpurpleTexture);	
     }
     //
     // draw frame top left
@@ -3197,35 +3303,35 @@ bool checkCountdown()
     clock_gettime(CLOCK_REALTIME, &timers.countdown_current);
     int timediff = timers.countdown_current.tv_sec - timers.countdown_start.tv_sec;
     if (timediff < 1) {
-	if (three) {
-	    playThree();
-	    three = false;
-	}
-	countdown3(800,600);
-	return false;
+        if (three) {
+            playThree();
+            three = false;
+        }
+        countdown3(800,600);
+        return false;
     }
     if (timediff < 2 && timediff >= 1) {
-	if (two) {
-	    playTwo();
-	    two = false;
-	}
-	countdown2(800,600);
-	return false;
+        if (two) {
+            playTwo();
+            two = false;
+        }
+        countdown2(800,600);
+        return false;
     }
     if (timediff < 3 && timediff >= 2) {
-	if (one) {
-	    playOne();
-	    one = false;
-	}
-	countdown1(800,600);
-	return true;
+        if (one) {
+            playOne();
+            one = false;
+        }
+        countdown1(800,600);
+        return true;
     }
     if (timediff < 4 && timediff >= 3) {
-	if (go) {
-	    playGo();
-	    go = false;
-	}
-	countdowngo(gl.xres/2,gl.yres/2);
+        if (go) {
+            playGo();
+            go = false;
+        }
+        countdowngo(gl.xres/2,gl.yres/2);
     }
     return true;
 }
@@ -3306,13 +3412,13 @@ void rWithoutAlpha(GLuint texture, int xres, int yres)
 void drawFrameRate() 
 {
     if (gl.frameRateOn) {
-	// Frame Rate	
-	Rect r;
-	unsigned int c = 0x002d88d8;
-	r.bot = gl.yres - 40;
-	r.left = (50);
-	r.center = 0;
-	ggprint16(&r, 32, c, "Frame Rate : %f", fps);
+        // Frame Rate	
+        Rect r;
+        unsigned int c = 0x002d88d8;
+        r.bot = gl.yres - 40;
+        r.left = (50);
+        r.center = 0;
+        ggprint16(&r, 32, c, "Frame Rate : %f", fps);
     }
 }
 
@@ -3326,16 +3432,16 @@ void drawPlayerOne(GLuint tempTexture)
     glBindTexture(GL_TEXTURE_2D, tempTexture);
     //
     //~ if (gl.keys[XK_a])
-		//~ glRotatef(10.0f, 0.0, 0.0, 1.0);
+    //~ glRotatef(10.0f, 0.0, 0.0, 1.0);
     //~ if (gl.keys[XK_d])
-		//~ glRotatef(-10.0f, 0.0, 0.0, 1.0);
+    //~ glRotatef(-10.0f, 0.0, 0.0, 1.0);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
     glColor4ub(255,255,255,255);
     int ix = gl.yellowcharFrame % 2;
     int iy = 1;
     if (gl.yellowcharFrame >= 2)
-	iy = 0;
+        iy = 0;
     float tx = (float)ix / 2.0;
     float ty = (float)iy / 1.0;
 
@@ -3344,36 +3450,36 @@ void drawPlayerOne(GLuint tempTexture)
     // Player 1 Draw
     glTranslated(char1->cx, char1->cy,0);
     if (gl.keys[XK_a])
-		glRotatef(8.0f, 0.0, 0.0, 1.0);
+        glRotatef(8.0f, 0.0, 0.0, 1.0);
     if (gl.keys[XK_d])
-		glRotatef(-8.0f, 0.0, 0.0, 1.0);
+        glRotatef(-8.0f, 0.0, 0.0, 1.0);
     glBegin(GL_QUADS);
     if (gl.keys[XK_d] || !char1->facingLeft)
     {
-	//printf("Left Char 1: %d\n", leftFaceChar1);
-	//printf("Left Char 2: %d\n", leftFaceChar2);
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(size,  -size);
-	glTexCoord2f(tx,       ty + 1); glVertex2i(-size ,-size);
-	glTexCoord2f(tx,              ty); glVertex2i( -size , size);
-	glTexCoord2f(tx + .5, ty);        glVertex2i(size , size );
-	//leftFaceChar2 = 0;
+        //printf("Left Char 1: %d\n", leftFaceChar1);
+        //printf("Left Char 2: %d\n", leftFaceChar2);
+        glTexCoord2f(tx + .5, ty + 1); glVertex2i(size,  -size);
+        glTexCoord2f(tx,       ty + 1); glVertex2i(-size ,-size);
+        glTexCoord2f(tx,              ty); glVertex2i( -size , size);
+        glTexCoord2f(tx + .5, ty);        glVertex2i(size , size );
+        //leftFaceChar2 = 0;
     }
 
     if (gl.keys[XK_a] || char1->facingLeft)
     {
-	//printf("Left Char 1: %d\n", leftFaceChar1);
-	//printf("Left Char 2: %d\n", leftFaceChar2);
-	//~ glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
-	//~ glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
-	//~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
-	//~ glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
-	//leftFaceChar2 = 1;
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(-size, -size);
-	glTexCoord2f(tx + .5,        ty); glVertex2i(-size, size);
-	glTexCoord2f(tx,              ty); glVertex2i(size, size);
-	glTexCoord2f(tx, ty + 1);       glVertex2i(size, -size);
+        //printf("Left Char 1: %d\n", leftFaceChar1);
+        //printf("Left Char 2: %d\n", leftFaceChar2);
+        //~ glTexCoord2f(tx + .5, ty + 1); glVertex2i(char1->cx - char1->width, char1->cy - char1->height);
+        //~ glTexCoord2f(tx + .5,        ty); glVertex2i(char1->cx - char1->width, char1->cy + char1->height);
+        //~ glTexCoord2f(tx,              ty); glVertex2i(char1->cx + char1->width, char1->cy + char1->height);
+        //~ glTexCoord2f(tx, ty + 1);       glVertex2i(char1->cx + char1->width, char1->cy - char1->height);
+        //leftFaceChar2 = 1;
+        glTexCoord2f(tx + .5, ty + 1); glVertex2i(-size, -size);
+        glTexCoord2f(tx + .5,        ty); glVertex2i(-size, size);
+        glTexCoord2f(tx,              ty); glVertex2i(size, size);
+        glTexCoord2f(tx, ty + 1);       glVertex2i(size, -size);
     }
-    
+
     glEnd();
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -3393,34 +3499,34 @@ void drawPlayerTwo(GLuint tempTexture2)
     int ix = gl.bluecharFrame % 2;
     int iy = 1;
     if (gl.bluecharFrame >= 2)
-	iy = 0;
+        iy = 0;
     float tx = (float)ix / 2.0;
     float ty = (float)iy / 1.0;
-    
+
     int size = 45;
     glTranslated(char2->cx, char2->cy,0);
     if (gl.keys[XK_Left])
-		glRotatef(8.0f, 0.0, 0.0, 1.0);
+        glRotatef(8.0f, 0.0, 0.0, 1.0);
     if (gl.keys[XK_Right])
-		glRotatef(-8.0f, 0.0, 0.0, 1.0);
+        glRotatef(-8.0f, 0.0, 0.0, 1.0);
 
     glBegin(GL_QUADS);
     if (gl.keys[XK_Right] || !char2->facingLeft)
     {
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(size,  -size);
-	glTexCoord2f(tx,       ty + 1); glVertex2i(-size ,-size);
-	glTexCoord2f(tx,              ty); glVertex2i( -size , size);
-	glTexCoord2f(tx + .5, ty);        glVertex2i(size , size );
-	//leftFaceChar1 = 0;
+        glTexCoord2f(tx + .5, ty + 1); glVertex2i(size,  -size);
+        glTexCoord2f(tx,       ty + 1); glVertex2i(-size ,-size);
+        glTexCoord2f(tx,              ty); glVertex2i( -size , size);
+        glTexCoord2f(tx + .5, ty);        glVertex2i(size , size );
+        //leftFaceChar1 = 0;
     }
 
     if (gl.keys[XK_Left] || char2->facingLeft)
     {
-	glTexCoord2f(tx + .5, ty + 1); glVertex2i(-size, -size);
-	glTexCoord2f(tx + .5,        ty); glVertex2i(-size, size);
-	glTexCoord2f(tx,              ty); glVertex2i(size, size);
-	glTexCoord2f(tx, ty + 1);       glVertex2i(size, -size);
-	//leftFaceChar1 = 1;
+        glTexCoord2f(tx + .5, ty + 1); glVertex2i(-size, -size);
+        glTexCoord2f(tx + .5,        ty); glVertex2i(-size, size);
+        glTexCoord2f(tx,              ty); glVertex2i(size, size);
+        glTexCoord2f(tx, ty + 1);       glVertex2i(size, -size);
+        //leftFaceChar1 = 1;
     }
     glEnd();
     glPopMatrix();
@@ -3446,7 +3552,7 @@ void drawBluePortal()
     float ix = gl.blueportalFrame % 2;
     float iy = 1;
     if (gl.blueportalFrame >= 2)
-	iy = 0;
+        iy = 0;
     float tx = (float)ix / 2.0;
     float ty = (float)iy / 1.0;
     // Draw
@@ -3480,7 +3586,7 @@ void drawOrangePortal()
     float ix = gl.orangeportalFrame % 2;
     float iy = 1;
     if (gl.orangeportalFrame >= 2)
-	iy = 0;
+        iy = 0;
     float tx = (float)ix / 2.0;
     float ty = (float)iy / 1.0;
     // Draw
@@ -3704,24 +3810,24 @@ void drawHealthVal1()
     Shape s;
     Shape boxes[100];
     for (int i = 0; i < char1->health; i++) {
-	boxes[i].width = 3;
-	boxes[i].height = 39;
-	boxes[i].center.x = 198 + (i*7);
-	boxes[i].center.y = 65;
-	boxes[i].center.z = 0;
-	s = boxes[i];
-	glPushMatrix();
-	glColor3ub(255-(4.9*i), 4.9*i, 0);
-	glTranslatef(s.center.x, s.center.y, s.center.z);
-	float w = s.width;
-	float h = s.height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i(w, h);
-	glVertex2i(w, -h);
-	glEnd();
-	glPopMatrix();
+        boxes[i].width = 3;
+        boxes[i].height = 39;
+        boxes[i].center.x = 198 + (i*7);
+        boxes[i].center.y = 65;
+        boxes[i].center.z = 0;
+        s = boxes[i];
+        glPushMatrix();
+        glColor3ub(255-(4.9*i), 4.9*i, 0);
+        glTranslatef(s.center.x, s.center.y, s.center.z);
+        float w = s.width;
+        float h = s.height;
+        glBegin(GL_QUADS);
+        glVertex2i(-w, -h);
+        glVertex2i(-w, h);
+        glVertex2i(w, h);
+        glVertex2i(w, -h);
+        glEnd();
+        glPopMatrix();
     }	
 }
 
@@ -3730,23 +3836,23 @@ void drawHealthVal2()
     Shape s;
     Shape boxes[100];
     for (int i = 0; i < char2->health; i++) {
-	boxes[i].width = 3;
-	boxes[i].height = 39;
-	boxes[i].center.x = 737 + (i*7);
-	boxes[i].center.y = 65;
-	boxes[i].center.z = 0;
-	s = boxes[i];
-	glPushMatrix();
-	glColor3ub(255-(4.9*i), 4.9*i, 0);
-	glTranslatef(s.center.x, s.center.y, s.center.z);
-	float w = s.width;
-	float h = s.height;
-	glBegin(GL_QUADS);
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i(w, h);
-	glVertex2i(w, -h);
-	glEnd();
-	glPopMatrix();
+        boxes[i].width = 3;
+        boxes[i].height = 39;
+        boxes[i].center.x = 737 + (i*7);
+        boxes[i].center.y = 65;
+        boxes[i].center.z = 0;
+        s = boxes[i];
+        glPushMatrix();
+        glColor3ub(255-(4.9*i), 4.9*i, 0);
+        glTranslatef(s.center.x, s.center.y, s.center.z);
+        float w = s.width;
+        float h = s.height;
+        glBegin(GL_QUADS);
+        glVertex2i(-w, -h);
+        glVertex2i(-w, h);
+        glVertex2i(w, h);
+        glVertex2i(w, -h);
+        glEnd();
+        glPopMatrix();
     }	
 }

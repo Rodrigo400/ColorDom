@@ -33,7 +33,7 @@ extern class Timers
         struct timespec timeStart, timeEnd, timeCurrent, timeOut;
         struct timespec yellowcharTime, bluecharTime, greencharTime, purplecharTime;
         struct timespec turt1Time, turt2Time, blueportalTime, orangeportalTime;
-        struct timespec gameTime;
+        struct timespec gameTime, timeHeart, timeFreeze;
         struct timespec countdown_start, countdown_current;
         Timers()
         {
