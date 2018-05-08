@@ -315,7 +315,7 @@ class Character {
         int points;
 	int inAirBool;
 	int jumpCount;
-	int health;
+	double health;
 	int facingLeft;
         Vec dir;
         Vec pos;

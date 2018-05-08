@@ -356,6 +356,7 @@ int boxIndex;
 int gameFrame = 30;
 //int gameFrame = 5;
 int timeoutFrame = 0;
+int freezeFrame = 0;
 int gameDelay = 1;
 int totalCubes;
 int bellFlag = 1;
@@ -1633,8 +1634,9 @@ void check_keys(XEvent *e)
         case XK_Tab:
                    if (game.state == STATE_GAMEPLAY) {
                        game.state = STATE_CHARSELECT;
-                       gameFrame = 5;			// reset Time when backing out
+                       gameFrame = 30;			// reset Time when backing out
                        timeoutFrame = timeoutFrame;
+		       freezeFrame = freezeFrame;
                        resetEverything();
                    }
                    if (game.state == STATE_CHARSELECT) {
@@ -2053,6 +2055,27 @@ void physics(Game *game)
             }
         }
 
+	printf("Dead Flag 1: %d\n", deadFlag1);	
+	printf("Char 1 health: %f\n", char1->health);	
+	
+	if (deadFlag1) {
+	    if (char1->health < 53)
+		char1->health += 0.5;
+	    else {
+		char1->health = 53;
+		deadFlag1 = 0;
+	    }
+	}
+	
+	if (deadFlag2) {
+	    if (char2->health < 53)
+		char2->health += 0.5;
+	    else {
+		char2->health = 53;
+		deadFlag2 = 0;
+	    }
+	}
+
         // Player 2 Movement Keys
         if (!deadFlag2 && !freezeFlag2) {
             if (gl.keys[XK_Right]) {
@@ -2345,8 +2368,8 @@ void physics(Game *game)
         freezeCollision1(char1);
         freezeCollision2(char2);
 
-        printf("Freeze Flag 1: %d\n", freezeFlag1);
-        printf("Freeze Flag 2: %d\n", freezeFlag2);
+        //printf("Freeze Flag 1: %d\n", freezeFlag1);
+        //printf("Freeze Flag 2: %d\n", freezeFlag2);
 
         // Turn heart back on
         if (gl.heartFlag) {
@@ -2357,22 +2380,35 @@ void physics(Game *game)
                 timers.recordTime(&timers.timeHeart);
             }
         }
-        
-        if (freezeFlag1 || freezeFlag2) {
-            timers.recordTime(&timers.timeCurrent);
-            double timeSpan = timers.timeDiff(&timers.timeFreeze, &timers.timeCurrent);
-            if (timeSpan > 3) {
-                freezeFlag1 = 0;
-                freezeFlag2 = 0;
-            }
-            if (timeSpan > 6) {
-                freezeOn = 1;
-                timers.recordTime(&timers.timeFreeze);
-            }
-        }
        
-        char1->cy += char1->vel.y;
-        char2->cy += char2->vel.y;
+        //printf("Freeze On: %d\n", freezeOn);	
+        if (freezeFlag1 || freezeFlag2) {
+	    timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.timeFreeze, &timers.timeCurrent);
+
+	    if (timeSpan >= 2) {
+		freezeFlag1 = 0;
+		freezeFlag2 = 0;
+		timers.recordTime(&timers.timeFreeze);
+	    }
+	    if (timeSpan >= 6) {
+		freezeOn = 1;
+		timers.recordTime(&timers.timeFreeze);
+	    }
+	}
+	if (!freezeOn) {
+	    timers.recordTime(&timers.timeCurrent);
+            double timeSpan = timers.timeDiff(&timers.timeFreeze, &timers.timeCurrent);
+
+	    if (timeSpan >= 4) {
+		freezeOn = 1;
+		timers.recordTime(&timers.timeFreeze);
+	    }
+	    //printf("Time Span: %f\n", timeSpan);
+	}
+
+	char1->cy += char1->vel.y;
+	char2->cy += char2->vel.y;
     }
 }
 
@@ -2452,7 +2488,7 @@ void drawCircle(float radius)
               }*/
         }
         else
-            glColor3ub(100,100,100);
+            glColor3ub(160,160,160);
 
         glVertex2f(cos(degInRad)*radius + gl.xres/2, sin(degInRad)*radius + gl.yres-50);
     }
@@ -2462,7 +2498,7 @@ void drawCircle(float radius)
 
 void heartCollision(Character *player)
 {
-    if (!gl.heartFlag) {
+    if (!gl.heartFlag && player->health < 53) {
         float xleft = gl.xres/2-45;
         float xright = gl.xres/2+45;
         float ytop = gl.yres/2+110;
@@ -2479,13 +2515,16 @@ void heartCollision(Character *player)
     }
 }
 
+//rWithAlpha(30, 30, gl.xres*3/4-50, gl.yres/2+200, gl.freezeTexture);	
+//rWithAlpha(30, 30, gl.xres/4+50, gl.yres/2+200, gl.freezeTexture);
+
 void freezeCollision1(Character *player)
 {
-    if (!freezeFlag1) {
-        float xleft = gl.xres*3/4-60;
-        float xright = gl.xres*3/4-40;
-        float ytop = gl.yres/2+200+10;
-        float ybot = gl.yres/2+200-10;
+    if (!freezeFlag1 && freezeOn) {
+        float xleft = gl.xres*3/4-70;
+        float xright = gl.xres*3/4-30;
+        float ytop = gl.yres/2+200+20;
+        float ybot = gl.yres/2+200-20;
 
         if (player->cx > xleft && player->cx < xright &&
                 player->cy > ybot && player->cy < ytop) {
@@ -2493,10 +2532,10 @@ void freezeCollision1(Character *player)
             freezeOn = 0;
         }
 
-        xleft = gl.xres/4-60;
-        xright = gl.xres/4-40;
-        ytop = gl.yres/2+200+10;
-        ybot = gl.yres/2+200-10;
+        xleft = gl.xres/4+50 - 20;
+        xright = gl.xres/4+50 + 20;
+        ytop = gl.yres/2+200+20;
+        ybot = gl.yres/2+200-20;
 
         if (player->cx > xleft && player->cx < xright &&
                 player->cy > ybot && player->cy < ytop) {
@@ -2508,9 +2547,9 @@ void freezeCollision1(Character *player)
 
 void freezeCollision2(Character *player)
 {
-    if (!freezeFlag2) {
-        float xleft = gl.xres*3/4-60;
-        float xright = gl.xres*3/4-40;
+    if (!freezeFlag2 && freezeOn) {
+        float xleft = gl.xres*3/4-70;
+        float xright = gl.xres*3/4-30;
         float ytop = gl.yres/2+200+10;
         float ybot = gl.yres/2+200-10;
 
@@ -2520,10 +2559,10 @@ void freezeCollision2(Character *player)
             freezeOn = 0;
         }
 
-        xleft = gl.xres/4-60;
-        xright = gl.xres/4-40;
-        ytop = gl.yres/2+200+10;
-        ybot = gl.yres/2+200-10;
+        xleft = gl.xres/4+50 - 20;
+        xright = gl.xres/4+50 + 20;
+        ytop = gl.yres/2+200+20;
+        ybot = gl.yres/2+200-20;
 
         if (player->cx > xleft && player->cx < xright &&
                 player->cy > ybot && player->cy < ytop) {
@@ -2536,7 +2575,8 @@ void freezeCollision2(Character *player)
 void resetEverything()
 {
     timeoutFrame = 0;
-    gameFrame = 5;
+    freezeFrame = 0;
+    gameFrame = 30;
     gl.cursorLocation = 0;
     initializeFlag = 1;
     one = true;
@@ -2653,7 +2693,7 @@ void awardPoint(Character *player, Shape *s)
 {
     if (player->colorID != s->boxColorID) {
         player->points++;
-        printf("Player Health: %d\n", player->health);	
+        //printf("Player Health: %d\n", player->health);	
         cout << "Player " << player->colorID << " Points: " << player->points << endl;
     }
 }
@@ -2662,7 +2702,7 @@ void removePoint(Character *player, Character *player2, Shape *s)
 {
     if (player->colorID == s->boxColorID && s->boxColorID != 0) {
         player->points--;
-        printf("Player 2 Health: %d\n", player2->health);	
+        printf("Player 2 Health: %f\n", player2->health);	
         cout << "Player " << player->colorID << " Points: " << player->points << endl;
     }
 }
@@ -2808,6 +2848,7 @@ void render(Game *game)
         drawCircle(30);
         countdown();
 
+	printf("Heart Flag: %d\n", gl.heartFlag);
         // Heart
         if (gl.heartFlag || gameFrame == 0)
             rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.heartaddTexture);	
@@ -2815,6 +2856,7 @@ void render(Game *game)
             rWithAlpha(30, 30, gl.xres/2, gl.yres/2+100, gl.heartaddTexture);	
         //
         // Freeze
+	//printf("FreezeOn: %d\n", freezeOn);
         if (!freezeOn || gameFrame == 0) {
             rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.freezeTexture);	
             rWithAlpha(30, 30, gl.xres/2-1000, gl.yres/2+100, gl.freezeTexture);	
