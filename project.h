@@ -76,10 +76,13 @@ extern class Bullet {
     public:
 	Vec pos;
 	Vec vel;
+	int velValue;
 	float color[3];
 	struct timespec time;
 
-	Bullet() { }
+	Bullet() { 
+	    velValue = 10;
+	}
 }b;
 
 /*extern class Weapon {

@@ -432,7 +432,7 @@ void drawControlsMenu();
 void drawCharSelectMenu();
 void drawCredits();
 void drawWinner();
-void drawBullet(Character *, GLuint);
+void drawBullet(Bullet *, GLuint);
 // ==============================================
 
 
@@ -1683,12 +1683,32 @@ void check_keys(XEvent *e)
 		       break;
 		   }
 		   break;
-	case XK_space:
+	case XK_space: {
+			   struct timespec bt;
+			   clock_gettime(CLOCK_REALTIME, &bt);
+			   double ts = timers.timeDiff(&game.bulletTimer, &bt);
+			   if (ts > 0.8) {
+			       timers.timeCopy(&game.bulletTimer, &bt);
+			       if (game.nbullets < MAX_BULLETS) {
+				   Bullet *b = &game.barr[game.nbullets];
+				   timers.timeCopy(&b->time, &bt);
+				   b->pos.x = char1->cx;
+				   b->pos.y = char1->cy;
+				   //b->vel.x = 2;
+				   //b->vel.y = 0;
+				   b->pos.x += b->velValue;
+				   b->pos.y += 0;
+				   ++game.nbullets;
+			       }
+			   }
+			   printf("NBullets: %d\n", game.nbullets);
+		       }
 		   break;
 	case XK_equal:
 		   gl.delay -= 0.005;
 		   if (gl.delay < 0.005)
 		       gl.delay = 0.005;
+		   break;
 	case XK_Up:
 		   if (game.state == STATE_STARTMENU) {
 		       playScroll();
@@ -2129,20 +2149,39 @@ void physics(Game *game)
 	//==============================================
 	// bullet physics
 	//==============================================
-	/*if (gl.keys[XK_space] && game.state == STATE_GAMEPLAY) {
-	    struct timespec bt;
-	    clock_gettime(CLOCK_REALTIME, &bt);
-	    double ts = timeDiff(&g.bulletTimer, &bt);
-	    if (ts > 0.5) {
-		memcpy(&g.barr[i], &g.barr[g.bullets-1], sizeof(Bullet));
-		g.nbullets--;
+	struct timespec bt;
+	clock_gettime(CLOCK_REALTIME, &bt);
+	int i = 0;
+	while (i < game->nbullets) {
+	    Bullet *b = &game->barr[i];
+	    double ts = timers.timeDiff(&b->time, &bt);
+	    if (ts > 8.5) {
+		memcpy(&game->barr[i], &game->barr[game->nbullets-1], sizeof(Bullet));
+		game->nbullets--;
 		continue;
 	    }
-	    b->pos[0] += 5;
-	    b->pos[1] += 0;
+	    b->pos.x += b->velValue;
+	    b->pos.y += 0;
 	    i++;
-	}*/
+	}
 
+	if (gl.keys[XK_space]) {
+	    struct timespec bt;
+	    clock_gettime(CLOCK_REALTIME, &bt);
+	    double ts = timers.timeDiff(&game->bulletTimer, &bt);
+	    if (ts > 2.5) {
+		timers.timeCopy(&game->bulletTimer, &bt);
+		if (game->nbullets < MAX_BULLETS) {
+		    Bullet *b = &game->barr[game->nbullets];
+		    timers.timeCopy(&b->time, &bt);
+		    b->pos.x = char1->cx;
+		    b->pos.y = char1->cy;
+		    b->vel.x += b->velValue;
+		    b->vel.y += 0;
+		    game->nbullets++;
+		}
+	    }
+	}
 	//==============================================
 	// bullet done
 	//==============================================
@@ -2580,21 +2619,21 @@ void render(Game *game)
 	    countdowngo(gl.xres/2,gl.yres/2);
 	}
 	//====================================
-	//Bullet *b = &g.barr[0];
-	//for (int i = 0; i < g.nbullets; i++) {
-	//    drawBullet(char1, gl.forkTexture);
-	//    ++b;
-	//}
-	if (gl.keys[XK_space])
-	    drawBullet(char1, gl.forkTexture);
+	Bullet *b = &game->barr[0];	
+	for (int i = 0; i < game->nbullets; i++) {
+	    drawBullet(b, gl.forkTexture);
+	    ++b;
+	}
+	//if (gl.keys[XK_space])
+	    //drawBullet(char1, gl.forkTexture);
     }
 }
 
-void drawBullet(Character *player, GLuint forkTexture) 
+void drawBullet(Bullet *b, GLuint forkTexture) 
 {
     glPushMatrix();
     glColor3f(1.0,1.0,1.0);
-    glTranslatef(player->cx, player->cy, 0);
+    glTranslatef(b->pos.x, b->pos.y, 0);
     glBindTexture(GL_TEXTURE_2D, forkTexture);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.0f);
