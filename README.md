@@ -1,7 +1,7 @@
 # ColorDom
 
-Ogirdor
-CS 3350 Software Engineering Game Project
+Color Domination
+CS 4490 Game Design Project
 C++ and OpenGL
 
 Description
