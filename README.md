@@ -4,8 +4,8 @@ Color Domination
 CS 4490 Game Design Project
 C++ and OpenGL
 
-![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomGame.png)
 
+![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomGame.png)
 
 
 Description
@@ -43,3 +43,18 @@ Linux terminal:
 3. make clean
 4. make
 5. ./game 1280 720
+
+
+Screenshots of the Game
+
+Title Screen
+![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomHome.png)
+
+Controls Screen
+![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomControls.png)
+
+Character Selection Screen 
+![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomCharSel.png)
+
+Winner Screen
+![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomWinner.png)
