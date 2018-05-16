@@ -38,4 +38,4 @@ Linux terminal:
 2. cd ColorDom
 3. make clean
 4. make
-5. ./project
+5. ./game 1280 720
