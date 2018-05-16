@@ -4,7 +4,7 @@ Color Domination
 CS 4490 Game Design Project
 C++ and OpenGL
 
-![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomGame.png)
+![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomGam.png)
 
 
 
