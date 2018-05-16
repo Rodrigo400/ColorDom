@@ -4,6 +4,10 @@ Color Domination
 CS 4490 Game Design Project
 C++ and OpenGL
 
+![alt text](https://raw.githubusercontent.com/Rodrigo400/ColorDom/master/ColorDomPhotos/ColorDomGame.png)
+
+
+
 Description
 
 - In our Game Design Class, we were given a project to create a game using vanilla OpenGL and C++ within 10 weeks.
